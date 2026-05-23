@@ -1,0 +1,229 @@
+<div class="flex flex-col gap-6 w-full animate-fadeIn">
+  
+  <!-- Header Row matching mockup -->
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-white/5 pb-6">
+    <div class="flex flex-col text-left">
+      <h1 class="text-3xl font-extrabold text-white tracking-tight leading-none mb-2">
+        Classificação
+      </h1>
+      <p class="text-xs text-slate-400 font-medium">Batalhe pelo topo na comunidade do Bolão Vlab.</p>
+    </div>
+
+    <!-- Sub-tabs and Dropdown -->
+    <div class="flex flex-wrap items-center gap-3">
+      <!-- Tabs Selector -->
+      <div class="flex bg-slate-950/60 p-1 border border-white/5 rounded-xl">
+        <button class="bg-[#1c2230] border-none text-white text-xs font-semibold px-4 py-2 rounded-lg shadow-sm cursor-pointer select-none">
+          Classificação Geral
+        </button>
+        <button class="bg-transparent border-none text-slate-400 hover:text-white text-xs font-semibold px-4 py-2 rounded-lg cursor-pointer transition-all duration-200 select-none">
+          Fase de Grupos
+        </button>
+      </div>
+
+      <!-- Dropdown Mimic -->
+      <div class="relative">
+        <button class="bg-[#1c2230] hover:bg-[#232a3c] border border-white/5 px-4 py-2 text-xs font-semibold rounded-xl text-white flex items-center gap-2 cursor-pointer transition-all duration-200 select-none">
+          Série Ouro
+          <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading state -->
+  @if (loadingRankings()) {
+    <div class="flex flex-col items-center justify-center py-20 gap-3 w-full">
+      <div class="w-10 h-10 border-3 border-white/5 border-t-red-500 rounded-full animate-spin"></div>
+      <p class="text-xs text-slate-400">Carregando classificação...</p>
+    </div>
+  } @else {
+    @if (rankings().length === 0) {
+      <div class="py-16 px-6 text-center text-slate-400 border border-dashed border-white/10 rounded-2xl bg-slate-900/10">
+        <svg class="w-12 h-12 text-slate-500 mx-auto mb-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <p class="text-sm font-semibold">Nenhuma classificação encontrada para este torneio ainda.</p>
+        <p class="text-xs text-slate-500 mt-1">Os rankings serão computados assim que as partidas começarem.</p>
+      </div>
+    } @else {
+      
+      <!-- Top Statistics Cards Row -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <!-- Card 1: Posição Atual -->
+        <div class="bg-[#121824] border border-white/5 rounded-2xl p-5 flex items-center justify-between shadow-lg shadow-black/10">
+          <div class="flex flex-col text-left gap-1">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Posição Atual</span>
+            <span class="text-3xl font-black text-white tracking-tight">{{ myRank() }}</span>
+          </div>
+          <div class="w-12 h-12 bg-red-500/10 text-red-500 border border-red-500/20 rounded-xl flex items-center justify-center shadow-inner">
+            <!-- Trophy SVG Icon -->
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12a7.5 7.5 0 00-15 0c0 1.5.3 2.925.85 4.25a6.002 6.002 0 0010.3 0c.55-1.325.85-2.75.85-4.25z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75v-1.5m0 3V18.75m-3.75 3h7.5" />
+            </svg>
+          </div>
+        </div>
+
+        <!-- Card 2: Sequência Ativa -->
+        <div class="bg-[#121824] border border-white/5 rounded-2xl p-5 flex items-center justify-between shadow-lg shadow-black/10">
+          <div class="flex flex-col text-left gap-1">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Sequência Ativa</span>
+            <span class="text-3xl font-black text-amber-400 tracking-tight">{{ myStreak() }}</span>
+          </div>
+          <div class="w-12 h-12 bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded-xl flex items-center justify-center shadow-inner">
+            <!-- Flame SVG Icon -->
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 18a3.75 3.75 0 00.495-7.467 5.99 5.99 0 00-1.925 3.546 5.974 5.974 0 012.133-1.897A3.75 3.75 0 0012 18z" />
+            </svg>
+          </div>
+        </div>
+
+        <!-- Card 3: Status de Promoção -->
+        <div class="bg-[#121824] border border-white/5 rounded-2xl p-5 flex items-center justify-between shadow-lg shadow-black/10">
+          <div class="flex flex-col text-left gap-1">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Status de Promoção</span>
+            <span class="text-3xl font-black text-white tracking-tight">{{ myStatus() }}</span>
+          </div>
+          <div class="w-12 h-12 bg-rose-500/10 text-rose-500 border border-rose-500/20 rounded-xl flex items-center justify-center shadow-inner">
+            <!-- Trend Up SVG Icon -->
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
+            </svg>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Leaderboard Main Table Container -->
+      <div class="w-full overflow-hidden rounded-2xl border border-white/5 bg-[#0d1321] shadow-2xl">
+        <div class="overflow-x-auto">
+          <table class="w-full border-collapse text-left text-sm select-none">
+            <thead>
+              <tr class="bg-white/2 border-b border-white/5 text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+                <th class="py-4 px-6 text-center w-20">Posição</th>
+                <th class="py-4 px-6">Participante</th>
+                <th class="py-4 px-6 text-center w-36">Pontos</th>
+                <th class="py-4 px-6 text-center w-32">Sequência</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of rankings(); track row.user_id) {
+                <tr 
+                  class="border-b border-white/5 transition-all duration-200"
+                  [class.bg-red-500/10]="row.user_id === userId()"
+                  [class.border-l-4]="row.user_id === userId()"
+                  [class.border-l-red-500]="row.user_id === userId()"
+                  [class.hover:bg-white/5]="row.user_id !== userId()"
+                >
+                  <!-- Position -->
+                  <td class="py-4 px-6 text-center">
+                    <span class="font-extrabold text-slate-300" [class.text-lg]="row.position <= 3">
+                      @if (row.position === 1) { 🥇 }
+                      @else if (row.position === 2) { 🥈 }
+                      @else if (row.position === 3) { 🥉 }
+                      @else { {{ row.position }} }
+                    </span>
+                  </td>
+                  
+                  <!-- Participant Details -->
+                  <td class="py-4 px-6">
+                    <div class="flex items-center gap-3">
+                      <!-- Profile Pic -->
+                      <div class="relative">
+                        @if (row.user_avatar) {
+                          <img [src]="row.user_avatar" alt="Avatar" class="w-9 h-9 rounded-full object-cover border border-white/10" />
+                        } @else {
+                          <div class="w-9 h-9 rounded-full bg-gradient-to-br from-red-500 to-red-800 text-white flex items-center justify-center text-xs font-extrabold border border-white/10">
+                            {{ row.user_name.charAt(0).toUpperCase() }}
+                          </div>
+                        }
+                        
+                        <!-- Glow highlight for active user -->
+                        @if (row.user_id === userId()) {
+                          <span class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 border border-slate-950 rounded-full"></span>
+                        }
+                      </div>
+                      
+                      <!-- Name & Status Badges -->
+                      <div class="flex flex-col items-start text-left">
+                        <span class="font-bold text-white flex items-center gap-1.5 text-sm">
+                          {{ row.user_name }}
+                          @if (row.user_id === userId()) {
+                            <span class="text-[9px] font-black uppercase bg-red-600 text-white px-2 py-0.5 rounded-full tracking-wider">Você</span>
+                          }
+                        </span>
+                        
+                        <!-- Sublabel Status Zone (Promoting, Stable, Demoting) -->
+                        @if (row.position <= 2) {
+                          <span class="text-[8px] font-bold text-amber-500 uppercase tracking-widest mt-0.5">Promovendo</span>
+                        } @else if (row.position === 3) {
+                          <span class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Estável</span>
+                        } @else {
+                          <span class="text-[8px] font-bold text-red-400 uppercase tracking-widest mt-0.5">Rebaixando</span>
+                        }
+                      </div>
+                    </div>
+                  </td>
+                  
+                  <!-- Points -->
+                  <td class="py-4 px-6 text-center">
+                    <span 
+                      class="font-black text-sm"
+                      [class.text-amber-400]="row.position === 1"
+                      [class.text-white]="row.position !== 1"
+                    >
+                      {{ row.pts_total }}
+                    </span>
+                  </td>
+                  
+                  <!-- Streaks Visual (Flames / Lightning) -->
+                  <td class="py-4 px-6 text-center">
+                    <span class="inline-flex items-center gap-1 text-xs select-none">
+                      @if (row.position === 1) {
+                        🔥 🔥 🔥
+                      } @else if (row.position === 2) {
+                        🔥 🔥
+                      } @else if (row.position === 3) {
+                        🔥
+                      } @else {
+                        ⚡
+                      }
+                    </span>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Bottom Legends & Expiration Metadata -->
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-semibold text-slate-500 select-none">
+        <!-- Color Legends -->
+        <div class="flex items-center gap-4">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.4)]"></span>
+            <span>Zona de Promoção</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.4)]"></span>
+            <span>Zona de Rebaixamento</span>
+          </div>
+        </div>
+
+        <!-- End time countdown -->
+        <div class="flex items-center gap-1">
+          <span>A temporada termina em</span>
+          <span class="text-slate-400 font-bold">4 dias, 12:45:00</span>
+        </div>
+      </div>
+
+    }
+  }
+</div>

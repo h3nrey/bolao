@@ -1,0 +1,14 @@
+<button 
+  class="flex items-center gap-3 px-4 py-3 text-sm font-semibold rounded-xl transition-all duration-200 cursor-pointer border-none text-left w-full select-none"
+  [class.bg-red-500]="active()"
+  [class.text-white]="active()"
+  [class.shadow-lg]="active()"
+  [class.shadow-red-500/20]="active()"
+  [class.bg-transparent]="!active()"
+  [class.text-slate-400]="!active()"
+  [class.hover:text-white]="!active()"
+  [class.hover:bg-white/5]="!active()"
+>
+  <ng-content></ng-content>
+  <span>{{ label() }}</span>
+</button>

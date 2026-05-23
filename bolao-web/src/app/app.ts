@@ -1,7 +1,15 @@
-import { Component, signal, effect, inject } from '@angular/core';
+import { Component, signal, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+
+// Import standalone page components
+import { LoginComponent } from './pages/login/login.component';
+import { RankingComponent } from './pages/ranking/ranking.component';
+import { PartidasComponent } from './pages/partidas/partidas.component';
+import { RegrasComponent } from './pages/regras/regras.component';
+import { PerfilComponent } from './pages/perfil/perfil.component';
+import { SidebarComponent } from './components/sidebar/sidebar.component';
 
 interface UserProfile {
   id: string;
@@ -15,7 +23,16 @@ interface UserProfile {
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [
+    CommonModule, 
+    FormsModule,
+    LoginComponent,
+    RankingComponent,
+    PartidasComponent,
+    RegrasComponent,
+    PerfilComponent,
+    SidebarComponent
+  ],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
@@ -23,11 +40,14 @@ export class App {
   private readonly http = inject(HttpClient);
   private readonly apiBaseUrl = 'http://localhost:3000';
 
-  // Signals for state
+  // Signals for auth state
   protected readonly token = signal('');
   protected readonly user = signal<UserProfile | null>(null);
   protected readonly loading = signal(false);
   protected readonly error = signal<string | null>(null);
+
+  // Tabs navigation state
+  protected readonly activeTab = signal<'leaderboard' | 'matches' | 'rules' | 'profile'>('leaderboard');
 
   constructor() {
     // Check if token exists in URL parameters (redirected from callback)
@@ -50,17 +70,12 @@ export class App {
   }
 
   protected redirectToGoogle(): void {
-    // Redirects current window to Google Auth endpoint on NestJS
     window.location.href = `${this.apiBaseUrl}/auth/google`;
   }
 
-  protected connectToken(): void {
-    const rawToken = this.token().trim();
-    if (!rawToken) {
-      this.error.set('Por favor, insira um token válido.');
-      return;
-    }
-    this.fetchProfile(rawToken);
+  protected onTokenConnected(jwtToken: string): void {
+    this.token.set(jwtToken);
+    this.fetchProfile(jwtToken);
   }
 
   private fetchProfile(jwtToken: string): void {
@@ -89,5 +104,6 @@ export class App {
     this.token.set('');
     this.user.set(null);
     this.error.set(null);
+    this.activeTab.set('leaderboard');
   }
 }

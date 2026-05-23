@@ -1,0 +1,126 @@
+<div class="flex flex-col gap-6 w-full animate-fadeIn">
+  
+  <!-- Premium Header -->
+  <div class="flex flex-col text-left border-b border-white/5 pb-6 mb-2">
+    <h1 class="text-3xl font-extrabold text-white tracking-tight leading-none mb-2">
+      Partidas
+    </h1>
+    <p class="text-xs text-slate-400 font-medium">Jogos do torneio divididos por andamento e resultados oficiais.</p>
+  </div>
+
+  <!-- Loading state -->
+  @if (loadingMatches()) {
+    <div class="flex flex-col items-center justify-center py-20 gap-3 w-full">
+      <div class="w-10 h-10 border-3 border-white/5 border-t-red-500 rounded-full animate-spin"></div>
+      <p class="text-xs text-slate-400">Carregando partidas...</p>
+    </div>
+  } @else {
+    @if (groupedMatches().length === 0) {
+      <div class="py-16 px-6 text-center text-slate-400 border border-dashed border-white/10 rounded-2xl bg-slate-900/10">
+        <svg class="w-12 h-12 text-slate-500 mx-auto mb-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+        <p class="text-sm font-semibold">Nenhuma partida agendada.</p>
+      </div>
+    } @else {
+      <!-- Grouped Matches List -->
+      <div class="flex flex-col gap-8 w-full text-left">
+        @for (group of groupedMatches(); track group.dateLabel) {
+          <!-- Date Group Section -->
+          <div class="flex flex-col gap-4 w-full">
+            
+            <!-- Sticky Date Label Header -->
+            <div class="flex items-center gap-3">
+              <span class="text-xs font-black uppercase text-amber-500 tracking-wider bg-amber-500/10 border border-amber-500/10 px-3 py-1.5 rounded-xl select-none">
+                {{ group.dateLabel }}
+              </span>
+              <div class="flex-1 h-[1px] bg-white/5"></div>
+            </div>
+
+            <!-- Matches List inside Date Group -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+              @for (match of group.matches; track match.id) {
+                <!-- Match Card -->
+                <div class="bg-slate-900/35 border border-white/5 rounded-2xl p-5 hover:border-red-500/20 transition-all duration-300 flex flex-col gap-4">
+                  <div class="flex items-center justify-between border-b border-white/5 pb-3">
+                    <!-- Stage / Group -->
+                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1 select-none">
+                      🌍 {{ match.stage === 'groups' ? 'Fase de Grupos' : match.stage }}
+                    </span>
+                    
+                    <!-- Status Badge -->
+                    @if (match.status === 'live') {
+                      <span class="flex items-center gap-1.5 text-[9px] font-bold bg-red-500/10 text-red-500 border border-red-500/25 px-2 py-0.5 rounded-full uppercase tracking-wider animate-pulse select-none">
+                        <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> Ao Vivo
+                        @if (match.current_minute) { {{ match.current_minute }}' }
+                      </span>
+                    } @else if (match.status === 'finished') {
+                      <span class="text-[9px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full uppercase tracking-wider select-none">
+                        Finalizado
+                      </span>
+                    } @else {
+                      <span class="text-[9px] font-bold bg-white/5 text-slate-400 border border-white/5 px-2 py-0.5 rounded-full uppercase tracking-wider select-none">
+                        Próximo
+                      </span>
+                    }
+                  </div>
+
+                  <!-- Teams & Scores -->
+                  <div class="flex items-center justify-between w-full">
+                    <!-- Team A -->
+                    <div class="flex flex-col items-center gap-2 w-5/12 text-center select-none">
+                      @if (match.team_a?.flag_emoji) {
+                        <span class="text-3xl md:text-4xl drop-shadow-[0_4px_8px_rgba(0,0,0,0.2)]">{{ match.team_a?.flag_emoji }}</span>
+                      } @else {
+                        <div class="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center font-bold text-slate-400">?</div>
+                      }
+                      <span class="text-xs md:text-sm font-bold text-white truncate max-w-full">
+                        {{ match.team_a?.name }}
+                      </span>
+                    </div>
+
+                    <!-- Score Center Box -->
+                    <div class="flex flex-col items-center justify-center w-2/12">
+                      @if (match.status === 'finished') {
+                        <div class="flex items-center gap-1 text-2xl font-black text-white tracking-wider select-none">
+                          <span>{{ match.score?.score_a }}</span>
+                          <span class="text-xs text-slate-500 px-0.5">-</span>
+                          <span>{{ match.score?.score_b }}</span>
+                        </div>
+                      } @else if (match.status === 'live') {
+                        <div class="flex items-center gap-1 text-2xl font-black text-red-500 tracking-wider select-none">
+                          <span>{{ match.score?.score_a }}</span>
+                          <span class="text-xs text-slate-500 px-0.5">-</span>
+                          <span>{{ match.score?.score_b }}</span>
+                        </div>
+                      } @else {
+                        <div class="flex flex-col items-center gap-1">
+                          <span class="text-xs text-amber-500 font-extrabold uppercase tracking-wide select-none">VS</span>
+                          <span class="text-[10px] text-slate-400 font-black whitespace-nowrap">
+                            {{ match.scheduled_at | date: 'HH:mm' }}
+                          </span>
+                        </div>
+                      }
+                    </div>
+
+                    <!-- Team B -->
+                    <div class="flex flex-col items-center gap-2 w-5/12 text-center select-none">
+                      @if (match.team_b?.flag_emoji) {
+                        <span class="text-3xl md:text-4xl drop-shadow-[0_4px_8px_rgba(0,0,0,0.2)]">{{ match.team_b?.flag_emoji }}</span>
+                      } @else {
+                        <div class="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center font-bold text-slate-400">?</div>
+                      }
+                      <span class="text-xs md:text-sm font-bold text-white truncate max-w-full">
+                        {{ match.team_b?.name }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+  }
+</div>
