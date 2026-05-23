@@ -1,0 +1,70 @@
+:root {
+  --font-display: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  /* HSL Colors */
+  --bg-primary: 224 35% 8%;
+  --bg-secondary: 224 30% 12%;
+  --bg-tertiary: 224 25% 16%;
+  
+  --primary: 263 90% 50%;         /* Deep Indigo */
+  --primary-hover: 263 90% 60%;
+  --secondary: 142 70% 45%;       /* Emerald Green */
+  --accent: 38 92% 50%;           /* World Cup Gold */
+  
+  --text-primary: 0 0% 98%;
+  --text-secondary: 220 15% 70%;
+  --text-muted: 220 10% 50%;
+  
+  --glass-bg: 224 30% 12% / 0.7;
+  --glass-border: 224 30% 25% / 0.5;
+  --glass-glow: 263 90% 50% / 0.15;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: hsl(var(--bg-primary));
+  color: hsl(var(--text-primary));
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Background Premium Orbs decoration */
+body::before {
+  content: '';
+  position: absolute;
+  top: -10%;
+  left: -20%;
+  width: 70vw;
+  height: 70vw;
+  border-radius: 50%;
+  background: radial-gradient(circle, hsla(var(--primary) / 0.15) 0%, transparent 70%);
+  z-index: -1;
+  pointer-events: none;
+}
+
+body::after {
+  content: '';
+  position: absolute;
+  bottom: -10%;
+  right: -20%;
+  width: 60vw;
+  height: 60vw;
+  border-radius: 50%;
+  background: radial-gradient(circle, hsla(var(--secondary) / 0.12) 0%, transparent 70%);
+  z-index: -1;
+  pointer-events: none;
+}

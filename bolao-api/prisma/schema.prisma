@@ -1,0 +1,311 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(uuid())
+  email       String   @unique
+  name        String
+  avatar_url  String?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  oauth_accounts  OauthAccount[]
+  predictions     Prediction[]
+  rankings        Ranking[]
+}
+
+model OauthAccount {
+  id                  String    @id @default(uuid())
+  user_id             String
+  provider            String
+  provider_account_id String
+  access_token        String?
+  refresh_token       String?
+  token_expires_at    DateTime?
+  created_at          DateTime  @default(now())
+
+  user User @relation(fields: [user_id], references: [id])
+
+  @@unique([provider, provider_account_id])
+}
+
+model Tournament {
+  id         String             @id @default(uuid())
+  name       String
+  status     TournamentStatus   @default(draft)
+  created_at DateTime           @default(now())
+
+  phases   Phase[]
+  rankings Ranking[]
+}
+
+model Phase {
+  id            String      @id @default(uuid())
+  tournament_id String
+  name          String
+  type          PhaseType
+  status        PhaseStatus @default(upcoming)
+  order         Int
+
+  tournament  Tournament @relation(fields: [tournament_id], references: [id])
+  groups      Group[]
+  matches     Match[]
+  rankings    Ranking[]
+}
+
+model Team {
+  id         String  @id @default(uuid())
+  name       String
+  flag_emoji String?
+  flag_url   String?
+
+  players          Player[]
+  group_teams      GroupTeam[]
+  matches_as_a     Match[]          @relation("TeamA")
+  matches_as_b     Match[]          @relation("TeamB")
+  match_events     MatchEvent[]
+  extra_period_winners MatchExtraPeriod[] @relation("PeriodWinner")
+}
+
+model Player {
+  id        String         @id @default(uuid())
+  team_id   String
+  name      String
+  number    Int?
+  position  PlayerPosition
+  is_active Boolean        @default(true)
+
+  team         Team          @relation(fields: [team_id], references: [id])
+  match_events MatchEvent[]
+}
+
+model Group {
+  id       String @id @default(uuid())
+  phase_id String
+  name     String
+
+  phase       Phase       @relation(fields: [phase_id], references: [id])
+  group_teams GroupTeam[]
+  matches     Match[]
+}
+
+model GroupTeam {
+  id             String @id @default(uuid())
+  group_id       String
+  team_id        String
+  final_position Int?
+
+  group Group @relation(fields: [group_id], references: [id])
+  team  Team  @relation(fields: [team_id], references: [id])
+
+  @@unique([group_id, team_id])
+}
+
+model Match {
+  id           String      @id @default(uuid())
+  phase_id     String
+  group_id     String?
+  stage        MatchStage
+  team_a_id    String?
+  team_b_id    String?
+  scheduled_at DateTime
+  started_at   DateTime?
+  ended_at     DateTime?
+  status       MatchStatus @default(upcoming)
+
+  phase         Phase              @relation(fields: [phase_id], references: [id])
+  group         Group?             @relation(fields: [group_id], references: [id])
+  team_a        Team?              @relation("TeamA", fields: [team_a_id], references: [id])
+  team_b        Team?              @relation("TeamB", fields: [team_b_id], references: [id])
+  events        MatchEvent[]
+  extra_periods MatchExtraPeriod[]
+  predictions   Prediction[]
+  bracket_slot  BracketSlot?
+}
+
+model MatchEvent {
+  id         String          @id @default(uuid())
+  match_id   String
+  team_id    String
+  player_id  String?
+  type       MatchEventType
+  minute     Int
+  period     MatchPeriod
+  created_at DateTime        @default(now())
+
+  match  Match   @relation(fields: [match_id], references: [id])
+  team   Team    @relation(fields: [team_id], references: [id])
+  player Player? @relation(fields: [player_id], references: [id])
+}
+
+model MatchExtraPeriod {
+  id               String          @id @default(uuid())
+  match_id         String
+  type             ExtraPeriodType
+  started_at       DateTime?
+  ended_at         DateTime?
+  winner_team_id   String?
+  penalty_score_a  Int?
+  penalty_score_b  Int?
+
+  match       Match  @relation(fields: [match_id], references: [id])
+  winner_team Team?  @relation("PeriodWinner", fields: [winner_team_id], references: [id])
+}
+
+model BracketSlot {
+  id            String          @id @default(uuid())
+  phase_id      String
+  stage         MatchStage
+  slot_number   Int
+  source_a_type BracketSource
+  source_a_ref  String
+  source_b_type BracketSource
+  source_b_ref  String
+  match_id      String?         @unique
+
+  match Match? @relation(fields: [match_id], references: [id])
+}
+
+model Prediction {
+  id           String   @id @default(uuid())
+  user_id      String
+  match_id     String
+  submitted_at DateTime @default(now())
+
+  user   User              @relation(fields: [user_id], references: [id])
+  match  Match             @relation(fields: [match_id], references: [id])
+  items  PredictionItem[]
+  points PredictionPoint[]
+
+  @@unique([user_id, match_id])
+}
+
+model PredictionItem {
+  id              String         @id @default(uuid())
+  prediction_id   String
+  type            PredictionType
+  value_int       Int?
+  value_team_id   String?
+  value_player_id String?
+
+  prediction Prediction @relation(fields: [prediction_id], references: [id])
+}
+
+model PredictionPoint {
+  id            String          @id @default(uuid())
+  prediction_id String
+  type          PointType
+  pts_earned    Int
+  calculated_at DateTime        @default(now())
+
+  prediction Prediction @relation(fields: [prediction_id], references: [id])
+}
+
+model Ranking {
+  id            String   @id @default(uuid())
+  user_id       String
+  tournament_id String
+  phase_id      String?
+  pts_matches   Int      @default(0)
+  pts_total     Int      @default(0)
+  position      Int?
+  updated_at    DateTime @updatedAt
+
+  user       User       @relation(fields: [user_id], references: [id])
+  tournament Tournament @relation(fields: [tournament_id], references: [id])
+  phase      Phase?     @relation(fields: [phase_id], references: [id])
+
+  @@unique([user_id, tournament_id, phase_id])
+}
+
+enum TournamentStatus {
+  draft
+  active
+  finished
+}
+
+enum PhaseType {
+  groups
+  knockout
+}
+
+enum PhaseStatus {
+  upcoming
+  active
+  finished
+}
+
+enum MatchStatus {
+  upcoming
+  live
+  finished
+  cancelled
+}
+
+enum MatchStage {
+  groups
+  round_of_16
+  quarterfinal
+  semifinal
+  third_place
+  final
+}
+
+enum MatchPeriod {
+  regular
+  extra_time
+  penalties
+}
+
+enum MatchEventType {
+  goal
+  own_goal
+  yellow_card
+  red_card
+  substitution
+}
+
+enum ExtraPeriodType {
+  extra_time
+  penalties
+}
+
+enum PlayerPosition {
+  goalkeeper
+  defender
+  midfielder
+  forward
+}
+
+enum PredictionType {
+  score_a
+  score_b
+  first_goal_team
+  first_goal_player
+  went_to_extra_time
+  went_to_penalties
+}
+
+enum PointType {
+  exact_score
+  goals_a
+  goals_b
+  result
+  total_goals
+  first_goal_player
+  first_goal_team
+  bonus_zero_zero
+  bonus_extra_time
+  bonus_penalties
+}
+
+enum BracketSource {
+  group_position
+  bracket_slot
+}
