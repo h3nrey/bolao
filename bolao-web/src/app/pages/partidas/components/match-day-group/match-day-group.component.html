@@ -1,0 +1,21 @@
+<div class="flex flex-col gap-4 w-full">
+
+  <!-- Date label header -->
+  <div class="flex items-center gap-3">
+    <span class="text-xs font-black uppercase text-amber-500 tracking-wider bg-amber-500/10 border border-amber-500/10 px-3 py-1.5 rounded-xl select-none">
+      {{ dateLabel() }}
+    </span>
+    <div class="flex-1 h-[1px] bg-white/5"></div>
+  </div>
+
+  <!-- Match cards grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+    @for (match of matches(); track match.id) {
+      <app-match-card
+        [match]="match"
+        (cardClick)="matchClick.emit($event)"
+      />
+    }
+  </div>
+
+</div>
