@@ -390,6 +390,13 @@
       <p class="text-xs text-slate-400 font-medium">Jogos do torneio divididos por andamento e resultados oficiais.</p>
     </div>
 
+    <!-- Stages Tab Selection (using TabSelectorComponent) -->
+    <app-tab-selector
+      [options]="stageTabs"
+      [activeId]="activeStage()"
+      (tabChange)="setActiveStage($event)"
+    />
+
     <!-- Loading state -->
     @if (loadingMatches()) {
       <div class="flex flex-col items-center justify-center py-20 gap-3 w-full">
@@ -397,7 +404,28 @@
         <p class="text-xs text-slate-400">Carregando partidas...</p>
       </div>
     } @else {
-      @if (groupedMatches().length === 0) {
+
+      <!-- Knockout Bracket View -->
+      @if (activeStage() === 'knockout') {
+        <div class="flex flex-col gap-4 w-full animate-fadeIn text-left">
+          <div class="flex flex-col text-left">
+            <h2 class="text-sm font-extrabold text-white tracking-wider uppercase">Chaves Eliminatórias</h2>
+            <p class="text-[11px] text-slate-400 mt-1">Acompanhe o caminho de cada time rumo ao título mundial.</p>
+          </div>
+
+          <!-- Bracket placeholder info when no knockout matches exist yet -->
+          <div class="bg-[#0d1321] border border-white/5 rounded-2xl p-6 shadow-2xl overflow-hidden">
+            <div class="flex items-center gap-2 mb-5">
+              <span class="text-lg">🏆</span>
+              <span class="text-xs font-black uppercase tracking-widest text-slate-300">Chave Completa</span>
+            </div>
+            <app-knockout-bracket />
+          </div>
+        </div>
+      }
+
+      <!-- Groups stage: grouped matches list -->
+      @if (activeStage() === 'groups') {
         <div class="py-16 px-6 text-center text-slate-400 border border-dashed border-white/10 rounded-2xl bg-slate-900/10">
           <svg class="w-12 h-12 text-slate-500 mx-auto mb-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />

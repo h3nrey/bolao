@@ -1,0 +1,16 @@
+<div class="flex border-b border-white/5 pb-1 gap-6 select-none justify-start mb-2">
+  @for (option of options(); track option.id) {
+    <button 
+      (click)="selectTab(option.id)" 
+      class="bg-transparent border-none py-2 px-1 text-xs font-black uppercase tracking-widest transition-all duration-200 cursor-pointer relative"
+      [class.text-white]="activeId() === option.id"
+      [class.text-slate-400]="activeId() !== option.id"
+      [class.hover:text-slate-200]="activeId() !== option.id"
+    >
+      {{ option.label }}
+      @if (activeId() === option.id) {
+        <div class="absolute bottom-0 left-0 right-0 h-[2.5px] bg-red-500 rounded-full animate-fadeIn shadow-[0_0_8px_rgba(239,68,68,0.5)]"></div>
+      }
+    </button>
+  }
+</div>

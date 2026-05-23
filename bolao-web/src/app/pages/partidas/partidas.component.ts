@@ -2,6 +2,8 @@ import { Component, input, signal, inject, OnInit, computed } from '@angular/cor
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TabSelectorComponent, TabOption } from '../../components/ui/tab-selector/tab-selector.component';
+import { KnockoutBracketComponent } from '../../components/ui/knockout-bracket/knockout-bracket.component';
 
 interface MatchTeam {
   id: string;
@@ -39,7 +41,7 @@ interface Match {
 @Component({
   selector: 'app-partidas',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TabSelectorComponent, KnockoutBracketComponent],
   templateUrl: './partidas.component.html',
 })
 export class PartidasComponent implements OnInit {
@@ -52,13 +54,26 @@ export class PartidasComponent implements OnInit {
   // State for Calendar
   protected readonly matches = signal<Match[]>([]);
   protected readonly loadingMatches = signal(false);
+  protected readonly activeStage = signal<'groups' | 'knockout'>('groups');
+
+  // Tab options for the stage selector
+  protected readonly stageTabs: TabOption[] = [
+    { id: 'groups', label: 'Fase de Grupos' },
+    { id: 'knockout', label: 'Fase Eliminatória' },
+  ];
+
+  protected setActiveStage(id: string): void {
+    if (id === 'groups' || id === 'knockout') {
+      this.activeStage.set(id);
+    }
+  }
 
   // State for Match Details
   protected readonly selectedMatchId = signal<string | null>(null);
   protected readonly selectedMatch = signal<any | null>(null);
   protected readonly loadingDetails = signal(false);
 
-  // Prediction Form State
+  // Prediction Form Form State
   protected readonly scoreA = signal<number>(0);
   protected readonly scoreB = signal<number>(0);
   protected readonly isEditingPrediction = signal(false);
@@ -74,9 +89,21 @@ export class PartidasComponent implements OnInit {
     const rawMatches = this.matches();
     if (rawMatches.length === 0) return [];
 
+    // Filter matches dynamically based on selected active stage
+    const currentStage = this.activeStage();
+    const filteredMatches = rawMatches.filter(match => {
+      if (currentStage === 'groups') {
+        return match.stage === 'groups';
+      } else {
+        return match.stage !== 'groups';
+      }
+    });
+
+    if (filteredMatches.length === 0) return [];
+
     const groups: { [key: string]: Match[] } = {};
 
-    rawMatches.forEach(match => {
+    filteredMatches.forEach(match => {
       const date = new Date(match.scheduled_at);
       const year = date.getFullYear();
       const month = String(date.getMonth() + 1).padStart(2, '0');
