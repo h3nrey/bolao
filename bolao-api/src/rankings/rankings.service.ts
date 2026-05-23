@@ -28,6 +28,12 @@ export class RankingsService {
 
     const userPoints: Record<string, { pts_total: number; pts_matches: number }> = {};
 
+    // Initialize with 0 points for ALL users
+    const allUsers = await this.prisma.user.findMany();
+    for (const user of allUsers) {
+      userPoints[user.id] = { pts_total: 0, pts_matches: 0 };
+    }
+
     for (const prediction of predictions) {
       if (!userPoints[prediction.user_id]) {
         userPoints[prediction.user_id] = { pts_total: 0, pts_matches: 0 };

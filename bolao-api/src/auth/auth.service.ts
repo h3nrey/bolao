@@ -17,7 +17,7 @@ export class AuthService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
-  ) {}
+  ) { }
 
   async findOrCreateUser(data: FindOrCreateUserData) {
     const {
@@ -82,6 +82,18 @@ export class AuthService {
         },
       },
     });
+
+    const tournaments = await this.prisma.tournament.findMany();
+    for (const tournament of tournaments) {
+      await this.prisma.ranking.create({
+        data: {
+          user_id: user.id,
+          tournament_id: tournament.id,
+          pts_total: 0,
+          pts_matches: 0,
+        },
+      });
+    }
 
     return user;
   }
