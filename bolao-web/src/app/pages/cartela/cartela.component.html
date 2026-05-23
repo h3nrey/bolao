@@ -1,0 +1,130 @@
+<div class="flex flex-col gap-6 w-full animate-fadeIn text-left">
+  
+  <!-- Header Section -->
+  <div class="flex flex-col text-left border-b border-white/5 pb-6 mb-2 select-none">
+    <h1 class="text-3xl font-extrabold text-white tracking-tight leading-none mb-2">
+      Cartela de Palpites
+    </h1>
+    <p class="text-xs text-slate-400 font-medium">Insira seus palpites rapidamente em lote para todos os jogos da Copa do Mundo.</p>
+  </div>
+
+  @if (loading()) {
+    <div class="flex flex-col items-center justify-center py-24 gap-3 w-full">
+      <div class="w-10 h-10 border-3 border-white/5 border-t-red-500 rounded-full animate-spin"></div>
+      <p class="text-xs text-slate-400">Carregando cartela de jogos...</p>
+    </div>
+  } @else {
+    <!-- Grid representation of 72 World Cup matches -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
+      @for (match of matches(); track match.id) {
+        <!-- Betsheet Compact Card -->
+        <div 
+          class="bg-[#0d1321] border rounded-2xl p-4 flex flex-col gap-3.5 transition-all duration-300 relative overflow-hidden"
+          [class.border-red-500/25]="localPredictions()[match.id]?.isModified"
+          [class.border-emerald-500/20]="localPredictions()[match.id]?.isSaved && !localPredictions()[match.id]?.isModified"
+          [class.border-white/5]="!localPredictions()[match.id]?.isModified && !localPredictions()[match.id]?.isSaved"
+        >
+          <!-- Orb Glow when modified -->
+          @if (localPredictions()[match.id]?.isModified) {
+            <div class="absolute -top-12 -right-12 w-24 h-24 rounded-full bg-red-500/5 blur-xl pointer-events-none"></div>
+          }
+
+          <!-- Header info -->
+          <div class="flex items-center justify-between text-[9px] font-bold text-slate-400 border-b border-white/5 pb-2 select-none">
+            <span>🌍 {{ match.stage === 'groups' ? 'Fase de Grupos' : match.stage }}</span>
+            <span class="text-slate-500">{{ match.scheduled_at | date: 'dd/MM - HH:mm' }}</span>
+          </div>
+
+          <!-- Quick Score Form Row -->
+          <div class="flex items-center justify-between gap-2">
+            <!-- Team A Info -->
+            <div class="flex items-center gap-2 w-5/12 overflow-hidden">
+              <span class="text-2xl shrink-0 select-none">{{ match.team_a?.flag_emoji }}</span>
+              <span class="text-xs font-black text-white truncate">{{ match.team_a?.name }}</span>
+            </div>
+
+            <!-- Score inputs -->
+            <div class="flex items-center justify-center gap-1 w-3/12 shrink-0">
+              @if (isPastDeadline(match)) {
+                <!-- Locked predictions (Match started/ended) -->
+                <div class="flex items-center gap-1.5 px-2.5 py-1 bg-white/2 border border-white/5 rounded-lg text-xs font-black text-slate-400 select-none">
+                  <span>{{ localPredictions()[match.id]?.scoreA }}</span>
+                  <span class="text-slate-600 font-light">-</span>
+                  <span>{{ localPredictions()[match.id]?.scoreB }}</span>
+                </div>
+              } @else {
+                <!-- Active quick input fields -->
+                <input 
+                  type="number" 
+                  [(ngModel)]="localPredictions()[match.id].scoreA" 
+                  (ngModelChange)="onInputChange(match.id)"
+                  min="0"
+                  class="w-8 bg-[#121824] border border-white/10 rounded-lg py-1.5 text-center font-extrabold text-white text-xs focus:border-red-500 focus:outline-none focus:shadow-[0_0_8px_rgba(239,68,68,0.2)] transition-all duration-150"
+                />
+                <span class="text-slate-600 font-bold text-xs select-none">-</span>
+                <input 
+                  type="number" 
+                  [(ngModel)]="localPredictions()[match.id].scoreB" 
+                  (ngModelChange)="onInputChange(match.id)"
+                  min="0"
+                  class="w-8 bg-[#121824] border border-white/10 rounded-lg py-1.5 text-center font-extrabold text-white text-xs focus:border-red-500 focus:outline-none focus:shadow-[0_0_8px_rgba(239,68,68,0.2)] transition-all duration-150"
+                />
+              }
+            </div>
+
+            <!-- Team B Info -->
+            <div class="flex items-center justify-end gap-2 w-5/12 overflow-hidden text-right">
+              <span class="text-xs font-black text-white truncate">{{ match.team_b?.name }}</span>
+              <span class="text-2xl shrink-0 select-none">{{ match.team_b?.flag_emoji }}</span>
+            </div>
+          </div>
+
+          <!-- Bottom Footer Row -->
+          <div class="flex items-center justify-between pt-2 border-t border-white/5 select-none">
+            <!-- Save status message / validation feedback -->
+            @if (localPredictions()[match.id]?.error) {
+              <span class="text-[9px] font-bold text-red-400">⚠️ Erro</span>
+            } @else {
+              <span class="text-[9px] text-slate-500 font-bold uppercase tracking-wider">
+                @if (match.status === 'finished') { Finalizado }
+                @else if (match.status === 'live') { Ao Vivo }
+                @else { Aberto }
+              </span>
+            }
+
+            <!-- Action triggering button -->
+            @if (isPastDeadline(match)) {
+              <!-- Locked icon -->
+              <span class="text-slate-500 text-xs" title="Palpites encerrados">🔒</span>
+            } @else {
+              @if (localPredictions()[match.id]?.isSaving) {
+                <!-- Loader -->
+                <div class="w-3.5 h-3.5 border border-white/10 border-t-red-500 rounded-full animate-spin"></div>
+              } @else if (localPredictions()[match.id]?.isModified) {
+                <!-- Quick Save Action Button -->
+                <button 
+                  (click)="savePrediction(match.id)"
+                  class="bg-red-500 hover:bg-red-600 text-white border-none py-1 px-3 text-[9px] font-black rounded-lg cursor-pointer transition-all duration-200 uppercase tracking-wider flex items-center gap-1 shadow-md shadow-red-950/20"
+                >
+                  Salvar
+                </button>
+              } @else if (localPredictions()[match.id]?.isSaved) {
+                <!-- Successfully Saved checkmark badge -->
+                <span class="text-[9px] font-black text-emerald-400 uppercase tracking-widest flex items-center gap-1">
+                  ✓ Salvo
+                </span>
+              } @else {
+                <!-- Prediction pending -->
+                <span class="text-[9px] font-bold text-amber-500 uppercase tracking-widest animate-pulse">
+                  Pendente
+                </span>
+              }
+            }
+          </div>
+
+        </div>
+      }
+    </div>
+  }
+
+</div>

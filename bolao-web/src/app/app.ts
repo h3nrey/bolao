@@ -10,6 +10,7 @@ import { PartidasComponent } from './pages/partidas/partidas.component';
 import { RegrasComponent } from './pages/regras/regras.component';
 import { PerfilComponent } from './pages/perfil/perfil.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
+import { CartelaComponent } from './pages/cartela/cartela.component';
 
 interface UserProfile {
   id: string;
@@ -31,7 +32,8 @@ interface UserProfile {
     PartidasComponent,
     RegrasComponent,
     PerfilComponent,
-    SidebarComponent
+    SidebarComponent,
+    CartelaComponent
   ],
   templateUrl: './app.html',
   styleUrl: './app.css',
@@ -47,7 +49,7 @@ export class App {
   protected readonly error = signal<string | null>(null);
 
   // Tabs navigation state
-  protected readonly activeTab = signal<'leaderboard' | 'matches' | 'rules' | 'profile'>('leaderboard');
+  protected readonly activeTab = signal<'leaderboard' | 'matches' | 'betsheet' | 'rules' | 'profile'>('leaderboard');
 
   constructor() {
     // Check if token exists in URL parameters (redirected from callback)

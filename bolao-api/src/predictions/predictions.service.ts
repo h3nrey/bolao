@@ -6,6 +6,15 @@ import { CreatePredictionDto } from './dto/prediction.dto';
 export class PredictionsService {
   constructor(private prisma: PrismaService) {}
 
+  async getMyAllPredictions(userId: string) {
+    return this.prisma.prediction.findMany({
+      where: { user_id: userId },
+      include: {
+        items: true,
+      },
+    });
+  }
+
   async getMyPrediction(matchId: string, userId: string) {
     const prediction = await this.prisma.prediction.findUnique({
       where: {

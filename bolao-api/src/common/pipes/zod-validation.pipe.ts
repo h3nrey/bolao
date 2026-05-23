@@ -6,6 +6,11 @@ export class ZodValidationPipe implements PipeTransform {
   constructor(private schema: any) {}
 
   transform(value: any, metadata: ArgumentMetadata) {
+    // Only validate request body. Skip path/query parameters to avoid validating them with the body's schema.
+    if (metadata.type !== 'body') {
+      return value;
+    }
+
     const schema = this.schema as ZodSchema;
     const result = schema.safeParse(value);
     if (!result.success) {

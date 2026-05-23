@@ -22,6 +22,10 @@
           <app-partidas [token]="token()"></app-partidas>
         }
 
+        @if (activeTab() === 'betsheet') {
+          <app-cartela [token]="token()"></app-cartela>
+        }
+
         @if (activeTab() === 'rules') {
           <app-regras></app-regras>
         }

@@ -10,6 +10,11 @@ import { createPredictionSchema, CreatePredictionDto } from './dto/prediction.dt
 export class PredictionsController {
   constructor(private predictionsService: PredictionsService) {}
 
+  @Get('predictions/me')
+  async getMyAllPredictions(@CurrentUser() user: any) {
+    return this.predictionsService.getMyAllPredictions(user.id);
+  }
+
   @Get('matches/:matchId/predictions/me')
   async getMyPrediction(
     @Param('matchId') matchId: string,

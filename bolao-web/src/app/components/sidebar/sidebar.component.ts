@@ -20,14 +20,14 @@ interface UserProfile {
 })
 export class SidebarComponent {
   // Inputs
-  activeTab = input.required<'leaderboard' | 'matches' | 'rules' | 'profile'>();
+  activeTab = input.required<'leaderboard' | 'matches' | 'betsheet' | 'rules' | 'profile'>();
   user = input.required<UserProfile | null>();
 
   // Outputs
-  tabSelected = output<'leaderboard' | 'matches' | 'rules' | 'profile'>();
+  tabSelected = output<'leaderboard' | 'matches' | 'betsheet' | 'rules' | 'profile'>();
   logoutRequested = output<void>();
 
-  protected selectTab(tab: 'leaderboard' | 'matches' | 'rules' | 'profile'): void {
+  protected selectTab(tab: 'leaderboard' | 'matches' | 'betsheet' | 'rules' | 'profile'): void {
     this.tabSelected.emit(tab);
   }
 
