@@ -11,6 +11,7 @@ import { RegrasComponent } from './pages/regras/regras.component';
 import { PerfilComponent } from './pages/perfil/perfil.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { CartelaComponent } from './pages/cartela/cartela.component';
+import { CountdownBannerComponent } from './components/ui/countdown-banner/countdown-banner.component';
 
 interface UserProfile {
   id: string;
@@ -33,7 +34,8 @@ interface UserProfile {
     RegrasComponent,
     PerfilComponent,
     SidebarComponent,
-    CartelaComponent
+    CartelaComponent,
+    CountdownBannerComponent
   ],
   templateUrl: './app.html',
   styleUrl: './app.css',

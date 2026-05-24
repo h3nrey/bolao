@@ -1,40 +1,46 @@
 @if (user()) {
-  <!-- Full Screen Premium Dashboard Layout -->
-  <div class="h-screen w-full flex bg-[#090d16] text-slate-100 font-sans overflow-hidden">
+  <!-- Full Screen Premium Dashboard Layout in Column -->
+  <div class="h-screen w-full flex flex-col bg-[#090d16] text-slate-100 font-sans overflow-hidden animate-fadeIn">
     
-    <!-- Left Sidebar Component -->
-    <app-sidebar 
-      [activeTab]="activeTab()" 
-      [user]="user()" 
-      (tabSelected)="activeTab.set($event)" 
-      (logoutRequested)="logout()"
-    ></app-sidebar>
+    <!-- Top Countdown Banner Component -->
+    <app-countdown-banner></app-countdown-banner>
 
-    <!-- Main Content Pane -->
-    <main class="flex-1 overflow-y-auto p-8 bg-[#090d16] flex flex-col">
-      <!-- Dynamic Pages wrapper -->
-      <div class="max-w-6xl w-full mx-auto">
-        @if (activeTab() === 'leaderboard') {
-          <app-ranking [token]="token()" [userId]="user()?.id"></app-ranking>
-        }
+    <!-- Content Area below Banner -->
+    <div class="flex flex-1 overflow-hidden">
+      <!-- Left Sidebar Component -->
+      <app-sidebar 
+        [activeTab]="activeTab()" 
+        [user]="user()" 
+        (tabSelected)="activeTab.set($event)" 
+        (logoutRequested)="logout()"
+      ></app-sidebar>
 
-        @if (activeTab() === 'matches') {
-          <app-partidas [token]="token()"></app-partidas>
-        }
+      <!-- Main Content Pane -->
+      <main class="flex-1 overflow-y-auto p-8 bg-[#090d16] flex flex-col">
+        <!-- Dynamic Pages wrapper -->
+        <div class="max-w-6xl w-full mx-auto">
+          @if (activeTab() === 'leaderboard') {
+            <app-ranking [token]="token()" [userId]="user()?.id"></app-ranking>
+          }
 
-        @if (activeTab() === 'betsheet') {
-          <app-cartela [token]="token()"></app-cartela>
-        }
+          @if (activeTab() === 'matches') {
+            <app-partidas [token]="token()"></app-partidas>
+          }
 
-        @if (activeTab() === 'rules') {
-          <app-regras></app-regras>
-        }
+          @if (activeTab() === 'betsheet') {
+            <app-cartela [token]="token()"></app-cartela>
+          }
 
-        @if (activeTab() === 'profile') {
-          <app-perfil [user]="user()" (logoutRequested)="logout()"></app-perfil>
-        }
-      </div>
-    </main>
+          @if (activeTab() === 'rules') {
+            <app-regras></app-regras>
+          }
+
+          @if (activeTab() === 'profile') {
+            <app-perfil [user]="user()" (logoutRequested)="logout()"></app-perfil>
+          }
+        </div>
+      </main>
+    </div>
   </div>
 } @else {
   <!-- Centered Login Layout -->

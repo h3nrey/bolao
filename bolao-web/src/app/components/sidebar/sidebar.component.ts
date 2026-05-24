@@ -2,6 +2,7 @@ import { Component, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SidebarItemComponent } from '../ui/sidebar-item/sidebar-item.component';
 import { UserProfileFooterComponent } from '../ui/user-profile-footer/user-profile-footer.component';
+import { LogoComponent } from '../ui/logo/logo.component';
 
 interface UserProfile {
   id: string;
@@ -15,7 +16,7 @@ interface UserProfile {
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, SidebarItemComponent, UserProfileFooterComponent],
+  imports: [CommonModule, SidebarItemComponent, UserProfileFooterComponent, LogoComponent],
   templateUrl: './sidebar.component.html',
 })
 export class SidebarComponent {

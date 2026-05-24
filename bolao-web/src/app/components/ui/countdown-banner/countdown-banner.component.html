@@ -1,0 +1,46 @@
+<div class="w-full bg-[#0d1321]/95 border-b border-white/5 px-8 py-3.5 flex items-center justify-between gap-6 select-none z-50 backdrop-blur-md">
+  
+  <!-- Left Side: Official WebP Logo & Details -->
+  <div class="flex items-center gap-4 text-left">
+    <div class="relative flex items-center justify-center bg-black/10 rounded-xl p-1.5 border border-white/5 shadow-inner">
+      <img src="assets/world-cup-2026-logo.webp" alt="Copa do Mundo 2026" class="h-10 w-auto object-contain" />
+    </div>
+    <div class="flex flex-col gap-0.5">
+      <h2 class="text-sm font-extrabold text-white tracking-tight uppercase flex items-center gap-2">
+        Copa do Mundo 2026
+        <span class="text-[9px] font-black uppercase bg-red-600 text-white px-2 py-0.5 rounded-full tracking-widest animate-pulse">FIFA</span>
+      </h2>
+      <p class="text-[10px] font-semibold text-slate-400">O maior espetáculo da Terra começa em breve. Prepare seus palpites!</p>
+    </div>
+  </div>
+  
+  <!-- Right Side: Countdown Boxes -->
+  <div class="flex items-center gap-2">
+    <!-- Days -->
+    <div class="flex items-center gap-2 bg-black/40 border border-white/5 rounded-xl px-3 py-1.5 shadow-inner">
+      <span class="text-sm font-black text-white leading-none tracking-tight">{{ countdownDays() }}</span>
+      <span class="text-[8px] font-bold uppercase text-slate-500">Dias</span>
+    </div>
+    <span class="text-slate-700 font-bold text-[10px]">:</span>
+    
+    <!-- Hours -->
+    <div class="flex items-center gap-2 bg-black/40 border border-white/5 rounded-xl px-3 py-1.5 shadow-inner">
+      <span class="text-sm font-black text-white leading-none tracking-tight">{{ countdownHours() }}</span>
+      <span class="text-[8px] font-bold uppercase text-slate-500">Hrs</span>
+    </div>
+    <span class="text-slate-700 font-bold text-[10px]">:</span>
+    
+    <!-- Minutes -->
+    <div class="flex items-center gap-2 bg-black/40 border border-white/5 rounded-xl px-3 py-1.5 shadow-inner">
+      <span class="text-sm font-black text-white leading-none tracking-tight">{{ countdownMinutes() }}</span>
+      <span class="text-[8px] font-bold uppercase text-slate-500">Min</span>
+    </div>
+    <span class="text-slate-700 font-bold text-[10px]">:</span>
+    
+    <!-- Seconds -->
+    <div class="flex items-center gap-2 bg-red-950/20 border border-red-500/20 rounded-xl px-3 py-1.5 shadow-inner">
+      <span class="text-sm font-black text-red-500 leading-none tracking-tight">{{ countdownSeconds() }}</span>
+      <span class="text-[8px] font-bold uppercase text-red-500/70">Seg</span>
+    </div>
+  </div>
+</div>
