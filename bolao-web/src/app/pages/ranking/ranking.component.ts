@@ -9,7 +9,7 @@ interface Tournament {
   created_at: string;
 }
 
-interface RankingUser {
+export interface RankingUser {
   position: number;
   user_id: string;
   user_name: string;
@@ -18,10 +18,13 @@ interface RankingUser {
   pts_matches: number;
 }
 
+import { LeaderboardTableComponent } from './components/leaderboard-table/leaderboard-table.component';
+import { RankingLegendComponent } from './components/ranking-legend/ranking-legend.component';
+
 @Component({
   selector: 'app-ranking',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, LeaderboardTableComponent, RankingLegendComponent],
   templateUrl: './ranking.component.html',
 })
 export class RankingComponent implements OnInit {

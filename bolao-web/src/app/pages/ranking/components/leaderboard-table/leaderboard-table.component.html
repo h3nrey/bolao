@@ -1,0 +1,82 @@
+<div class="w-full overflow-hidden rounded-2xl border border-white/5 bg-[#0d1321] shadow-2xl">
+  <div class="overflow-x-auto">
+    <table class="w-full border-collapse text-left text-sm select-none">
+      <thead>
+        <tr class="bg-white/2 border-b border-white/5 text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+          <th class="py-4 px-6 text-center w-20">Posição</th>
+          <th class="py-4 px-6">Participante</th>
+          <th class="py-4 px-6 text-center w-36">Pontos</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of rankings(); track row.user_id) {
+        <tr class="border-b border-white/5 transition-all duration-200"
+          [class.bg-red-500/10]="row.user_id === userId()" [class.border-l-4]="row.user_id === userId()"
+          [class.border-l-red-500]="row.user_id === userId()" [class.hover:bg-white/5]="row.user_id !== userId()">
+          <!-- Position -->
+          <td class="py-4 px-6 text-center">
+            <span class="font-extrabold text-slate-300" [class.text-lg]="row.position <= 3">
+              @if (row.position === 1) { 🥇 }
+              @else if (row.position === 2) { 🥈 }
+              @else if (row.position === 3) { 🥉 }
+              @else { {{ row.position }} }
+            </span>
+          </td>
+
+          <!-- Participant Details -->
+          <td class="py-4 px-6">
+            <div class="flex items-center gap-3">
+              <!-- Profile Pic -->
+              <div class="relative">
+                @if (row.user_avatar) {
+                <img [src]="row.user_avatar" alt="Avatar"
+                  class="w-9 h-9 rounded-full object-cover border border-white/10" />
+                } @else {
+                <div
+                  class="w-9 h-9 rounded-full bg-gradient-to-br from-red-500 to-red-800 text-white flex items-center justify-center text-xs font-extrabold border border-white/10">
+                  {{ row.user_name.charAt(0).toUpperCase() }}
+                </div>
+                }
+
+                <!-- Glow highlight for active user -->
+                @if (row.user_id === userId()) {
+                <span
+                  class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 border border-slate-950 rounded-full"></span>
+                }
+              </div>
+
+              <!-- Name & Status Badges -->
+              <div class="flex flex-col items-start text-left">
+                <span class="font-bold text-white flex items-center gap-1.5 text-sm">
+                  {{ row.user_name }}
+                  @if (row.user_id === userId()) {
+                  <span
+                    class="text-[9px] font-black uppercase bg-red-600 text-white px-2 py-0.5 rounded-full tracking-wider">Você</span>
+                  }
+                </span>
+
+                <!-- Sublabel Status Zone (Promoting, Stable, Demoting) -->
+                @if (row.position <= 2) { <span
+                  class="text-[8px] font-bold text-amber-500 uppercase tracking-widest mt-0.5">Promovendo</span>
+                  } @else if (row.position === 3) {
+                  <span class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Estável</span>
+                  } @else {
+                  <span class="text-[8px] font-bold text-red-400 uppercase tracking-widest mt-0.5">Rebaixando</span>
+                  }
+              </div>
+            </div>
+          </td>
+
+          <!-- Points -->
+          <td class="py-4 px-6 text-center">
+            <span class="font-black text-sm" [class.text-amber-400]="row.position === 1"
+              [class.text-white]="row.position !== 1">
+              {{ row.pts_total }}
+            </span>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
