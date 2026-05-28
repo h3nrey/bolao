@@ -6,6 +6,8 @@ interface UserProfile {
   email: string;
   name: string;
   avatar_url?: string | null;
+  project?: 'avamec' | 'siscad' | 'inovaula' | 'materiais-digitais' | 'outro' | null;
+  seniority?: 'bolsista' | 'clt' | 'gerente' | 'pmo' | 'outro' | null;
   created_at: string;
   updated_at: string;
 }
@@ -22,6 +24,30 @@ export class PerfilComponent {
 
   // Outputs
   logoutRequested = output<void>();
+
+  protected getProjectLabel(project: string | null | undefined): string {
+    if (!project) return 'Não definido';
+    const mapping: Record<string, string> = {
+      'avamec': 'AVAMEC',
+      'siscad': 'SISCAD',
+      'inovaula': 'Inovaula',
+      'materiais-digitais': 'Materiais Digitais',
+      'outro': 'Outro'
+    };
+    return mapping[project] || project;
+  }
+
+  protected getSeniorityLabel(seniority: string | null | undefined): string {
+    if (!seniority) return 'Não definido';
+    const mapping: Record<string, string> = {
+      'bolsista': 'Bolsista',
+      'clt': 'CLT',
+      'gerente': 'Gerente',
+      'pmo': 'PMO',
+      'outro': 'Outro'
+    };
+    return mapping[seniority] || seniority;
+  }
 
   protected onLogout(): void {
     this.logoutRequested.emit();

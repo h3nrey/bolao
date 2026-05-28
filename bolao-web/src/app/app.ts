@@ -1,4 +1,4 @@
-import { Component, signal, inject } from '@angular/core';
+import { Component, signal, inject, computed } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -18,6 +18,8 @@ interface UserProfile {
   email: string;
   name: string;
   avatar_url?: string | null;
+  project?: 'avamec' | 'siscad' | 'inovaula' | 'materiais-digitais' | 'outro' | null;
+  seniority?: 'bolsista' | 'clt' | 'gerente' | 'pmo' | 'outro' | null;
   created_at: string;
   updated_at: string;
 }
@@ -49,6 +51,19 @@ export class App {
   protected readonly user = signal<UserProfile | null>(null);
   protected readonly loading = signal(false);
   protected readonly error = signal<string | null>(null);
+
+  // Computed state to check if the user profile needs completion
+  protected readonly isProfileIncomplete = computed(() => {
+    const u = this.user();
+    return !!u && (!u.project || !u.seniority || !u.name);
+  });
+
+  // Complete profile form signals
+  protected readonly completeProfileName = signal('');
+  protected readonly completeProfileProject = signal<'avamec' | 'siscad' | 'inovaula' | 'materiais-digitais' | 'outro' | ''>('');
+  protected readonly completeProfileSeniority = signal<'bolsista' | 'clt' | 'gerente' | 'pmo' | 'outro' | ''>('');
+  protected readonly completeProfileError = signal<string | null>(null);
+  protected readonly completeProfileLoading = signal(false);
 
   // Tabs navigation state
   protected readonly activeTab = signal<'leaderboard' | 'matches' | 'betsheet' | 'rules' | 'profile'>('leaderboard');
@@ -91,6 +106,11 @@ export class App {
     this.http.get<UserProfile>(`${this.apiBaseUrl}/auth/me`, { headers }).subscribe({
       next: (profile) => {
         this.user.set(profile);
+        if (profile) {
+          this.completeProfileName.set(profile.name || '');
+          this.completeProfileProject.set(profile.project || '');
+          this.completeProfileSeniority.set(profile.seniority || '');
+        }
         localStorage.setItem('bolao_token', jwtToken);
         this.loading.set(false);
       },
@@ -99,6 +119,43 @@ export class App {
         this.error.set('Token inválido ou expirado. Verifique e tente novamente.');
         this.user.set(null);
         this.loading.set(false);
+      },
+    });
+  }
+
+  protected submitProfileUpdate(): void {
+    const name = this.completeProfileName().trim();
+    const project = this.completeProfileProject();
+    const seniority = this.completeProfileSeniority();
+
+    if (!name) {
+      this.completeProfileError.set('O nome é obrigatório.');
+      return;
+    }
+    if (!project) {
+      this.completeProfileError.set('O projeto é obrigatório.');
+      return;
+    }
+    if (!seniority) {
+      this.completeProfileError.set('A senioridade é obrigatória.');
+      return;
+    }
+
+    this.completeProfileLoading.set(true);
+    this.completeProfileError.set(null);
+
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token()}`);
+    const body = { name, project, seniority };
+
+    this.http.patch<UserProfile>(`${this.apiBaseUrl}/users/me`, body, { headers }).subscribe({
+      next: (updatedProfile) => {
+        this.user.set(updatedProfile);
+        this.completeProfileLoading.set(false);
+      },
+      error: (err) => {
+        console.error('Falha ao atualizar perfil', err);
+        this.completeProfileError.set('Ocorreu um erro ao salvar suas informações. Tente novamente.');
+        this.completeProfileLoading.set(false);
       },
     });
   }

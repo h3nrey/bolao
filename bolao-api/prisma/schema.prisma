@@ -12,6 +12,8 @@ model User {
   email       String   @unique
   name        String
   avatar_url  String?
+  project     Project?
+  seniority   Seniority?
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
 
@@ -308,4 +310,20 @@ enum PointType {
 enum BracketSource {
   group_position
   bracket_slot
+}
+
+enum Project {
+  avamec
+  siscad
+  inovaula
+  materiais_digitais @map("materiais-digitais")
+  outro
+}
+
+enum Seniority {
+  bolsista
+  clt
+  gerente
+  pmo
+  outro
 }

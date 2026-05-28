@@ -23,6 +23,17 @@
       <p class="text-xs text-slate-400">{{ user()?.email }}</p>
     </div>
 
+    <div class="grid grid-cols-2 gap-4 w-full text-left">
+      <div class="p-4 bg-white/2 border border-white/5 rounded-xl">
+        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Projeto</span>
+        <span class="text-sm font-bold text-white">{{ getProjectLabel(user()?.project) }}</span>
+      </div>
+      <div class="p-4 bg-white/2 border border-white/5 rounded-xl">
+        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Vínculo</span>
+        <span class="text-sm font-bold text-white">{{ getSeniorityLabel(user()?.seniority) }}</span>
+      </div>
+    </div>
+
     <div class="inline-flex py-1.5 px-4 bg-white/2 border border-white/5 rounded-xl text-xs font-semibold text-slate-400 tracking-wide uppercase">
       🏆 Participante do Bolão
     </div>
