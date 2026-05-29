@@ -1,5 +1,6 @@
-import { Component, input, output } from '@angular/core';
+import { Component, input, output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { SidebarItemComponent } from '../ui/sidebar-item/sidebar-item.component';
 import { UserProfileFooterComponent } from '../ui/user-profile-footer/user-profile-footer.component';
 import { LogoComponent } from '../ui/logo/logo.component';
@@ -22,16 +23,20 @@ interface UserProfile {
   templateUrl: './sidebar.component.html',
 })
 export class SidebarComponent {
+  private readonly router = inject(Router);
+
   // Inputs
-  activeTab = input.required<'leaderboard' | 'matches' | 'betsheet' | 'rules' | 'profile' | 'participants'>();
   user = input.required<UserProfile | null>();
 
   // Outputs
-  tabSelected = output<'leaderboard' | 'matches' | 'betsheet' | 'rules' | 'profile' | 'participants'>();
   logoutRequested = output<void>();
 
-  protected selectTab(tab: 'leaderboard' | 'matches' | 'betsheet' | 'rules' | 'profile' | 'participants'): void {
-    this.tabSelected.emit(tab);
+  protected navigate(path: string): void {
+    this.router.navigate([path]);
+  }
+
+  protected isActive(path: string): boolean {
+    return this.router.url.startsWith(path);
   }
 
   protected onLogout(): void {

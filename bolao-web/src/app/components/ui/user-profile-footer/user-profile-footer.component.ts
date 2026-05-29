@@ -21,6 +21,7 @@ interface UserProfile {
 export class UserProfileFooterComponent {
   user = input.required<UserProfile | null>();
   logoutRequested = output<void>();
+  profileRequested = output<void>();
 
   protected onLogout(): void {
     this.logoutRequested.emit();

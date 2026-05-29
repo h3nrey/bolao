@@ -6,6 +6,7 @@ import { forkJoin } from 'rxjs';
 import { CartelaTableComponent } from './components/cartela-table/cartela-table.component';
 import { CartelaMatchComponent } from './components/cartela-match/cartela-match.component';
 import { RoundSelectorComponent } from '../../components/ui/round-selector/round-selector.component';
+import { SessionService } from '../../services/session.service';
 
 interface MatchTeam {
   id: string;
@@ -52,8 +53,9 @@ interface LocalPrediction {
 export class CartelaComponent implements OnInit {
   private readonly http = inject(HttpClient);
   private readonly apiBaseUrl = 'http://localhost:3000';
+  private readonly session = inject(SessionService);
 
-  token = input.required<string>();
+  protected readonly token = this.session.token;
 
   protected readonly matches = signal<Match[]>([]);
   protected readonly loading = signal(false);

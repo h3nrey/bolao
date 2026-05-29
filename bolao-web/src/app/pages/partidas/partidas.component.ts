@@ -7,6 +7,7 @@ import { LoadingSpinnerComponent } from '../../components/ui/loading-spinner/loa
 import { MatchCardComponent, MatchCardData } from './components/match-card/match-card.component';
 import { MatchDetailComponent } from './components/match-detail/match-detail.component';
 import { MatchDayGroupComponent } from './components/match-day-group/match-day-group.component';
+import { SessionService } from '../../services/session.service';
 
 interface Match {
   id: string;
@@ -42,8 +43,9 @@ interface Match {
 export class PartidasComponent implements OnInit {
   private readonly http = inject(HttpClient);
   private readonly apiBaseUrl = 'http://localhost:3000';
+  private readonly session = inject(SessionService);
 
-  token = input.required<string>();
+  protected readonly token = this.session.token;
 
   // List state
   protected readonly matches = signal<Match[]>([]);

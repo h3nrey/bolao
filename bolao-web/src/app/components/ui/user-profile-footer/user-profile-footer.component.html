@@ -1,5 +1,8 @@
 <div class="flex items-center justify-between border-t border-white/5 pt-4">
-  <div class="flex items-center gap-3 overflow-hidden">
+  <div 
+    (click)="profileRequested.emit()" 
+    class="flex items-center gap-3 overflow-hidden cursor-pointer hover:opacity-85 active:scale-95 transition-all select-none"
+  >
     @if (user()?.avatar_url) {
       <img [src]="user()?.avatar_url" alt="Avatar" class="w-10 h-10 rounded-full object-cover border border-white/10 shrink-0 shadow-sm" />
     } @else {

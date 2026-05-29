@@ -8,8 +8,8 @@
     <!-- Navigation Menu -->
     <nav class="flex flex-col gap-2">
       <app-sidebar-item 
-        (click)="selectTab('leaderboard')" 
-        [active]="activeTab() === 'leaderboard'" 
+        (click)="navigate('/ranking')" 
+        [active]="isActive('/ranking')" 
         label="Classificação"
       >
         <!-- Trophy SVG -->
@@ -21,8 +21,8 @@
       </app-sidebar-item>
 
       <app-sidebar-item 
-        (click)="selectTab('participants')" 
-        [active]="activeTab() === 'participants'" 
+        (click)="navigate('/participantes')" 
+        [active]="isActive('/participantes')" 
         label="Participantes"
       >
         <!-- Users SVG -->
@@ -32,8 +32,8 @@
       </app-sidebar-item>
 
       <app-sidebar-item 
-        (click)="selectTab('matches')" 
-        [active]="activeTab() === 'matches'" 
+        (click)="navigate('/partidas')" 
+        [active]="isActive('/partidas')" 
         label="Partidas"
       >
         <!-- Calendar/Match SVG -->
@@ -43,8 +43,8 @@
       </app-sidebar-item>
 
       <app-sidebar-item 
-        (click)="selectTab('betsheet')" 
-        [active]="activeTab() === 'betsheet'" 
+        (click)="navigate('/cartela')" 
+        [active]="isActive('/cartela')" 
         label="Palpitar"
       >
         <!-- Clipboard/Predictions SVG -->
@@ -54,24 +54,13 @@
       </app-sidebar-item>
 
       <app-sidebar-item 
-        (click)="selectTab('rules')" 
-        [active]="activeTab() === 'rules'" 
+        (click)="navigate('/regras')" 
+        [active]="isActive('/regras')" 
         label="Regras"
       >
         <!-- Clipboard/Rules SVG -->
         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-        </svg>
-      </app-sidebar-item>
-
-      <app-sidebar-item 
-        (click)="selectTab('profile')" 
-        [active]="activeTab() === 'profile'" 
-        label="Perfil"
-      >
-        <!-- User Profile SVG -->
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
         </svg>
       </app-sidebar-item>
     </nav>
@@ -81,5 +70,6 @@
   <app-user-profile-footer 
     [user]="user()" 
     (logoutRequested)="onLogout()"
+    (profileRequested)="navigate('/perfil')"
   ></app-user-profile-footer>
 </aside>

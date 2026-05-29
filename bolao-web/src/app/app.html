@@ -9,9 +9,7 @@
     <div class="flex flex-1 overflow-hidden">
       <!-- Left Sidebar Component -->
       <app-sidebar 
-        [activeTab]="activeTab()" 
         [user]="user()" 
-        (tabSelected)="onTabSelected($event)" 
         (logoutRequested)="logout()"
       ></app-sidebar>
 
@@ -19,29 +17,7 @@
       <main class="flex-1 overflow-y-auto p-8 bg-[#090d16] flex flex-col">
         <!-- Dynamic Pages wrapper -->
         <div class="max-w-6xl w-full mx-auto">
-          @if (activeTab() === 'leaderboard') {
-            <app-ranking [token]="token()" [userId]="user()?.id"></app-ranking>
-          }
-
-          @if (activeTab() === 'participants') {
-            <app-participantes [token]="token()" (profileRequested)="viewUserProfile($event)"></app-participantes>
-          }
-
-          @if (activeTab() === 'matches') {
-            <app-partidas [token]="token()"></app-partidas>
-          }
-
-          @if (activeTab() === 'betsheet') {
-            <app-cartela [token]="token()"></app-cartela>
-          }
-
-          @if (activeTab() === 'rules') {
-            <app-regras></app-regras>
-          }
-
-          @if (activeTab() === 'profile') {
-            <app-perfil [user]="profileViewUser()" (logoutRequested)="logout()"></app-perfil>
-          }
+          <router-outlet></router-outlet>
         </div>
       </main>
     </div>

@@ -20,6 +20,7 @@ export interface RankingUser {
 
 import { LeaderboardTableComponent } from './components/leaderboard-table/leaderboard-table.component';
 import { RankingLegendComponent } from './components/ranking-legend/ranking-legend.component';
+import { SessionService } from '../../services/session.service';
 
 @Component({
   selector: 'app-ranking',
@@ -30,10 +31,11 @@ import { RankingLegendComponent } from './components/ranking-legend/ranking-lege
 export class RankingComponent implements OnInit {
   private readonly http = inject(HttpClient);
   private readonly apiBaseUrl = 'http://localhost:3000';
+  private readonly session = inject(SessionService);
 
-  // Inputs
-  token = input.required<string>();
-  userId = input.required<string | undefined>();
+  // Read state from SessionService instead of inputs
+  protected readonly token = this.session.token;
+  protected readonly userId = computed(() => this.session.user()?.id);
 
   // State
   protected readonly rankings = signal<RankingUser[]>([]);

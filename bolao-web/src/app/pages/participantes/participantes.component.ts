@@ -3,6 +3,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { TabSelectorComponent, TabOption } from '../../components/ui/tab-selector/tab-selector.component';
 import { ParticipantCardComponent } from './components/participant-card/participant-card.component';
+import { Router } from '@angular/router';
+import { SessionService } from '../../services/session.service';
 
 interface RankingUser {
   position: number;
@@ -38,12 +40,11 @@ interface ProjectGroup {
 export class ParticipantesComponent implements OnInit {
   private readonly http = inject(HttpClient);
   private readonly apiBaseUrl = 'http://localhost:3000';
+  private readonly router = inject(Router);
+  private readonly session = inject(SessionService);
 
-  // Inputs
-  token = input.required<string>();
-
-  // Outputs
-  profileRequested = output<string>();
+  // Read state from SessionService
+  protected readonly token = this.session.token;
 
   // State
   protected readonly allParticipants = signal<RankingUser[]>([]);
@@ -152,5 +153,9 @@ export class ParticipantesComponent implements OnInit {
         this.loading.set(false);
       }
     });
+  }
+
+  protected viewProfile(userId: string): void {
+    this.router.navigate(['/perfil', userId]);
   }
 }
