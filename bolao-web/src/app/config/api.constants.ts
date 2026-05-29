@@ -2,4 +2,6 @@ const isLocalhost =
   typeof window !== 'undefined' &&
   ['localhost', '127.0.0.1'].includes(window.location.hostname);
 
-export const API_BASE_URL = isLocalhost ? 'http://localhost:3000' : '/api';
+export const API_BASE_URL = isLocalhost
+  ? 'http://localhost:3000'
+  : 'https://bolao-v58y.onrender.com';
