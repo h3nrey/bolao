@@ -11,15 +11,13 @@
       <tbody>
         @for (row of rankings(); track row.user_id) {
         <tr class="border-b border-white/5 transition-all duration-200"
-          [class.bg-red-500/10]="row.user_id === userId()" [class.border-l-4]="row.user_id === userId()"
-          [class.border-l-red-500]="row.user_id === userId()" [class.hover:bg-white/5]="row.user_id !== userId()">
+          [class.bg-dark/5]="row.position === 1 && row.user_id !== userId()"
+          [class.border-l-4]="row.user_id === userId()" [class.border-l-red-500]="row.user_id === userId()"
+          [class.hover:bg-white/5]="row.user_id !== userId()">
           <!-- Position -->
           <td class="py-4 px-6 text-center">
-            <span class="font-extrabold text-slate-300" [class.text-lg]="row.position <= 3">
-              @if (row.position === 1) { 🥇 }
-              @else if (row.position === 2) { 🥈 }
-              @else if (row.position === 3) { 🥉 }
-              @else { {{ row.position }} }
+            <span class="font-extrabold text-slate-300 text-sm">
+              {{ row.position }}
             </span>
           </td>
 
@@ -45,7 +43,7 @@
                 }
               </div>
 
-              <!-- Name & Status Badges -->
+              <!-- Name -->
               <div class="flex flex-col items-start text-left">
                 <span class="font-bold text-white flex items-center gap-1.5 text-sm">
                   {{ row.user_name }}
@@ -54,23 +52,13 @@
                     class="text-[9px] font-black uppercase bg-red-600 text-white px-2 py-0.5 rounded-full tracking-wider">Você</span>
                   }
                 </span>
-
-                <!-- Sublabel Status Zone (Promoting, Stable, Demoting) -->
-                @if (row.position <= 2) { <span
-                  class="text-[8px] font-bold text-amber-500 uppercase tracking-widest mt-0.5">Promovendo</span>
-                  } @else if (row.position === 3) {
-                  <span class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Estável</span>
-                  } @else {
-                  <span class="text-[8px] font-bold text-red-400 uppercase tracking-widest mt-0.5">Rebaixando</span>
-                  }
               </div>
             </div>
           </td>
 
           <!-- Points -->
           <td class="py-4 px-6 text-center">
-            <span class="font-black text-sm" [class.text-amber-400]="row.position === 1"
-              [class.text-white]="row.position !== 1">
+            <span class="font-black text-sm text-white">
               {{ row.pts_total }}
             </span>
           </td>

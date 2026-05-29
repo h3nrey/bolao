@@ -19,13 +19,12 @@ export interface RankingUser {
 }
 
 import { LeaderboardTableComponent } from './components/leaderboard-table/leaderboard-table.component';
-import { RankingLegendComponent } from './components/ranking-legend/ranking-legend.component';
 import { SessionService } from '../../services/session.service';
 
 @Component({
   selector: 'app-ranking',
   standalone: true,
-  imports: [CommonModule, LeaderboardTableComponent, RankingLegendComponent],
+  imports: [CommonModule, LeaderboardTableComponent],
   templateUrl: './ranking.component.html',
 })
 export class RankingComponent implements OnInit {

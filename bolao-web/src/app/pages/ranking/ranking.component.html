@@ -6,22 +6,7 @@
       <h1 class="text-3xl font-extrabold text-white tracking-tight leading-none mb-2">
         Classificação
       </h1>
-      <p class="text-xs text-slate-400 font-medium">Batalhe pelo topo na comunidade do Bolão Vlab.</p>
-    </div>
-
-    <!-- Sub-tabs and Dropdown -->
-    <div class="flex flex-wrap items-center gap-3">
-
-      <!-- Dropdown Mimic -->
-      <div class="relative">
-        <button
-          class="bg-[#1c2230] hover:bg-[#232a3c] border border-white/5 px-4 py-2 text-xs font-semibold rounded-xl text-white flex items-center gap-2 cursor-pointer transition-all duration-200 select-none">
-          Série Ouro
-          <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-          </svg>
-        </button>
-      </div>
+      <p class="text-xs text-slate-400 font-medium">Batalhe pelo topo do Bolão Vlab.</p>
     </div>
   </div>
 
@@ -46,9 +31,6 @@
 
   <!-- Leaderboard Table Component -->
   <app-leaderboard-table [rankings]="rankings()" [userId]="userId()" />
-
-  <!-- Bottom Legend & Countdown Component -->
-  <app-ranking-legend countdown="4 dias, 12:45:00" />
 
   }
   }

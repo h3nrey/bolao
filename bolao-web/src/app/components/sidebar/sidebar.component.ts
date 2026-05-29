@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { SidebarItemComponent } from '../ui/sidebar-item/sidebar-item.component';
 import { UserProfileFooterComponent } from '../ui/user-profile-footer/user-profile-footer.component';
 import { LogoComponent } from '../ui/logo/logo.component';
+import { LucideTrophy, LucideUsers, LucideCalendar, LucideClipboardList, LucideFileText } from '@lucide/angular';
 
 interface UserProfile {
   id: string;
@@ -19,7 +20,17 @@ interface UserProfile {
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, SidebarItemComponent, UserProfileFooterComponent, LogoComponent],
+  imports: [
+    CommonModule, 
+    SidebarItemComponent, 
+    UserProfileFooterComponent, 
+    LogoComponent,
+    LucideTrophy, 
+    LucideUsers, 
+    LucideCalendar, 
+    LucideClipboardList, 
+    LucideFileText
+  ],
   templateUrl: './sidebar.component.html',
 })
 export class SidebarComponent {

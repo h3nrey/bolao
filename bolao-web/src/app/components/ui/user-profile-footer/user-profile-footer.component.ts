@@ -1,5 +1,6 @@
 import { Component, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { LucideLogOut } from '@lucide/angular';
 
 interface UserProfile {
   id: string;
@@ -15,7 +16,7 @@ interface UserProfile {
 @Component({
   selector: 'app-user-profile-footer',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, LucideLogOut],
   templateUrl: './user-profile-footer.component.html',
 })
 export class UserProfileFooterComponent {
