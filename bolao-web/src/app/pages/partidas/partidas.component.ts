@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { TabSelectorComponent, TabOption } from '../../components/ui/tab-selector/tab-selector.component';
 import { KnockoutBracketComponent } from '../../components/ui/knockout-bracket/knockout-bracket.component';
 import { LoadingSpinnerComponent } from '../../components/ui/loading-spinner/loading-spinner.component';
-import { MatchCardComponent, MatchCardData } from './components/match-card/match-card.component';
+import { MatchCardData } from './components/match-card/match-card.component';
 import { MatchDetailComponent } from './components/match-detail/match-detail.component';
 import { MatchDayGroupComponent } from './components/match-day-group/match-day-group.component';
 import { SessionService } from '../../services/session.service';
@@ -35,7 +35,6 @@ interface Match {
     TabSelectorComponent,
     KnockoutBracketComponent,
     LoadingSpinnerComponent,
-    MatchCardComponent,
     MatchDetailComponent,
     MatchDayGroupComponent,
   ],
