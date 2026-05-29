@@ -28,6 +28,11 @@ export class PredictionsController {
     return this.predictionsService.getAllForMatch(matchId);
   }
 
+  @Get('predictions/user/:userId')
+  async getUserPredictions(@Param('userId') userId: string) {
+    return this.predictionsService.getMyAllPredictions(userId);
+  }
+
   @Post('matches/:matchId/predictions')
   @UsePipes(new ZodValidationPipe(createPredictionSchema))
   async create(
