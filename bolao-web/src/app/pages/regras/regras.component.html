@@ -1,62 +1,157 @@
 <div class="flex flex-col gap-6 w-full animate-fadeIn text-left">
+  
+  <!-- Page Header -->
   <div class="flex flex-col text-left border-b border-white/5 pb-6 mb-2">
     <h1 class="text-3xl font-extrabold text-white tracking-tight leading-none mb-2">
-      Regras
+      Regras e Copa 2026
     </h1>
-    <p class="text-xs text-slate-400 font-medium">Veja como os pontos são calculados para os palpites feitos em cada partida.</p>
+    <p class="text-xs text-slate-400 font-medium">Veja como os pontos do Bolão são calculados e conheça os detalhes oficiais da Copa do Mundo FIFA 2026.</p>
   </div>
 
-  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
-    <!-- Rule Card 1 -->
-    <div class="bg-slate-900/40 border border-white/5 rounded-2xl p-5 hover:border-red-500/10 transition-all duration-300">
-      <div class="flex items-center gap-3 mb-3">
-        <div class="w-9 h-9 rounded-xl bg-red-500/10 text-red-500 flex items-center justify-center text-lg font-bold border border-red-500/20">
-          🎯
+  <!-- Sweepstake Rules Section -->
+  <div class="flex flex-col gap-4">
+    <h2 class="text-lg font-black text-white tracking-tight uppercase flex items-center gap-2">
+      <span class="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]"></span>
+      Sistema de Pontuação
+    </h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+      
+      <!-- Card 1 -->
+      <div class="bg-slate-900/40 border border-white/5 rounded-2xl p-5 hover:border-red-500/10 transition-all duration-300">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-9 h-9 rounded-xl bg-red-500/10 flex items-center justify-center border border-red-500/20">
+            <svg lucideTarget class="w-5 h-5 text-red-500"></svg>
+          </div>
+          <h3 class="font-bold text-white text-sm">Placar Exato</h3>
         </div>
-        <h3 class="font-bold text-white text-sm">Placar Exato</h3>
+        <p class="text-xs text-slate-400 leading-relaxed">
+          Acertar em cheio o placar final do jogo. Dá direito a <span class="text-red-400 font-extrabold">15 pontos</span>. (Exemplo: Palpitar 2 x 1 e o jogo terminar 2 x 1).
+        </p>
       </div>
-      <p class="text-xs text-slate-400 leading-relaxed">
-        Acertar em cheio o placar final do jogo. Dá direito a <span class="text-red-400 font-extrabold">15 pontos</span>. (Exemplo: Palpitar 2 x 1 e o jogo terminar 2 x 1).
-      </p>
-    </div>
 
-    <!-- Rule Card 2 -->
-    <div class="bg-slate-900/40 border border-white/5 rounded-2xl p-5 hover:border-red-500/10 transition-all duration-300">
-      <div class="flex items-center gap-3 mb-3">
-        <div class="w-9 h-9 rounded-xl bg-red-500/10 text-red-500 flex items-center justify-center text-lg font-bold border border-red-500/20">
-          🏆
+      <!-- Card 2 -->
+      <div class="bg-slate-900/40 border border-white/5 rounded-2xl p-5 hover:border-red-500/10 transition-all duration-300">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-9 h-9 rounded-xl bg-red-500/10 flex items-center justify-center border border-red-500/20">
+            <svg lucideTrophy class="w-5 h-5 text-red-500"></svg>
+          </div>
+          <h3 class="font-bold text-white text-sm">Resultado Correto</h3>
         </div>
-        <h3 class="font-bold text-white text-sm">Resultado Correto</h3>
+        <p class="text-xs text-slate-400 leading-relaxed">
+          Acertar o vencedor ou o empate, mas errar a quantidade exata de gols. Dá direito a <span class="text-red-400 font-extrabold">5 pontos</span>. (Exemplo: Palpitar 1 x 0 e o jogo terminar 2 x 1).
+        </p>
       </div>
-      <p class="text-xs text-slate-400 leading-relaxed">
-        Acertar o vencedor ou o empate, mas errar a quantidade exata de gols. Dá direito a <span class="text-red-400 font-extrabold">5 pontos</span>. (Exemplo: Palpitar 1 x 0 e o jogo terminar 2 x 1).
-      </p>
-    </div>
 
-    <!-- Rule Card 3 -->
-    <div class="bg-slate-900/40 border border-white/5 rounded-2xl p-5 hover:border-red-500/10 transition-all duration-300">
-      <div class="flex items-center gap-3 mb-3">
-        <div class="w-9 h-9 rounded-xl bg-red-500/10 text-red-500 flex items-center justify-center text-lg font-bold border border-red-500/20">
-          ⚽
+      <!-- Card 3 -->
+      <div class="bg-slate-900/40 border border-white/5 rounded-2xl p-5 hover:border-red-500/10 transition-all duration-300">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-9 h-9 rounded-xl bg-red-500/10 flex items-center justify-center border border-red-500/20">
+            <svg lucideUser class="w-5 h-5 text-red-500"></svg>
+          </div>
+          <h3 class="font-bold text-white text-sm">Marcador do 1º Gol</h3>
         </div>
-        <h3 class="font-bold text-white text-sm">Marcador do 1º Gol</h3>
+        <p class="text-xs text-slate-400 leading-relaxed">
+          Acertar o jogador específico que marcará o primeiro gol da partida. Adiciona <span class="text-red-400 font-extrabold">5 pontos</span> extras na pontuação da partida.
+        </p>
       </div>
-      <p class="text-xs text-slate-400 leading-relaxed">
-        Acertar o jogador específico que marcará o primeiro gol da partida. Adiciona <span class="text-red-400 font-extrabold">5 pontos</span> extras na pontuação da partida.
-      </p>
-    </div>
 
-    <!-- Rule Card 4 -->
-    <div class="bg-slate-900/40 border border-white/5 rounded-2xl p-5 hover:border-red-500/10 transition-all duration-300">
-      <div class="flex items-center gap-3 mb-3">
-        <div class="w-9 h-9 rounded-xl bg-red-500/10 text-red-500 flex items-center justify-center text-lg font-bold border border-red-500/20">
-          🛡️
+      <!-- Card 4 -->
+      <div class="bg-slate-900/40 border border-white/5 rounded-2xl p-5 hover:border-red-500/10 transition-all duration-300">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-9 h-9 rounded-xl bg-red-500/10 flex items-center justify-center border border-red-500/20">
+            <svg lucideShield class="w-5 h-5 text-red-500"></svg>
+          </div>
+          <h3 class="font-bold text-white text-sm">Seleção do 1º Gol</h3>
         </div>
-        <h3 class="font-bold text-white text-sm">Seleção do 1º Gol</h3>
+        <p class="text-xs text-slate-400 leading-relaxed">
+          Acertar qual time abrirá o placar marcando o primeiro gol. Adiciona <span class="text-red-400 font-extrabold">3 pontos</span> extras na pontuação final.
+        </p>
       </div>
-      <p class="text-xs text-slate-400 leading-relaxed">
-        Acertar qual time abrirá o placar marcando o primeiro gol. Adiciona <span class="text-red-400 font-extrabold">3 pontos</span> extras na pontuação final.
-      </p>
+
     </div>
   </div>
+
+  <!-- World Cup Information Section -->
+  <div class="flex flex-col gap-6 border-t border-white/5 pt-8 mt-4 text-left">
+    <h2 class="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white via-red-200 to-red-500 tracking-tight">
+      Copa do Mundo FIFA 2026
+    </h2>
+    
+    <div class="p-5 bg-slate-900/25 border border-white/5 rounded-2xl leading-relaxed text-slate-300 text-xs md:text-sm shadow-inner">
+      A Copa do Mundo FIFA é a principal competição profissional de futebol entre seleções masculinas, organizada pela FIFA. O torneio acontece a cada quatro anos e, a partir de 2026, contará com um formato ampliado de 48 seleções. A atual campeã é a Argentina, enquanto o Brasil é a seleção com mais títulos, com essa grande conquista de cinco conquistas históricas.
+    </div>
+
+    <!-- Grid Layout for 2026 Format and Dates/Cities -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-2">
+      
+      <!-- 2026 Format Card -->
+      <div class="p-6 bg-slate-900/35 border border-white/5 rounded-3xl flex flex-col gap-4 hover:border-white/10 transition-all duration-300">
+        <h3 class="text-sm font-black text-white uppercase tracking-wider flex items-center gap-2 border-b border-white/5 pb-3">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.5)]"></span>
+          Formato da Copa do Mundo FIFA 2026
+        </h3>
+        <p class="text-xs text-slate-400">A edição de 2026 terá um total de 48 seleções e 104 partidas oficiais:</p>
+        <ul class="flex flex-col gap-3 text-xs text-slate-300 pl-4 list-disc marker:text-red-500 leading-relaxed">
+          <li>A primeira fase será formada por 12 grupos com quatro equipes cada.</li>
+          <li>Cada seleção disputará três partidas na fase de grupos.</li>
+          <li>As duas melhores equipes de cada grupo avançam para a fase eliminatória, junto das oito melhores terceiras colocadas.</li>
+          <li>A partir da fase de 32 seleções, o torneio seguirá em formato mata-mata até a final.</li>
+          <li>As equipes finalistas disputarão oito partidas ao longo da competição.</li>
+        </ul>
+      </div>
+
+      <!-- Dates and Host Cities Card -->
+      <div class="p-6 bg-slate-900/35 border border-white/5 rounded-3xl flex flex-col gap-4 hover:border-white/10 transition-all duration-300">
+        <h3 class="text-sm font-black text-white uppercase tracking-wider flex items-center gap-2 border-b border-white/5 pb-3">
+          <span class="w-1.5 h-1.5 rounded-full bg-red-500 shadow-[0_0_6px_rgba(239,68,68,0.5)]"></span>
+          Datas e sedes da Copa do Mundo FIFA 2026
+        </h3>
+        <p class="text-xs text-slate-400">O torneio de 2026 será realizado em conjunto pelos Estados Unidos, Canadá e México.</p>
+        <ul class="flex flex-col gap-3 text-xs text-slate-300 pl-4 list-disc marker:text-red-500 leading-relaxed">
+          <li>A partida de abertura acontecerá em 11 de junho de 2026, no Estádio Azteca, na Cidade do México.</li>
+          <li>A final será disputada em 19 de julho de 2026, no MetLife Stadium, em East Rutherford, Nova Jersey.</li>
+        </ul>
+        <div class="mt-2 border-t border-white/5 pt-4">
+          <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-3">16 Cidades-Sede Oficiais</span>
+          <div class="flex flex-col gap-2.5 text-xs text-slate-300 leading-normal">
+            <p><strong>Canadá:</strong> Toronto e Vancouver</p>
+            <p><strong>México:</strong> Guadalajara, Cidade do México e Monterrey</p>
+            <p><strong>Estados Unidos:</strong> Atlanta, Boston, Dallas, Houston, Kansas City, Los Angeles, Miami, Nova York/Nova Jersey, Filadélfia, Área da Baía de São Francisco e Seattle</p>
+            <p class="text-[10px] text-slate-400 italic mt-2 bg-white/2 p-2.5 rounded-xl border border-white/5">
+              * Os Estados Unidos sediarão todas as partidas a partir das quartas de final.
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- History Panel -->
+    <div class="p-6 bg-[#0c121e] border border-white/5 rounded-3xl flex flex-col gap-4 mt-2">
+      <h3 class="text-sm font-black text-white uppercase tracking-wider flex items-center gap-2 border-b border-white/5 pb-3">
+        <span class="w-1.5 h-1.5 rounded-full bg-amber-500 shadow-[0_0_6px_rgba(245,158,11,0.5)]"></span>
+        História da Copa do Mundo FIFA
+      </h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mt-1">
+        <div class="p-4 bg-white/2 border border-white/5 rounded-2xl flex flex-col gap-1">
+          <span class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block">Primeira Edição</span>
+          <span class="text-xs font-bold text-white leading-normal">Realizada em 1930 e vencida pelo Uruguai.</span>
+        </div>
+        <div class="p-4 bg-white/2 border border-white/5 rounded-2xl flex flex-col gap-1">
+          <span class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block">Maior Vencedor</span>
+          <span class="text-xs font-bold text-white leading-normal">O Brasil é a seleção mais vitoriosa, com cinco títulos.</span>
+        </div>
+        <div class="p-4 bg-white/2 border border-white/5 rounded-2xl flex flex-col gap-1">
+          <span class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block">Atual Campeã</span>
+          <span class="text-xs font-bold text-white leading-normal">A Argentina venceu a edição de 2022.</span>
+        </div>
+        <div class="p-4 bg-white/2 border border-white/5 rounded-2xl flex flex-col gap-1">
+          <span class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block">Média de Gols</span>
+          <span class="text-xs font-bold text-white leading-normal">Em 2022, a média de gols por partida foi de 2,69.</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
 </div>
