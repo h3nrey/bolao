@@ -1,4 +1,6 @@
 {
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist/bolao-web/browser",
   "rewrites": [
     {
       "source": "/api/:path*",
