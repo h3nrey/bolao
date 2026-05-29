@@ -6,11 +6,13 @@ import { LogoComponent } from '../ui/logo/logo.component';
 
 interface UserProfile {
   id: string;
-  email: string;
+  email?: string | null;
   name: string;
   avatar_url?: string | null;
-  created_at: string;
-  updated_at: string;
+  project?: string | null;
+  seniority?: string | null;
+  created_at?: string;
+  updated_at?: string;
 }
 
 @Component({
@@ -21,14 +23,14 @@ interface UserProfile {
 })
 export class SidebarComponent {
   // Inputs
-  activeTab = input.required<'leaderboard' | 'matches' | 'betsheet' | 'rules' | 'profile'>();
+  activeTab = input.required<'leaderboard' | 'matches' | 'betsheet' | 'rules' | 'profile' | 'participants'>();
   user = input.required<UserProfile | null>();
 
   // Outputs
-  tabSelected = output<'leaderboard' | 'matches' | 'betsheet' | 'rules' | 'profile'>();
+  tabSelected = output<'leaderboard' | 'matches' | 'betsheet' | 'rules' | 'profile' | 'participants'>();
   logoutRequested = output<void>();
 
-  protected selectTab(tab: 'leaderboard' | 'matches' | 'betsheet' | 'rules' | 'profile'): void {
+  protected selectTab(tab: 'leaderboard' | 'matches' | 'betsheet' | 'rules' | 'profile' | 'participants'): void {
     this.tabSelected.emit(tab);
   }
 

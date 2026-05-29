@@ -120,6 +120,8 @@ export class RankingsService {
         user_id: r.user_id,
         user_name: r.user.name,
         user_avatar: r.user.avatar_url,
+        user_project: r.user.project,
+        user_seniority: r.user.seniority,
         pts_total: r.pts_total,
         pts_matches: r.pts_matches,
       };

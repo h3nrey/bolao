@@ -3,11 +3,13 @@ import { CommonModule } from '@angular/common';
 
 interface UserProfile {
   id: string;
-  email: string;
+  email?: string | null;
   name: string;
   avatar_url?: string | null;
-  created_at: string;
-  updated_at: string;
+  project?: string | null;
+  seniority?: string | null;
+  created_at?: string;
+  updated_at?: string;
 }
 
 @Component({

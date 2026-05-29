@@ -12,16 +12,18 @@ import { PerfilComponent } from './pages/perfil/perfil.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { CartelaComponent } from './pages/cartela/cartela.component';
 import { CountdownBannerComponent } from './components/ui/countdown-banner/countdown-banner.component';
+import { ParticipantesComponent } from './pages/participantes/participantes.component';
 
 interface UserProfile {
   id: string;
-  email: string;
+  email?: string | null;
   name: string;
   avatar_url?: string | null;
   project?: 'avamec' | 'siscad' | 'inovaula' | 'materiais-digitais' | 'outro' | null;
   seniority?: 'bolsista' | 'clt' | 'gerente' | 'pmo' | 'outro' | null;
-  created_at: string;
-  updated_at: string;
+  created_at?: string;
+  updated_at?: string;
+  can_edit?: boolean;
 }
 
 @Component({
@@ -37,7 +39,8 @@ interface UserProfile {
     PerfilComponent,
     SidebarComponent,
     CartelaComponent,
-    CountdownBannerComponent
+    CountdownBannerComponent,
+    ParticipantesComponent
   ],
   templateUrl: './app.html',
   styleUrl: './app.css',
@@ -49,6 +52,7 @@ export class App {
   // Signals for auth state
   protected readonly token = signal('');
   protected readonly user = signal<UserProfile | null>(null);
+  protected readonly profileViewUser = signal<UserProfile | null>(null);
   protected readonly loading = signal(false);
   protected readonly error = signal<string | null>(null);
 
@@ -66,7 +70,7 @@ export class App {
   protected readonly completeProfileLoading = signal(false);
 
   // Tabs navigation state
-  protected readonly activeTab = signal<'leaderboard' | 'matches' | 'betsheet' | 'rules' | 'profile'>('leaderboard');
+  protected readonly activeTab = signal<'leaderboard' | 'matches' | 'betsheet' | 'rules' | 'profile' | 'participants'>('leaderboard');
 
   constructor() {
     // Check if token exists in URL parameters (redirected from callback)
@@ -105,12 +109,14 @@ export class App {
 
     this.http.get<UserProfile>(`${this.apiBaseUrl}/auth/me`, { headers }).subscribe({
       next: (profile) => {
-        this.user.set(profile);
         if (profile) {
+          profile.can_edit = true;
           this.completeProfileName.set(profile.name || '');
           this.completeProfileProject.set(profile.project || '');
           this.completeProfileSeniority.set(profile.seniority || '');
         }
+        this.user.set(profile);
+        this.profileViewUser.set(profile);
         localStorage.setItem('bolao_token', jwtToken);
         this.loading.set(false);
       },
@@ -118,6 +124,7 @@ export class App {
         console.error('Falha ao autenticar token', err);
         this.error.set('Token inválido ou expirado. Verifique e tente novamente.');
         this.user.set(null);
+        this.profileViewUser.set(null);
         this.loading.set(false);
       },
     });
@@ -149,7 +156,11 @@ export class App {
 
     this.http.patch<UserProfile>(`${this.apiBaseUrl}/users/me`, body, { headers }).subscribe({
       next: (updatedProfile) => {
+        if (updatedProfile) {
+          updatedProfile.can_edit = true;
+        }
         this.user.set(updatedProfile);
+        this.profileViewUser.set(updatedProfile);
         this.completeProfileLoading.set(false);
       },
       error: (err) => {
@@ -160,10 +171,48 @@ export class App {
     });
   }
 
+  protected viewUserProfile(userId: string): void {
+    this.activeTab.set('profile');
+    this.loading.set(true);
+    this.error.set(null);
+
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token()}`);
+
+    this.http.get<UserProfile>(`${this.apiBaseUrl}/users/${userId}`, { headers }).subscribe({
+      next: (profile) => {
+        this.profileViewUser.set(profile);
+        this.loading.set(false);
+      },
+      error: (err) => {
+        console.error('Falha ao carregar perfil do participante', err);
+        this.error.set('Não foi possível carregar as informações do participante.');
+        this.loading.set(false);
+      }
+    });
+  }
+
+  protected viewMyProfile(): void {
+    const me = this.user();
+    if (me) {
+      me.can_edit = true;
+    }
+    this.profileViewUser.set(me);
+    this.activeTab.set('profile');
+  }
+
+  protected onTabSelected(tab: 'leaderboard' | 'matches' | 'betsheet' | 'rules' | 'profile' | 'participants'): void {
+    if (tab === 'profile') {
+      this.viewMyProfile();
+    } else {
+      this.activeTab.set(tab);
+    }
+  }
+
   protected logout(): void {
     localStorage.removeItem('bolao_token');
     this.token.set('');
     this.user.set(null);
+    this.profileViewUser.set(null);
     this.error.set(null);
     this.activeTab.set('leaderboard');
   }

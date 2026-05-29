@@ -17,7 +17,7 @@ export class UsersController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
-    return this.usersService.findById(id);
+  async findOne(@Param('id') id: string, @CurrentUser() currentUser: any) {
+    return this.usersService.findByIdAndFilter(id, currentUser.id);
   }
 }

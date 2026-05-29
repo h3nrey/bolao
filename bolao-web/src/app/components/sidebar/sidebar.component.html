@@ -21,6 +21,17 @@
       </app-sidebar-item>
 
       <app-sidebar-item 
+        (click)="selectTab('participants')" 
+        [active]="activeTab() === 'participants'" 
+        label="Participantes"
+      >
+        <!-- Users SVG -->
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.109A11.386 11.386 0 0110.089 21c-2.243 0-4.352-.648-6.124-1.772.381-1.074 1.258-1.89 2.377-2.193a10.94 10.94 0 0111.458 0c1.119.303 1.996 1.119 2.377 2.193M12 7a3 3 0 11-6 0 3 3 0 016 0zm7.136 6a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0z" />
+        </svg>
+      </app-sidebar-item>
+
+      <app-sidebar-item 
         (click)="selectTab('matches')" 
         [active]="activeTab() === 'matches'" 
         label="Partidas"

@@ -16,6 +16,33 @@ export class UsersService {
     return user;
   }
 
+  async findByIdAndFilter(id: string, loggedInUserId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+    });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const canEdit = id === loggedInUserId;
+
+    if (canEdit) {
+      return {
+        ...user,
+        can_edit: true,
+      };
+    }
+
+    return {
+      id: user.id,
+      name: user.name,
+      avatar_url: user.avatar_url,
+      project: user.project,
+      seniority: user.seniority,
+      can_edit: false,
+    };
+  }
+
   async findByEmail(email: string) {
     const user = await this.prisma.user.findUnique({
       where: { email },

@@ -1,0 +1,62 @@
+<div class="flex flex-col gap-6 w-full animate-fadeIn">
+  <!-- Title / Header -->
+  <div class="flex flex-col text-left border-b border-white/5 pb-4">
+    <h1 class="text-3xl font-extrabold text-white tracking-tight leading-none mb-2">
+      Participantes do Bolão
+    </h1>
+    <p class="text-xs text-slate-400 font-medium">Veja todos os membros ativos na Copa, divididos por equipe de projeto.</p>
+  </div>
+
+  <!-- Tab Selector Filter -->
+  <div class="w-full">
+    <app-tab-selector 
+      [options]="projectOptions" 
+      [activeId]="activeFilter()" 
+      (tabChange)="activeFilter.set($event)"
+    ></app-tab-selector>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="flex justify-center items-center py-20">
+      <div class="w-10 h-10 border-4 border-white/10 border-t-red-500 rounded-full animate-spin"></div>
+    </div>
+  } @else {
+    <!-- Empty State -->
+    @if (groupedParticipants().length === 0) {
+      <div class="flex flex-col items-center text-center py-20 bg-slate-900/20 border border-white/5 rounded-2xl p-8">
+        <span class="text-4xl mb-3">👥</span>
+        <h3 class="text-lg font-bold text-white mb-1">Nenhum participante encontrado</h3>
+        <p class="text-xs text-slate-400 max-w-sm">Nenhum usuário correspondente aos filtros de projetos ativos foi carregado no momento.</p>
+      </div>
+    } @else {
+      <!-- Project Groups -->
+      <div class="flex flex-col gap-10">
+        @for (group of groupedParticipants(); track group.id) {
+          <div class="flex flex-col gap-4">
+            <!-- Project Subheading -->
+            <div class="flex items-center justify-between border-b border-white/5 pb-2">
+              <h2 class="text-lg font-black text-white tracking-tight uppercase flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]"></span>
+                {{ group.name }}
+              </h2>
+              <span class="px-2.5 py-0.5 bg-white/2 border border-white/5 text-[10px] font-bold text-slate-400 uppercase rounded-full tracking-wider">
+                {{ group.users.length }} {{ group.users.length === 1 ? 'membro' : 'membros' }} - {{ group.totalPoints }} pts
+              </span>
+            </div>
+
+            <!-- Participant Grid using Standalone Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              @for (user of group.users; track user.user_id) {
+                <app-participant-card 
+                  [user]="user" 
+                  (cardClick)="profileRequested.emit(user.user_id)"
+                ></app-participant-card>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+  }
+</div>
