@@ -19,6 +19,23 @@ import { SportsModule } from './sports/sports.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      validate: (config) => {
+        const requiredEnvVars = [
+          'DATABASE_URL',
+          'JWT_SECRET',
+          'GOOGLE_CLIENT_ID',
+          'GOOGLE_CLIENT_SECRET',
+          'GOOGLE_CALLBACK_URL',
+          'FRONTEND_URL',
+        ];
+        const missingEnvVars = requiredEnvVars.filter((key) => !config[key]);
+
+        if (missingEnvVars.length > 0) {
+          throw new Error(`Missing required environment variables: ${missingEnvVars.join(', ')}`);
+        }
+
+        return config;
+      },
       load: [() => ({
         frontendUrl: process.env.FRONTEND_URL || 'http://localhost:4200',
       })],
