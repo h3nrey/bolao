@@ -119,6 +119,7 @@ model Match {
   phase_id     String
   group_id     String?
   stage        MatchStage
+  round        String?
   team_a_id    String?
   team_b_id    String?
   scheduled_at DateTime

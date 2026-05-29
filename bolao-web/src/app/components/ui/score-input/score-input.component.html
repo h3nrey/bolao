@@ -1,0 +1,9 @@
+<input 
+  type="number" 
+  [ngModel]="value()" 
+  (ngModelChange)="onModelChange($event)"
+  (blur)="blur.emit()"
+  [disabled]="disabled()"
+  min="0"
+  class="w-12 h-11 bg-[#111724] border border-white/10 rounded-xl text-center font-black text-white text-base focus:border-red-500 focus:outline-none focus:shadow-[0_0_10px_rgba(239,68,68,0.3)] transition-all duration-150 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none disabled:bg-white/2 disabled:border-white/5 disabled:text-slate-400 select-all"
+/>

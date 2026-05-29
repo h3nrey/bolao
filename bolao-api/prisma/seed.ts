@@ -285,6 +285,7 @@ async function main() {
         started_at,
         ended_at,
         status,
+        round: m.round,
       }
     });
 

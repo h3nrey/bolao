@@ -1,0 +1,76 @@
+<div class="flex items-center justify-between py-3 px-1 hover:bg-white/1 transition-colors rounded-lg">
+
+  <!-- Match Date Info -->
+  <div class="flex flex-col text-left select-none w-2/12 shrink-0">
+    <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider">
+      {{ dateLabel() }}
+    </span>
+  </div>
+
+  <!-- Match Interactive Score Box -->
+  <div class="flex items-center justify-center gap-3 w-8/12 px-2">
+    <!-- Team A short name and flag -->
+    <div class="flex items-center justify-end gap-2.5 w-5/12 overflow-hidden text-right">
+      <span class="text-[11px] font-black text-slate-100 uppercase tracking-wide truncate"
+        [title]="match().team_a?.name">
+        {{ match().team_a?.name ? (match().team_a?.name?.substring(0, 3)?.toUpperCase()) : '' }}
+      </span>
+      @if (match().team_a?.flag_url) {
+      <img [src]="match().team_a?.flag_url"
+        class="w-4.5 h-4.5 rounded-full object-cover shrink-0 select-none shadow-[0_0_4px_rgba(0,0,0,0.4)]"
+        [alt]="match().team_a?.name" />
+      }
+    </div>
+
+    <!-- Scores inputs -->
+    <div class="flex flex-col items-center gap-1 shrink-0">
+      <div class="flex items-center justify-center gap-1.5">
+        @if (isPastDeadline()) {
+        <!-- Prediction locked -->
+        <div
+          class="flex items-center gap-1 px-2.5 py-1 bg-white/2 border border-white/5 rounded-lg text-xs font-black text-slate-400 select-none">
+          <span>{{ scoreA() }}</span>
+          <span class="text-slate-600 font-light">&bull;</span>
+          <span>{{ scoreB() }}</span>
+        </div>
+        } @else {
+        <!-- Prediction interactive inputs -->
+        <app-score-input [value]="scoreA()" (valueChange)="scoreAChange.emit($event)" (inputChange)="inputChange.emit()"
+          (blur)="blur.emit()"></app-score-input>
+        <span class="text-slate-600 font-bold text-xs select-none">x</span>
+        <app-score-input [value]="scoreB()" (valueChange)="scoreBChange.emit($event)" (inputChange)="inputChange.emit()"
+          (blur)="blur.emit()"></app-score-input>
+        }
+      </div>
+    </div>
+
+    <!-- Team B flag and short name -->
+    <div class="flex items-center justify-start gap-2.5 w-5/12 overflow-hidden text-left">
+      @if (match().team_b?.flag_url) {
+      <img [src]="match().team_b?.flag_url"
+        class="w-4.5 h-4.5 rounded-full object-cover shrink-0 select-none shadow-[0_0_4px_rgba(0,0,0,0.4)]"
+        [alt]="match().team_b?.name" />
+      }
+      <span class="text-[11px] font-black text-slate-100 uppercase tracking-wide truncate"
+        [title]="match().team_b?.name">
+        {{ match().team_b?.name ? (match().team_b?.name?.substring(0, 3)?.toUpperCase()) : '' }}
+      </span>
+    </div>
+  </div>
+
+  <!-- Scheduled Time and Status info -->
+  <div class="flex flex-col items-end justify-center w-2/12 shrink-0 select-none">
+    <!-- Green scheduled time -->
+    <span class="text-[10px] font-black text-emerald-400 tracking-wider">
+      {{ match().scheduled_at | date: 'HH:mm' }}
+    </span>
+
+    <!-- Save / Pending statuses -->
+    <div class="mt-1 flex items-center">
+      @if (isPastDeadline()) {
+      <span class="text-[8px] text-slate-500 font-extrabold uppercase tracking-wider">Encerrado</span>
+      }
+    </div>
+  </div>
+
+</div>

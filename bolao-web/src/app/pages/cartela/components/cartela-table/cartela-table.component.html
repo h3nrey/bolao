@@ -1,0 +1,51 @@
+<div class="flex flex-col gap-3">
+  <div class="text-[9px] font-black text-slate-500 uppercase tracking-widest select-none">
+    Classificação
+  </div>
+  
+  <div class="w-full overflow-x-auto no-scrollbar">
+    <table class="w-full text-left border-collapse min-w-[280px]">
+      <thead>
+        <tr class="border-b border-white/5 text-[9px] font-black text-slate-500 select-none">
+          <th class="pb-2 font-black">Seleção</th>
+          <th class="pb-2 text-center w-8">P</th>
+          <th class="pb-2 text-center w-8">J</th>
+          <th class="pb-2 text-center w-8">V</th>
+          <th class="pb-2 text-center w-8">E</th>
+          <th class="pb-2 text-center w-8">D</th>
+          <th class="pb-2 text-center w-8">SG</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of standings(); track row.team.id; let idx = $index) {
+          <tr 
+            class="border-b border-white/2 last:border-none hover:bg-white/1 text-xs transition-colors"
+            [class.bg-emerald-500/[0.03]]="idx < 2"
+          >
+            <td class="py-2.5 flex items-center gap-2.5">
+              <!-- Qualification zones indicator: top 2 emerald, bottom 2 gray -->
+              <span class="font-extrabold text-[11px] w-4 shrink-0 text-center" 
+                    [class.text-emerald-400]="idx < 2"
+                    [class.text-slate-600]="idx >= 2">
+                {{ idx + 1 }}.
+              </span>
+              
+              <!-- Round Flag Image matching mockup -->
+              @if (row.team.flag_url) {
+                <img [src]="row.team.flag_url" class="w-4.5 h-4.5 rounded-full object-cover shrink-0 select-none shadow-[0_0_4px_rgba(0,0,0,0.4)]" [alt]="row.team.name" />
+              }
+              
+              <span class="font-bold text-white tracking-wide truncate max-w-[120px] md:max-w-none">{{ row.team.name }}</span>
+            </td>
+            <td class="py-2.5 text-center font-black text-white w-8">{{ row.P }}</td>
+            <td class="py-2.5 text-center font-bold text-slate-400 w-8">{{ row.J }}</td>
+            <td class="py-2.5 text-center font-semibold text-slate-400 w-8">{{ row.V }}</td>
+            <td class="py-2.5 text-center font-semibold text-slate-400 w-8">{{ row.E }}</td>
+            <td class="py-2.5 text-center font-semibold text-slate-400 w-8">{{ row.D }}</td>
+            <td class="py-2.5 text-center font-bold text-slate-400 w-8" [class.text-emerald-400]="row.SG > 0" [class.text-red-400]="row.SG < 0">{{ row.SG }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

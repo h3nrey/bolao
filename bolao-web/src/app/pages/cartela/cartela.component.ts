@@ -3,16 +3,28 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { forkJoin } from 'rxjs';
+import { CartelaTableComponent } from './components/cartela-table/cartela-table.component';
+import { CartelaMatchComponent } from './components/cartela-match/cartela-match.component';
+import { RoundSelectorComponent } from '../../components/ui/round-selector/round-selector.component';
 
 interface MatchTeam {
   id: string;
   name: string;
   flag_emoji?: string | null;
+  flag_url?: string | null;
+}
+
+interface Group {
+  id: string;
+  name: string;
 }
 
 interface Match {
   id: string;
   stage: string;
+  round?: string | null;
+  group_id?: string | null;
+  group?: Group | null;
   scheduled_at: string;
   started_at?: string | null;
   ended_at?: string | null;
@@ -34,7 +46,7 @@ interface LocalPrediction {
 @Component({
   selector: 'app-cartela',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, CartelaTableComponent, CartelaMatchComponent, RoundSelectorComponent],
   templateUrl: './cartela.component.html',
 })
 export class CartelaComponent implements OnInit {
@@ -48,6 +60,155 @@ export class CartelaComponent implements OnInit {
   
   // Track inputs and saved/modified states dynamically
   protected readonly localPredictions = signal<{ [matchId: string]: LocalPrediction }>({});
+
+  // Track active round index per group
+  protected readonly currentGroupRoundIndex = signal<{ [groupName: string]: number }>({});
+
+  // Groups of matches with their classification standings calculated in real time
+  protected readonly groupSections = computed(() => {
+    const rawMatches = this.matches();
+    const preds = this.localPredictions();
+
+    const groupMap: { [groupName: string]: { id: string; name: string; matches: Match[] } } = {};
+    for (const m of rawMatches) {
+      if (m.stage === 'groups' && m.group) {
+        const groupName = m.group.name;
+        if (!groupMap[groupName]) {
+          groupMap[groupName] = {
+            id: m.group.id,
+            name: groupName,
+            matches: []
+          };
+        }
+        groupMap[groupName].matches.push(m);
+      }
+    }
+
+    const sortedGroupNames = Object.keys(groupMap).sort();
+
+    return sortedGroupNames.map(name => {
+      const g = groupMap[name];
+
+      // Get all unique rounds from this group's matches
+      const rounds = Array.from(new Set(g.matches.map(m => m.round || ''))).filter(Boolean);
+      // Natural sort by round number: "Matchday 8" -> 8
+      rounds.sort((a, b) => {
+        const numA = parseInt(a.replace(/\D/g, ''), 10) || 0;
+        const numB = parseInt(b.replace(/\D/g, ''), 10) || 0;
+        return numA - numB;
+      });
+
+      const activeIdx = this.currentGroupRoundIndex()[name] ?? 0;
+      const validIdx = Math.max(0, Math.min(activeIdx, rounds.length - 1));
+      const activeRound = rounds[validIdx] || '';
+
+      // Filter matches by active round
+      const filteredMatches = g.matches.filter(m => m.round === activeRound);
+
+      // Calculate standings for this group (using all group matches)
+      const teamMap: { [teamId: string]: { team: MatchTeam; P: number; J: number; V: number; E: number; D: number; SG: number; GP: number; GC: number } } = {};
+
+      for (const m of g.matches) {
+        if (m.team_a && !teamMap[m.team_a.id]) {
+          teamMap[m.team_a.id] = { team: m.team_a, P: 0, J: 0, V: 0, E: 0, D: 0, SG: 0, GP: 0, GC: 0 };
+        }
+        if (m.team_b && !teamMap[m.team_b.id]) {
+          teamMap[m.team_b.id] = { team: m.team_b, P: 0, J: 0, V: 0, E: 0, D: 0, SG: 0, GP: 0, GC: 0 };
+        }
+      }
+
+      for (const m of g.matches) {
+        if (!m.team_a || !m.team_b) continue;
+
+        let scoreA = 0;
+        let scoreB = 0;
+
+        const localPred = preds[m.id];
+        if (localPred) {
+          scoreA = localPred.scoreA;
+          scoreB = localPred.scoreB;
+        }
+        const played = true;
+
+        if (played) {
+          const tA = teamMap[m.team_a.id];
+          const tB = teamMap[m.team_b.id];
+
+          tA.J++;
+          tB.J++;
+          tA.GP += scoreA;
+          tA.GC += scoreB;
+          tB.GP += scoreB;
+          tB.GC += scoreA;
+
+          if (scoreA > scoreB) {
+            tA.V++;
+            tA.P += 3;
+            tB.D++;
+          } else if (scoreB > scoreA) {
+            tB.V++;
+            tB.P += 3;
+            tA.D++;
+          } else {
+            tA.E++;
+            tA.P += 1;
+            tB.E++;
+            tB.P += 1;
+          }
+        }
+      }
+
+      const standingsList = Object.values(teamMap).map(t => {
+        t.SG = t.GP - t.GC;
+        return t;
+      });
+
+      standingsList.sort((a, b) => {
+        if (b.P !== a.P) return b.P - a.P;
+        if (b.SG !== a.SG) return b.SG - a.SG;
+        if (b.GP !== a.GP) return b.GP - a.GP;
+        return a.team.name.localeCompare(b.team.name);
+      });
+
+      return {
+        id: g.id,
+        name: g.name,
+        matches: filteredMatches,
+        standings: standingsList,
+        allRounds: rounds,
+        activeRound: activeRound,
+        activeRoundLabel: `${validIdx + 1}ª Rodada`,
+        hasPrevRound: validIdx > 0,
+        hasNextRound: validIdx < rounds.length - 1
+      };
+    });
+  });
+
+  protected scrollToGroup(groupName: string): void {
+    const targetId = 'group-' + groupName.replace(/\s+/g, '-');
+    const element = document.getElementById(targetId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  protected prevRound(groupName: string, maxRounds: number): void {
+    const dict = { ...this.currentGroupRoundIndex() };
+    const current = dict[groupName] ?? 0;
+    if (current > 0) {
+      dict[groupName] = current - 1;
+      this.currentGroupRoundIndex.set(dict);
+    }
+  }
+
+  protected nextRound(groupName: string, maxRounds: number): void {
+    const dict = { ...this.currentGroupRoundIndex() };
+    const current = dict[groupName] ?? 0;
+    if (current < maxRounds - 1) {
+      dict[groupName] = current + 1;
+      this.currentGroupRoundIndex.set(dict);
+    }
+  }
 
   ngOnInit(): void {
     this.fetchData();
@@ -152,5 +313,13 @@ export class CartelaComponent implements OnInit {
     if (match.started_at) return true;
     const deadline = new Date(new Date(match.scheduled_at).getTime() - 5 * 60 * 1000);
     return new Date() > deadline;
+  }
+
+  protected getMatchDateLabel(dateStr: string): string {
+    const d = new Date(dateStr);
+    const weekdays = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    return `${weekdays[d.getDay()]}, ${day}/${month}`;
   }
 }

@@ -25,6 +25,7 @@ export class MatchesService {
       include: {
         team_a: true,
         team_b: true,
+        group: true,
       },
     });
 
