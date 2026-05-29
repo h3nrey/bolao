@@ -1,9 +1,6 @@
 <div class="flex flex-col items-center text-center mb-8">
-  <span class="inline-flex px-4 py-1.5 bg-gradient-to-r from-red-600/10 to-amber-500/10 border border-red-500/20 rounded-full text-xs font-semibold tracking-wider text-amber-400 uppercase mb-4">
-    World Cup 2026
-  </span>
   <h1 class="font-black text-4xl text-transparent bg-clip-text bg-gradient-to-r from-white via-red-200 to-red-500 tracking-tight leading-none mb-3">
-    Bolão Copa
+    Bolão Vlab
   </h1>
   <p class="text-sm text-slate-400 leading-relaxed">
     Acompanhe, dê palpites e lidere o ranking oficial do campeonato mundial.
@@ -23,43 +20,3 @@
   </button>
 </div>
 
-<!-- Divider -->
-<div class="flex items-center text-center text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-6 w-full before:content-[''] before:flex-1 before:border-b before:border-white/5 before:mr-4 after:content-[''] after:flex-1 after:border-b after:border-white/5 after:ml-4">
-  ou insira seu token
-</div>
-
-<!-- Token Field -->
-<div class="flex flex-col gap-2 w-full text-left">
-  <label for="jwt-token" class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Token JWT do Usuário</label>
-  <div class="w-full">
-    <input 
-      type="text" 
-      id="jwt-token" 
-      placeholder="Cole o token retornado pelo Google Callback..." 
-      class="w-full py-3.5 px-4 bg-white/2 border border-white/10 rounded-xl text-white text-xs outline-none focus:border-red-500 focus:shadow-[0_0_12px_rgba(239,68,68,0.2)] focus:bg-white/5 transition-all duration-200" 
-      [ngModel]="token()"
-      (ngModelChange)="token.set($event)"
-      [disabled]="loading()"
-    />
-  </div>
-
-  @if (error()) {
-    <div class="w-full py-3 px-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-xs mt-3 leading-relaxed">
-      {{ error() }}
-    </div>
-  }
-
-  @if (loading()) {
-    <div class="flex justify-center items-center py-4 mt-3">
-      <div class="w-7 h-7 border-3 border-white/10 border-t-red-500 rounded-full animate-spin"></div>
-    </div>
-  } @else {
-    <button 
-      (click)="onConnectToken()" 
-      class="w-full mt-4 py-3.5 px-5 bg-gradient-to-r from-red-600 to-red-800 text-white font-bold border-none rounded-xl cursor-pointer shadow-lg shadow-red-950/20 hover:scale-[1.01] hover:shadow-red-900/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100 disabled:shadow-none" 
-      [disabled]="!token().trim()"
-    >
-      Conectar Token
-    </button>
-  }
-</div>

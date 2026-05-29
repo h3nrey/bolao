@@ -1,18 +1,25 @@
-import { Component, input, signal, inject, OnInit, computed, output } from '@angular/core';
+import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { TabSelectorComponent, TabOption } from '../../components/ui/tab-selector/tab-selector.component';
 import { ParticipantCardComponent } from './components/participant-card/participant-card.component';
 import { Router } from '@angular/router';
 import { SessionService } from '../../services/session.service';
+import {
+  PROJECT_LABELS,
+  PROJECT_VALUES,
+  ProjectValue,
+  SENIORITY_LABELS,
+  SeniorityValue,
+} from '../../shared/constants/profile-options';
 
 interface RankingUser {
   position: number;
   user_id: string;
   user_name: string;
   user_avatar?: string | null;
-  user_project?: string | null;
-  user_seniority?: string | null;
+  user_project?: ProjectValue | null;
+  user_seniority?: SeniorityValue | null;
   pts_total: number;
   pts_matches: number;
 }
@@ -43,61 +50,41 @@ export class ParticipantesComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly session = inject(SessionService);
 
-  // Read state from SessionService
   protected readonly token = this.session.token;
 
-  // State
   protected readonly allParticipants = signal<RankingUser[]>([]);
   protected readonly loading = signal(false);
   protected readonly activeFilter = signal<string>('all');
 
-  // Project definitions and displays
   protected readonly projectOptions: TabOption[] = [
     { id: 'all', label: 'Todos' },
-    { id: 'avamec', label: 'AVAMEC' },
-    { id: 'siscad', label: 'SISCAD' },
-    { id: 'inovaula', label: 'Inovaula' },
-    { id: 'materiais-digitais', label: 'Materiais Digitais' },
-    { id: 'outro', label: 'Outro' },
+    ...PROJECT_VALUES.map((value) => ({ id: value, label: PROJECT_LABELS[value] })),
   ];
 
-  // Grouping mapping for display
-  private readonly projectDisplayMap: Record<string, string> = {
-    'avamec': 'AVAMEC',
-    'siscad': 'SISCAD',
-    'inovaula': 'Inovaula',
-    'materiais-digitais': 'Materiais Digitais',
-    'outro': 'Outro'
-  };
-
-  // Grouped participants computed property
   protected readonly groupedParticipants = computed<ProjectGroup[]>(() => {
     const participants = this.allParticipants();
     const filter = this.activeFilter();
 
-    // Determine which projects to include
-    const projectKeys = filter === 'all'
-      ? ['avamec', 'siscad', 'inovaula', 'materiais-digitais', 'outro', 'sem-projeto']
-      : [filter];
-
+    const projectKeys = filter === 'all' ? [...PROJECT_VALUES, 'sem-projeto'] : [filter];
     const groups: ProjectGroup[] = [];
 
     for (const key of projectKeys) {
       const isSemProjeto = key === 'sem-projeto';
-      const usersInProject = participants.filter(u => {
+      const usersInProject = participants.filter((user) => {
         if (isSemProjeto) {
-          return !u.user_project || !this.projectDisplayMap[u.user_project];
+          return !user.user_project || !PROJECT_LABELS[user.user_project];
         }
-        return u.user_project === key;
+
+        return user.user_project === key;
       });
 
       if (usersInProject.length > 0) {
-        const totalPoints = usersInProject.reduce((sum, u) => sum + u.pts_total, 0);
+        const totalPoints = usersInProject.reduce((sum, user) => sum + user.pts_total, 0);
         groups.push({
           id: key,
-          name: isSemProjeto ? 'Sem Projeto / Não Informado' : (this.projectDisplayMap[key] || key),
+          name: isSemProjeto ? 'Sem Projeto / Não Informado' : (PROJECT_LABELS[key as ProjectValue] || key),
           users: usersInProject,
-          totalPoints: totalPoints
+          totalPoints,
         });
       }
     }
@@ -107,14 +94,7 @@ export class ParticipantesComponent implements OnInit {
 
   protected getSeniorityLabel(seniority: string | null | undefined): string {
     if (!seniority) return 'Participante';
-    const mapping: Record<string, string> = {
-      'bolsista': 'Bolsista',
-      'clt': 'CLT',
-      'gerente': 'Gerente',
-      'pmo': 'PMO',
-      'outro': 'Outro'
-    };
-    return mapping[seniority] || seniority;
+    return SENIORITY_LABELS[seniority as SeniorityValue] || seniority;
   }
 
   ngOnInit(): void {
@@ -137,7 +117,7 @@ export class ParticipantesComponent implements OnInit {
       error: (err) => {
         console.error('Falha ao carregar torneios', err);
         this.loading.set(false);
-      }
+      },
     });
   }
 
@@ -151,7 +131,7 @@ export class ParticipantesComponent implements OnInit {
       error: (err) => {
         console.error('Falha ao carregar rankings', err);
         this.loading.set(false);
-      }
+      },
     });
   }
 

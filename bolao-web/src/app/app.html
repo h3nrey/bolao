@@ -23,111 +23,19 @@
     </div>
   </div>
 
-  <!-- If profile is incomplete, show the Modal Overlay on top -->
-  @if (isProfileIncomplete()) {
-    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#05070c]/90 backdrop-blur-md animate-fadeIn">
-      <div class="bg-slate-950/80 backdrop-blur-2xl border border-white/10 rounded-3xl shadow-2xl p-6 md:p-8 transition-all duration-300 w-full max-w-md animate-scaleUp">
-        
-        <div class="flex flex-col items-center text-center mb-6">
-          <span class="inline-flex px-3 py-1 bg-gradient-to-r from-red-600/10 to-amber-500/10 border border-red-500/20 rounded-full text-[10px] font-bold tracking-wider text-amber-400 uppercase mb-3">
-            Passo Final
-          </span>
-          <h2 class="font-black text-2xl text-transparent bg-clip-text bg-gradient-to-r from-white via-red-200 to-red-500 tracking-tight leading-none mb-2">
-            Complete seu Perfil
-          </h2>
-          <p class="text-xs text-slate-400 leading-relaxed">
-            Precisamos de mais algumas informações para você participar dos rankings e palpites.
-          </p>
-        </div>
-
-        <div class="flex flex-col gap-4 text-left">
-          <!-- Nome -->
-          <div class="flex flex-col gap-1.5">
-            <label for="complete-name" class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Nome Completo</label>
-            <input 
-              type="text" 
-              id="complete-name" 
-              placeholder="Seu nome" 
-              class="w-full py-3 px-4 bg-white/5 border border-white/10 rounded-xl text-white text-xs outline-none focus:border-red-500 focus:shadow-[0_0_12px_rgba(239,68,68,0.2)] focus:bg-white/10 transition-all duration-200" 
-              [ngModel]="completeProfileName()"
-              (ngModelChange)="completeProfileName.set($event)"
-              [disabled]="completeProfileLoading()"
-            />
-          </div>
-
-          <!-- Projeto -->
-          <div class="flex flex-col gap-1.5">
-            <label for="complete-project" class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Projeto</label>
-            <select 
-              id="complete-project" 
-              class="w-full py-3 px-4 bg-slate-900 border border-white/10 rounded-xl text-white text-xs outline-none focus:border-red-500 focus:shadow-[0_0_12px_rgba(239,68,68,0.2)] focus:bg-white/10 transition-all duration-200 cursor-pointer" 
-              [ngModel]="completeProfileProject()"
-              (ngModelChange)="completeProfileProject.set($event)"
-              [disabled]="completeProfileLoading()"
-            >
-              <option value="" disabled selected>Selecione seu projeto</option>
-              <option value="avamec">AVAMEC</option>
-              <option value="siscad">SISCAD</option>
-              <option value="inovaula">Inovaula</option>
-              <option value="materiais-digitais">Materiais Digitais</option>
-              <option value="outro">Outro</option>
-            </select>
-          </div>
-
-          <!-- Senioridade -->
-          <div class="flex flex-col gap-1.5">
-            <label for="complete-seniority" class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Senioridade / Vínculo</label>
-            <select 
-              id="complete-seniority" 
-              class="w-full py-3 px-4 bg-slate-900 border border-white/10 rounded-xl text-white text-xs outline-none focus:border-red-500 focus:shadow-[0_0_12px_rgba(239,68,68,0.2)] focus:bg-white/10 transition-all duration-200 cursor-pointer" 
-              [ngModel]="completeProfileSeniority()"
-              (ngModelChange)="completeProfileSeniority.set($event)"
-              [disabled]="completeProfileLoading()"
-            >
-              <option value="" disabled selected>Selecione seu vínculo</option>
-              <option value="bolsista">Bolsista</option>
-              <option value="clt">CLT</option>
-              <option value="gerente">Gerente</option>
-              <option value="pmo">PMO</option>
-              <option value="outro">Outro</option>
-            </select>
-          </div>
-
-          @if (completeProfileError()) {
-            <div class="w-full py-2.5 px-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-xs leading-relaxed">
-              {{ completeProfileError() }}
-            </div>
-          }
-
-          <div class="flex flex-col gap-2 mt-2">
-            <button 
-              (click)="submitProfileUpdate()" 
-              class="w-full py-3 px-5 bg-gradient-to-r from-red-600 to-red-800 text-white font-bold border-none rounded-xl cursor-pointer shadow-lg shadow-red-950/20 hover:scale-[1.01] hover:shadow-red-900/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100" 
-              [disabled]="completeProfileLoading() || !completeProfileName().trim() || !completeProfileProject() || !completeProfileSeniority()"
-            >
-              @if (completeProfileLoading()) {
-                <div class="flex justify-center items-center gap-2">
-                  <div class="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
-                  <span>Salvando...</span>
-                </div>
-              } @else {
-                Salvar e Continuar
-              }
-            </button>
-
-            <button 
-              (click)="logout()" 
-              class="w-full py-3 px-5 bg-slate-900/50 hover:bg-red-950/20 border border-white/5 text-slate-400 hover:text-red-400 font-bold rounded-xl transition-all duration-200"
-              [disabled]="completeProfileLoading()"
-            >
-              Sair da Conta
-            </button>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  }
+  <app-profile-completion-modal
+    [open]="isProfileIncomplete()"
+    [loading]="completeProfileLoading()"
+    [error]="completeProfileError()"
+    [name]="completeProfileName()"
+    [project]="completeProfileProject()"
+    [seniority]="completeProfileSeniority()"
+    (nameChange)="completeProfileName.set($event)"
+    (projectChange)="completeProfileProject.set($event)"
+    (seniorityChange)="completeProfileSeniority.set($event)"
+    (save)="submitProfileUpdate()"
+    (logout)="logout()"
+  ></app-profile-completion-modal>
 } @else {
   <!-- Centered Login Layout -->
   <div class="min-h-screen w-full flex items-center justify-center p-4 bg-[#090d16] font-sans">

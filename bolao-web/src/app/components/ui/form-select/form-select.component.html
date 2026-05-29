@@ -1,0 +1,65 @@
+<div class="flex flex-col gap-1.5 w-full">
+  <label [for]="id()" class="text-[10px] font-black text-text-primary uppercase tracking-[0.18em]">
+    {{ label() }}
+  </label>
+
+  <div class="relative">
+    <button
+      type="button"
+      class="w-full flex items-center justify-between gap-3 py-3 px-4 bg-bg-card border-2 border-brand-red rounded-md text-left text-xs text-text-primary outline-none transition-all duration-200 cursor-pointer hover:border-brand-red-light focus:border-brand-red-light focus:shadow-[0_0_0_3px_rgba(239,68,68,0.22)] disabled:opacity-50 disabled:cursor-not-allowed"
+      [id]="id()"
+      [disabled]="disabled()"
+      [attr.aria-invalid]="error() ? 'true' : null"
+      [attr.aria-expanded]="isOpen()"
+      [attr.aria-controls]="id() + '-listbox'"
+      [attr.role]="'combobox'"
+      [attr.aria-haspopup]="'listbox'"
+      (click)="toggleOpen()"
+    >
+      <span class="font-bold" [class.text-text-muted]="!selectedLabel()">
+        {{ selectedLabel() || placeholder() }}
+      </span>
+
+      <span class="pointer-events-none flex items-center justify-center">
+        <span class="h-2.5 w-2.5 rotate-45 border-r-2 border-b-2 border-brand-red-light transition-transform duration-200" [class.-rotate-135]="isOpen()"></span>
+      </span>
+    </button>
+
+    @if (isOpen()) {
+      <div
+        [id]="id() + '-listbox'"
+        role="listbox"
+        class="absolute left-0 right-0 top-full z-[70] mt-2 overflow-hidden rounded-md border-2 border-brand-red bg-bg-sidebar shadow-[0_18px_50px_rgba(0,0,0,0.55)]"
+      >
+        <button
+          type="button"
+          class="w-full px-4 py-3 text-left text-xs font-bold text-text-muted border-b border-brand-red-dark bg-bg-sidebar"
+          disabled
+        >
+          {{ placeholder() }}
+        </button>
+
+        @for (option of options(); track option.value) {
+          <button
+            type="button"
+            class="w-full px-4 py-3 text-left text-xs font-bold transition-colors duration-150 border-b border-brand-red-dark last:border-b-0 hover:bg-brand-red-dark disabled:cursor-not-allowed disabled:opacity-40"
+            [ngClass]="option.value === value() ? 'bg-brand-red text-text-primary' : 'text-text-primary'"
+            [disabled]="option.disabled"
+            [attr.aria-selected]="option.value === value()"
+            (click)="selectOption(option.value)"
+          >
+            {{ option.label }}
+          </button>
+        }
+      </div>
+    }
+  </div>
+
+  @if (hint()) {
+    <p class="text-[11px] leading-relaxed text-text-muted">{{ hint() }}</p>
+  }
+
+  @if (error()) {
+    <p class="text-[11px] leading-relaxed text-red-400">{{ error() }}</p>
+  }
+</div>

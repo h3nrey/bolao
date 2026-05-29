@@ -3,14 +3,20 @@ import { CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SessionService } from '../../services/session.service';
+import {
+  PROJECT_LABELS,
+  ProjectValue,
+  SENIORITY_LABELS,
+  SeniorityValue,
+} from '../../shared/constants/profile-options';
 
 interface UserProfile {
   id: string;
   email?: string | null;
   name: string;
   avatar_url?: string | null;
-  project?: 'avamec' | 'siscad' | 'inovaula' | 'materiais-digitais' | 'outro' | null;
-  seniority?: 'bolsista' | 'clt' | 'gerente' | 'pmo' | 'outro' | null;
+  project?: ProjectValue | null;
+  seniority?: SeniorityValue | null;
   created_at?: string;
   updated_at?: string;
   can_edit?: boolean;
@@ -160,26 +166,12 @@ export class PerfilComponent implements OnInit {
 
   protected getProjectLabel(project: string | null | undefined): string {
     if (!project) return 'Não definido';
-    const mapping: Record<string, string> = {
-      'avamec': 'AVAMEC',
-      'siscad': 'SISCAD',
-      'inovaula': 'Inovaula',
-      'materiais-digitais': 'Materiais Digitais',
-      'outro': 'Outro'
-    };
-    return mapping[project] || project;
+    return PROJECT_LABELS[project as ProjectValue] || project;
   }
 
   protected getSeniorityLabel(seniority: string | null | undefined): string {
     if (!seniority) return 'Não definido';
-    const mapping: Record<string, string> = {
-      'bolsista': 'Bolsista',
-      'clt': 'CLT',
-      'gerente': 'Gerente',
-      'pmo': 'PMO',
-      'outro': 'Outro'
-    };
-    return mapping[seniority] || seniority;
+    return SENIORITY_LABELS[seniority as SeniorityValue] || seniority;
   }
 
   protected getMatchDateLabel(dateStr: string): string {

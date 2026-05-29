@@ -334,9 +334,12 @@ enum BracketSource {
 enum Project {
   avamec
   siscad
-  inovaula
+  mt
+  vyndance
+  clique_escola @map("clique-escola")
+  maipe
+  rh
   materiais_digitais @map("materiais-digitais")
-  outro
 }
 
 enum Seniority {

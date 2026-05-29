@@ -1,0 +1,89 @@
+<app-modal [open]="open()" size="md">
+  <div class="bg-brand-red border-b-2 border-brand-red-light px-5 py-4 md:px-6">
+    <div class="flex items-center justify-between gap-4">
+      <div class="min-w-0">
+        <p class="text-[10px] font-black uppercase tracking-[0.22em] text-text-primary">Bolao VLab</p>
+        <h2 class="font-black text-2xl text-text-primary tracking-tight leading-none mt-1">
+          Complete seu Perfil
+        </h2>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="px-5 py-5 md:px-6 md:py-6">
+    <div class="mb-5 bg-bg-card pt-2 pb-4 px-4 rounded-md">
+      <p class="text-xs text-text-primary leading-relaxed">
+        Precisamos de mais algumas informa&ccedil;&otilde;es para voc&ecirc; participar dos rankings e palpites.
+      </p>
+    </div>
+
+    <div class="flex flex-col gap-4 text-left">
+      <div class="flex flex-col gap-1.5">
+        <label for="complete-name" class="text-[10px] font-black text-text-primary uppercase tracking-[0.18em]">Nome Completo</label>
+        <input
+          type="text"
+          id="complete-name"
+          placeholder="Seu nome"
+          class="w-full py-3 px-4 bg-bg-card border-2 border-brand-red rounded-md text-text-primary text-xs font-bold outline-none transition-all duration-200 placeholder:text-text-muted hover:border-brand-red-light focus:border-brand-red-light focus:shadow-[0_0_0_3px_rgba(239,68,68,0.22)] disabled:opacity-50"
+          [value]="name()"
+          [disabled]="loading()"
+          (input)="handleNameInput($event)"
+        />
+      </div>
+
+      <app-form-select
+        id="complete-project"
+        label="Projeto"
+        placeholder="Selecione seu projeto"
+        [value]="project()"
+        [options]="projectOptions"
+        [disabled]="loading()"
+        (valueChange)="onProjectChange($event)"
+      ></app-form-select>
+
+      <app-form-select
+        id="complete-seniority"
+        label="V&iacute;nculo"
+        placeholder="Selecione seu v&iacute;nculo"
+        [value]="seniority()"
+        [options]="seniorityOptions"
+        [disabled]="loading()"
+        (valueChange)="onSeniorityChange($event)"
+      ></app-form-select>
+
+      @if (error()) {
+        <div class="w-full py-2.5 px-4 bg-brand-red-dark border-2 border-brand-red-light rounded-md text-text-primary text-xs font-bold leading-relaxed">
+          {{ error() }}
+        </div>
+      }
+
+      <div class="grid grid-cols-1 gap-2 mt-2">
+        <button
+          type="button"
+          (click)="save.emit()"
+          class="w-full py-3 px-5 bg-brand-red text-text-primary font-black uppercase tracking-wide border-2 border-brand-red-light rounded-md cursor-pointer shadow-[0_14px_28px_rgba(239,68,68,0.28)] hover:bg-brand-red-dark transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          [disabled]="loading() || !name().trim() || !project() || !seniority()"
+        >
+          @if (loading()) {
+            <div class="flex justify-center items-center gap-2 normal-case tracking-normal">
+              <div class="w-4 h-4 border-2 border-text-primary/25 border-t-text-primary rounded-full animate-spin"></div>
+              <span>Salvando...</span>
+            </div>
+          } @else {
+            Salvar e Continuar
+          }
+        </button>
+
+        <button
+          type="button"
+          (click)="logout.emit()"
+          class="w-full py-3 px-5 bg-bg-card hover:bg-bg-sidebar border-2 border-brand-red text-text-primary font-black uppercase tracking-wide rounded-md transition-all duration-200 disabled:opacity-50"
+          [disabled]="loading()"
+        >
+          Sair da Conta
+        </button>
+      </div>
+    </div>
+  </div>
+</app-modal>

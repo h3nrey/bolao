@@ -1,0 +1,13 @@
+@if (open()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-bg-dark/95 backdrop-blur-sm animate-fadeIn">
+    <div
+      class="w-full overflow-visible bg-bg-sidebar border-2 border-brand-red rounded-md shadow-[0_24px_80px_rgba(0,0,0,0.68)] p-0 transition-all duration-300 animate-scaleUp"
+      [class.max-w-sm]="size() === 'sm'"
+      [class.max-w-md]="size() === 'md'"
+      [class.max-w-lg]="size() === 'lg'"
+      [class.max-w-xl]="size() === 'xl'"
+    >
+      <ng-content></ng-content>
+    </div>
+  </div>
+}

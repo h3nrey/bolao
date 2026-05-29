@@ -1,22 +1,26 @@
 import { Component, signal, inject, computed } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { RouterOutlet, Router } from '@angular/router';
 
 // Import standalone page components
 import { LoginComponent } from './pages/login/login.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { CountdownBannerComponent } from './components/ui/countdown-banner/countdown-banner.component';
+import { ProfileCompletionModalComponent } from './components/ui/profile-completion-modal/profile-completion-modal.component';
 import { SessionService } from './services/session.service';
+import {
+  ProjectValue,
+  SeniorityValue,
+} from './shared/constants/profile-options';
 
 interface UserProfile {
   id: string;
   email?: string | null;
   name: string;
   avatar_url?: string | null;
-  project?: 'avamec' | 'siscad' | 'inovaula' | 'materiais-digitais' | 'outro' | null;
-  seniority?: 'bolsista' | 'clt' | 'gerente' | 'pmo' | 'outro' | null;
+  project?: ProjectValue | null;
+  seniority?: SeniorityValue | null;
   created_at?: string;
   updated_at?: string;
   can_edit?: boolean;
@@ -27,10 +31,10 @@ interface UserProfile {
   standalone: true,
   imports: [
     CommonModule, 
-    FormsModule,
     LoginComponent,
     SidebarComponent,
     CountdownBannerComponent,
+    ProfileCompletionModalComponent,
     RouterOutlet
   ],
   templateUrl: './app.html',
@@ -53,8 +57,8 @@ export class App {
 
   // Complete profile form signals
   protected readonly completeProfileName = signal('');
-  protected readonly completeProfileProject = signal<'avamec' | 'siscad' | 'inovaula' | 'materiais-digitais' | 'outro' | ''>('');
-  protected readonly completeProfileSeniority = signal<'bolsista' | 'clt' | 'gerente' | 'pmo' | 'outro' | ''>('');
+  protected readonly completeProfileProject = signal<ProjectValue | ''>('');
+  protected readonly completeProfileSeniority = signal<SeniorityValue | ''>('');
   protected readonly completeProfileError = signal<string | null>(null);
   protected readonly completeProfileLoading = signal(false);
 

@@ -1,12 +1,16 @@
 import { Injectable, signal, computed } from '@angular/core';
+import {
+  ProjectValue,
+  SeniorityValue,
+} from '../shared/constants/profile-options';
 
 interface UserProfile {
   id: string;
   email?: string | null;
   name: string;
   avatar_url?: string | null;
-  project?: 'avamec' | 'siscad' | 'inovaula' | 'materiais-digitais' | 'outro' | null;
-  seniority?: 'bolsista' | 'clt' | 'gerente' | 'pmo' | 'outro' | null;
+  project?: ProjectValue | null;
+  seniority?: SeniorityValue | null;
   created_at?: string;
   updated_at?: string;
   can_edit?: boolean;
