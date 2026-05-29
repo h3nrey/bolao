@@ -2,14 +2,14 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "npm run build",
   "outputDirectory": "dist/bolao-web/browser",
-  "rewrites": [
+  "routes": [
     {
-      "source": "/api/:path*",
-      "destination": "https://bolao-v58y.onrender.com/:path*"
+      "src": "/api/(.*)",
+      "dest": "https://bolao-v58y.onrender.com/$1"
     },
     {
-      "source": "/((?!.*\\.).*)",
-      "destination": "/index.html"
+      "src": "/((?!.*\\.).*)",
+      "dest": "/index.html"
     }
   ]
 }
