@@ -8,6 +8,7 @@ import { MatchCardComponent, MatchCardData } from './components/match-card/match
 import { MatchDetailComponent } from './components/match-detail/match-detail.component';
 import { MatchDayGroupComponent } from './components/match-day-group/match-day-group.component';
 import { SessionService } from '../../services/session.service';
+import { API_BASE_URL } from '../../config/api.constants';
 
 interface Match {
   id: string;
@@ -42,7 +43,7 @@ interface Match {
 })
 export class PartidasComponent implements OnInit {
   private readonly http = inject(HttpClient);
-  private readonly apiBaseUrl = 'http://localhost:3000';
+  private readonly apiBaseUrl = API_BASE_URL;
   private readonly session = inject(SessionService);
 
   protected readonly token = this.session.token;

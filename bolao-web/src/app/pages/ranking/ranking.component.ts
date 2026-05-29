@@ -1,6 +1,7 @@
 import { Component, input, signal, inject, OnInit, computed } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
+import { API_BASE_URL } from '../../config/api.constants';
 
 interface Tournament {
   id: string;
@@ -29,7 +30,7 @@ import { SessionService } from '../../services/session.service';
 })
 export class RankingComponent implements OnInit {
   private readonly http = inject(HttpClient);
-  private readonly apiBaseUrl = 'http://localhost:3000';
+  private readonly apiBaseUrl = API_BASE_URL;
   private readonly session = inject(SessionService);
 
   // Read state from SessionService instead of inputs

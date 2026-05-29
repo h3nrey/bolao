@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { LoadingSpinnerComponent } from '../../../../components/ui/loading-spinner/loading-spinner.component';
 import { ScoreStepperComponent } from '../../../../components/ui/score-stepper/score-stepper.component';
+import { API_BASE_URL } from '../../../../config/api.constants';
 
 @Component({
   selector: 'app-match-detail',
@@ -20,7 +21,7 @@ export class MatchDetailComponent implements OnInit {
   back = output<void>();
 
   private readonly http = inject(HttpClient);
-  private readonly apiBaseUrl = 'http://localhost:3000';
+  private readonly apiBaseUrl = API_BASE_URL;
 
   // Match data
   protected readonly match = signal<any | null>(null);

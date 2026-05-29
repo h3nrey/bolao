@@ -2,10 +2,9 @@
   (click)="handleClick()"
   class="bg-slate-900/35 border border-white/5 rounded-2xl p-5 hover:border-red-500/20 hover:scale-[1.01] transition-all duration-200 flex flex-col gap-4 cursor-pointer select-none"
 >
-  <!-- Header: Stage label + Status badge -->
   <div class="flex items-center justify-between border-b border-white/5 pb-3">
     <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1">
-      🌍 {{ match().stage === 'groups' ? 'Fase de Grupos' : match().stage }}
+      🌍 {{ stageLabel(match().stage) }}
     </span>
 
     @if (match().status === 'live') {
@@ -25,9 +24,7 @@
     }
   </div>
 
-  <!-- Teams & Score -->
   <div class="flex items-center justify-between w-full">
-    <!-- Team A -->
     <div class="flex flex-col items-center gap-2 w-5/12 text-center">
       @if (match().team_a?.flag_emoji) {
         <span class="text-3xl md:text-4xl drop-shadow-[0_4px_8px_rgba(0,0,0,0.2)]">{{ match().team_a!.flag_emoji }}</span>
@@ -39,7 +36,6 @@
       </span>
     </div>
 
-    <!-- Score / VS -->
     <div class="flex flex-col items-center justify-center w-2/12">
       @if (match().status === 'finished') {
         <div class="flex items-center gap-1 text-2xl font-black text-white tracking-wider">
@@ -63,7 +59,6 @@
       }
     </div>
 
-    <!-- Team B -->
     <div class="flex flex-col items-center gap-2 w-5/12 text-center">
       @if (match().team_b?.flag_emoji) {
         <span class="text-3xl md:text-4xl drop-shadow-[0_4px_8px_rgba(0,0,0,0.2)]">{{ match().team_b!.flag_emoji }}</span>

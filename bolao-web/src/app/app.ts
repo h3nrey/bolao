@@ -13,6 +13,7 @@ import {
   ProjectValue,
   SeniorityValue,
 } from './shared/constants/profile-options';
+import { API_BASE_URL } from './config/api.constants';
 
 interface UserProfile {
   id: string;
@@ -42,7 +43,7 @@ interface UserProfile {
 })
 export class App {
   private readonly http = inject(HttpClient);
-  private readonly apiBaseUrl = 'http://localhost:3000';
+  private readonly apiBaseUrl = API_BASE_URL;
   private readonly session = inject(SessionService);
   private readonly router = inject(Router);
 

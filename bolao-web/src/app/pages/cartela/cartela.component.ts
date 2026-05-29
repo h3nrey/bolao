@@ -7,6 +7,7 @@ import { CartelaTableComponent } from './components/cartela-table/cartela-table.
 import { CartelaMatchComponent } from './components/cartela-match/cartela-match.component';
 import { RoundSelectorComponent } from '../../components/ui/round-selector/round-selector.component';
 import { SessionService } from '../../services/session.service';
+import { API_BASE_URL } from '../../config/api.constants';
 
 interface MatchTeam {
   id: string;
@@ -52,7 +53,7 @@ interface LocalPrediction {
 })
 export class CartelaComponent implements OnInit {
   private readonly http = inject(HttpClient);
-  private readonly apiBaseUrl = 'http://localhost:3000';
+  private readonly apiBaseUrl = API_BASE_URL;
   private readonly session = inject(SessionService);
 
   protected readonly token = this.session.token;

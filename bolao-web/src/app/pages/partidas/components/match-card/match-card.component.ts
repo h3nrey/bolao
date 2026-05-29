@@ -22,6 +22,20 @@ export class MatchCardComponent {
   match = input.required<MatchCardData>();
   cardClick = output<string>();
 
+  protected stageLabel(stage: string): string {
+    const labels: Record<string, string> = {
+      groups: 'Fase de Grupos',
+      round_of_32: 'Mata-mata',
+      round_of_16: 'Oitavas de Final',
+      quarterfinal: 'Quartas de Final',
+      semifinal: 'Semifinal',
+      third_place: 'Disputa do 3º Lugar',
+      final: 'Final',
+    };
+
+    return labels[stage] ?? stage;
+  }
+
   handleClick(): void {
     this.cardClick.emit(this.match().id);
   }

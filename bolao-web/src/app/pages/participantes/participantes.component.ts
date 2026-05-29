@@ -5,6 +5,7 @@ import { TabSelectorComponent, TabOption } from '../../components/ui/tab-selecto
 import { ParticipantCardComponent } from './components/participant-card/participant-card.component';
 import { Router } from '@angular/router';
 import { SessionService } from '../../services/session.service';
+import { API_BASE_URL } from '../../config/api.constants';
 import {
   PROJECT_LABELS,
   PROJECT_VALUES,
@@ -46,7 +47,7 @@ interface ProjectGroup {
 })
 export class ParticipantesComponent implements OnInit {
   private readonly http = inject(HttpClient);
-  private readonly apiBaseUrl = 'http://localhost:3000';
+  private readonly apiBaseUrl = API_BASE_URL;
   private readonly router = inject(Router);
   private readonly session = inject(SessionService);
 

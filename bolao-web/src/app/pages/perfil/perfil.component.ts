@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SessionService } from '../../services/session.service';
+import { API_BASE_URL } from '../../config/api.constants';
 import {
   PROJECT_LABELS,
   ProjectValue,
@@ -64,7 +65,7 @@ export class PerfilComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly session = inject(SessionService);
-  private readonly apiBaseUrl = 'http://localhost:3000';
+  private readonly apiBaseUrl = API_BASE_URL;
 
   private readonly profileUser = signal<UserProfile | null>(null);
 

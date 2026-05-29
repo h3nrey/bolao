@@ -271,6 +271,7 @@ enum MatchStatus {
 
 enum MatchStage {
   groups
+  round_of_32
   round_of_16
   quarterfinal
   semifinal
