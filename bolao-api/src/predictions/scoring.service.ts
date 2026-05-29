@@ -1,6 +1,7 @@
 import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { MatchesService } from '../matches/matches.service';
+import { hydratePredictionItems } from './prediction-item.crypto';
 
 @Injectable()
 export class ScoringService {
@@ -34,12 +35,13 @@ export class ScoringService {
     });
 
     // Extract prediction values
+    const items = hydratePredictionItems(prediction.items as any);
     const getItemInt = (type: string) =>
-      prediction.items.find((i) => i.type === type)?.value_int ?? null;
+      items.find((i) => i.type === type)?.value_int ?? null;
     const getItemTeamId = (type: string) =>
-      prediction.items.find((i) => i.type === type)?.value_team_id ?? null;
+      items.find((i) => i.type === type)?.value_team_id ?? null;
     const getItemPlayerId = (type: string) =>
-      prediction.items.find((i) => i.type === type)?.value_player_id ?? null;
+      items.find((i) => i.type === type)?.value_player_id ?? null;
 
     const predScoreA = getItemInt('score_a');
     const predScoreB = getItemInt('score_b');

@@ -214,6 +214,7 @@ model PredictionItem {
   value_int       Int?
   value_team_id   String?
   value_player_id String?
+  encrypted_value String?
 
   prediction Prediction @relation(fields: [prediction_id], references: [id])
 }

@@ -1,18 +1,28 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreatePredictionDto } from './dto/prediction.dto';
+import {
+  encryptPredictionItem,
+  hydratePredictionItems,
+  PredictionItemPayload,
+} from './prediction-item.crypto';
 
 @Injectable()
 export class PredictionsService {
   constructor(private prisma: PrismaService) {}
 
   async getMyAllPredictions(userId: string) {
-    return this.prisma.prediction.findMany({
+    const predictions = await this.prisma.prediction.findMany({
       where: { user_id: userId },
       include: {
         items: true,
       },
     });
+
+    return predictions.map((prediction) => ({
+      ...prediction,
+      items: hydratePredictionItems(prediction.items as any),
+    }));
   }
 
   async getMyPrediction(matchId: string, userId: string) {
@@ -33,7 +43,10 @@ export class PredictionsService {
       throw new NotFoundException('Prediction not found');
     }
 
-    return prediction;
+    return {
+      ...prediction,
+      items: hydratePredictionItems(prediction.items as any),
+    };
   }
 
   async getAllForMatch(matchId: string) {
@@ -47,7 +60,7 @@ export class PredictionsService {
       throw new ForbiddenException('Predictions are only visible after the match starts');
     }
 
-    return this.prisma.prediction.findMany({
+    const predictions = await this.prisma.prediction.findMany({
       where: { match_id: matchId },
       include: {
         user: true,
@@ -55,6 +68,11 @@ export class PredictionsService {
         points: true,
       },
     });
+
+    return predictions.map((prediction) => ({
+      ...prediction,
+      items: hydratePredictionItems(prediction.items as any),
+    }));
   }
 
   async createOrUpdate(matchId: string, userId: string, dto: CreatePredictionDto) {
@@ -89,33 +107,47 @@ export class PredictionsService {
         data: dto.items.map((item) => ({
           prediction_id: existing.id,
           type: item.type as any,
-          value_int: 'value_int' in item ? item.value_int : null,
-          value_team_id: 'value_team_id' in item ? item.value_team_id : null,
-          value_player_id: 'value_player_id' in item ? item.value_player_id : null,
-        })),
+          encrypted_value: encryptPredictionItem(item as PredictionItemPayload),
+          value_int: null,
+          value_team_id: null,
+          value_player_id: null,
+        })) as any,
       });
 
-      return this.prisma.prediction.findUnique({
+      const updated = await this.prisma.prediction.findUnique({
         where: { id: existing.id },
         include: { items: true },
       });
+
+      return updated
+        ? {
+            ...updated,
+            items: hydratePredictionItems(updated.items as any),
+          }
+        : updated;
     }
 
     // Create new prediction with items
-    return this.prisma.prediction.create({
+    const created = await this.prisma.prediction.create({
       data: {
         user_id: userId,
         match_id: matchId,
         items: {
           create: dto.items.map((item) => ({
             type: item.type as any,
-            value_int: 'value_int' in item ? item.value_int : null,
-            value_team_id: 'value_team_id' in item ? item.value_team_id : null,
-            value_player_id: 'value_player_id' in item ? item.value_player_id : null,
-          })),
+            encrypted_value: encryptPredictionItem(item as PredictionItemPayload),
+            value_int: null,
+            value_team_id: null,
+            value_player_id: null,
+          })) as any,
         },
       },
       include: { items: true },
     });
+
+    return {
+      ...created,
+      items: hydratePredictionItems(created.items as any),
+    };
   }
 }
