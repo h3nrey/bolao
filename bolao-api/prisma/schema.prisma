@@ -67,12 +67,17 @@ model Team {
   flag_emoji String?
   flag_url   String?
 
+  provider    String?
+  external_id String?
+
   players          Player[]
   group_teams      GroupTeam[]
   matches_as_a     Match[]          @relation("TeamA")
   matches_as_b     Match[]          @relation("TeamB")
   match_events     MatchEvent[]
   extra_period_winners MatchExtraPeriod[] @relation("PeriodWinner")
+
+  @@unique([provider, external_id])
 }
 
 model Player {
@@ -121,6 +126,17 @@ model Match {
   ended_at     DateTime?
   status       MatchStatus @default(upcoming)
 
+  // Score cache fields
+  score_a         Int         @default(0)
+  score_b         Int         @default(0)
+  score_a_extra   Int         @default(0)
+  score_b_extra   Int         @default(0)
+  penalty_score_a Int?
+  penalty_score_b Int?
+
+  provider    String?
+  external_id String?
+
   phase         Phase              @relation(fields: [phase_id], references: [id])
   group         Group?             @relation(fields: [group_id], references: [id])
   team_a        Team?              @relation("TeamA", fields: [team_a_id], references: [id])
@@ -129,6 +145,8 @@ model Match {
   extra_periods MatchExtraPeriod[]
   predictions   Prediction[]
   bracket_slot  BracketSlot?
+
+  @@unique([provider, external_id])
 }
 
 model MatchEvent {

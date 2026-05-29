@@ -13,6 +13,7 @@ import { MatchEventsModule } from './match-events/match-events.module';
 import { PredictionsModule } from './predictions/predictions.module';
 import { RankingsModule } from './rankings/rankings.module';
 import { BracketModule } from './bracket/bracket.module';
+import { SportsModule } from './sports/sports.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { BracketModule } from './bracket/bracket.module';
     PredictionsModule,
     RankingsModule,
     BracketModule,
+    SportsModule,
   ],
 })
 export class AppModule {}

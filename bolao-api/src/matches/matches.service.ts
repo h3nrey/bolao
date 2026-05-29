@@ -28,18 +28,21 @@ export class MatchesService {
       },
     });
 
-    const result: any[] = [];
-    for (const match of matches) {
-      const score = await this.getScore(match.id);
+    return matches.map((match) => {
       const currentMinute = this.getCurrentMinute(match);
-      result.push({
+      return {
         ...match,
-        score,
+        score: {
+          score_a: match.score_a + match.score_a_extra,
+          score_b: match.score_b + match.score_b_extra,
+          score_a_regular: match.score_a,
+          score_b_regular: match.score_b,
+          score_a_extra: match.score_a_extra,
+          score_b_extra: match.score_b_extra,
+        },
         current_minute: currentMinute,
-      });
-    }
-
-    return result;
+      };
+    });
   }
 
   async findOne(id: string) {
@@ -138,51 +141,13 @@ export class MatchesService {
       throw new NotFoundException('Match not found');
     }
 
-    const events = await this.prisma.matchEvent.findMany({
-      where: {
-        match_id: matchId,
-        type: { in: ['goal', 'own_goal'] },
-      },
-    });
-
-    let score_a_regular = 0;
-    let score_b_regular = 0;
-    let score_a_extra = 0;
-    let score_b_extra = 0;
-
-    for (const event of events) {
-      const isTeamA = event.team_id === match.team_a_id;
-      const isTeamB = event.team_id === match.team_b_id;
-
-      if (event.period === 'regular') {
-        if (event.type === 'goal') {
-          if (isTeamA) score_a_regular++;
-          else if (isTeamB) score_b_regular++;
-        } else if (event.type === 'own_goal') {
-          if (isTeamA) score_b_regular++;
-          else if (isTeamB) score_a_regular++;
-        }
-      } else if (event.period === 'extra_time') {
-        if (event.type === 'goal') {
-          if (isTeamA) score_a_extra++;
-          else if (isTeamB) score_b_extra++;
-        } else if (event.type === 'own_goal') {
-          if (isTeamA) score_b_extra++;
-          else if (isTeamB) score_a_extra++;
-        }
-      }
-    }
-
-    const score_a = score_a_regular + score_a_extra;
-    const score_b = score_b_regular + score_b_extra;
-
     return {
-      score_a,
-      score_b,
-      score_a_regular,
-      score_b_regular,
-      score_a_extra,
-      score_b_extra,
+      score_a: match.score_a + match.score_a_extra,
+      score_b: match.score_b + match.score_b_extra,
+      score_a_regular: match.score_a,
+      score_b_regular: match.score_b,
+      score_a_extra: match.score_a_extra,
+      score_b_extra: match.score_b_extra,
     };
   }
 
