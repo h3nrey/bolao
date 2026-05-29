@@ -4,6 +4,10 @@
   "outputDirectory": "dist/bolao-web/browser",
   "rewrites": [
     {
+      "source": "/api/:path*",
+      "destination": "https://bolao-v58y.onrender.com/:path*"
+    },
+    {
       "source": "/((?!.*\\.).*)",
       "destination": "/index.html"
     }
