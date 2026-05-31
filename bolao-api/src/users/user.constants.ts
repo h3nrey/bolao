@@ -3,10 +3,13 @@ export const PROJECT_VALUES = [
   'siscad',
   'mt',
   'vyndance',
-  'clique-escola',
+  'clique_escola',
   'maipe',
   'rh',
-  'materiais-digitais',
+  'materiais_digitais',
+  'esmpu',
+  'jump',
+  'inovaula',
 ] as const;
 
 export type ProjectValue = (typeof PROJECT_VALUES)[number];

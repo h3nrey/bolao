@@ -338,10 +338,13 @@ enum Project {
   siscad
   mt
   vyndance
-  clique_escola @map("clique-escola")
+  clique_escola
   maipe
   rh
-  materiais_digitais @map("materiais-digitais")
+  materiais_digitais
+  esmpu
+  jump
+  inovaula
 }
 
 enum Seniority {

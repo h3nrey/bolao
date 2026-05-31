@@ -3,10 +3,13 @@ export const PROJECT_VALUES = [
   'siscad',
   'mt',
   'vyndance',
-  'clique-escola',
+  'clique_escola',
   'maipe',
   'rh',
-  'materiais-digitais',
+  'materiais_digitais',
+  'esmpu',
+  'jump',
+  'inovaula',
 ] as const;
 
 export type ProjectValue = (typeof PROJECT_VALUES)[number];
@@ -16,10 +19,13 @@ export const PROJECT_LABELS: Record<ProjectValue, string> = {
   siscad: 'SISCAD',
   mt: 'MT',
   vyndance: 'Vyndance',
-  'clique-escola': 'Clique Escola',
+  clique_escola: 'Clique Escola',
   maipe: 'Maipe',
   rh: 'RH',
-  'materiais-digitais': 'Materiais Digitais',
+  materiais_digitais: 'Materiais Digitais',
+  esmpu: 'ESMPU',
+  jump: 'Jump',
+  inovaula: 'Inovaula',
 };
 
 export const PROJECT_OPTIONS = PROJECT_VALUES.map((value) => ({
