@@ -1,8 +1,8 @@
-<div class="flex border-b border-white/5 pb-1 gap-6 select-none justify-start mb-2">
+<div class="flex border-b border-white/5 pb-1 gap-6 select-none justify-start mb-2 overflow-x-auto no-scrollbar whitespace-nowrap scroll-smooth">
   @for (option of options(); track option.id) {
     <button 
       (click)="selectTab(option.id)" 
-      class="bg-transparent border-none py-2 px-1 text-xs font-black uppercase tracking-widest transition-all duration-200 cursor-pointer relative"
+      class="bg-transparent border-none py-2 px-1 text-xs font-black uppercase tracking-widest transition-all duration-200 cursor-pointer relative shrink-0"
       [class.text-white]="activeId() === option.id"
       [class.text-slate-400]="activeId() !== option.id"
       [class.hover:text-slate-200]="activeId() !== option.id"

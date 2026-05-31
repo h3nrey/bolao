@@ -30,16 +30,16 @@ interface Match {
 })
 export class CartelaMatchComponent {
   match = input.required<Match>();
-  scoreA = input.required<number>();
-  scoreB = input.required<number>();
+  scoreA = input.required<number | null>();
+  scoreB = input.required<number | null>();
   isSaved = input.required<boolean>();
   isModified = input.required<boolean>();
   isSaving = input.required<boolean>();
   isPastDeadline = input.required<boolean>();
   dateLabel = input.required<string>();
 
-  scoreAChange = output<number>();
-  scoreBChange = output<number>();
+  scoreAChange = output<number | null>();
+  scoreBChange = output<number | null>();
   inputChange = output<void>();
   blur = output<void>();
 }

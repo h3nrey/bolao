@@ -37,8 +37,8 @@ interface Match {
 }
 
 interface LocalPrediction {
-  scoreA: number;
-  scoreB: number;
+  scoreA: number | null;
+  scoreB: number | null;
   isSaved: boolean;
   isModified: boolean;
   isSaving: boolean;
@@ -123,15 +123,16 @@ export class CartelaComponent implements OnInit {
       for (const m of g.matches) {
         if (!m.team_a || !m.team_b) continue;
 
+        let played = false;
         let scoreA = 0;
         let scoreB = 0;
-
+ 
         const localPred = preds[m.id];
-        if (localPred) {
+        if (localPred && localPred.scoreA !== null && localPred.scoreB !== null) {
           scoreA = localPred.scoreA;
           scoreB = localPred.scoreB;
+          played = true;
         }
-        const played = true;
 
         if (played) {
           const tA = teamMap[m.team_a.id];
@@ -237,16 +238,16 @@ export class CartelaComponent implements OnInit {
             const itemA = pred.items?.find((i: any) => i.type === 'score_a');
             const itemB = pred.items?.find((i: any) => i.type === 'score_b');
             dict[match.id] = {
-              scoreA: itemA ? itemA.value_int : 0,
-              scoreB: itemB ? itemB.value_int : 0,
+              scoreA: itemA && itemA.value_int !== undefined && itemA.value_int !== null ? itemA.value_int : null,
+              scoreB: itemB && itemB.value_int !== undefined && itemB.value_int !== null ? itemB.value_int : null,
               isSaved: true,
               isModified: false,
               isSaving: false
             };
           } else {
             dict[match.id] = {
-              scoreA: 0,
-              scoreB: 0,
+              scoreA: null,
+              scoreB: null,
               isSaved: false,
               isModified: false,
               isSaving: false
@@ -276,7 +277,7 @@ export class CartelaComponent implements OnInit {
   protected savePrediction(matchId: string): void {
     const dict = { ...this.localPredictions() };
     const pred = dict[matchId];
-    if (!pred || pred.isSaving) return;
+    if (!pred || pred.isSaving || pred.scoreA === null || pred.scoreB === null) return;
 
     pred.isSaving = true;
     pred.error = null;

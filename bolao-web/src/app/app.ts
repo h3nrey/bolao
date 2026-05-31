@@ -8,12 +8,24 @@ import { LoginComponent } from './pages/login/login.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { CountdownBannerComponent } from './components/ui/countdown-banner/countdown-banner.component';
 import { ProfileCompletionModalComponent } from './components/ui/profile-completion-modal/profile-completion-modal.component';
+import { LogoComponent } from './components/ui/logo/logo.component';
 import { SessionService } from './services/session.service';
 import {
   ProjectValue,
   SeniorityValue,
 } from './shared/constants/profile-options';
 import { API_BASE_URL } from './config/api.constants';
+import { 
+  LucideTrophy, 
+  LucideUsers, 
+  LucideCalendar, 
+  LucideClipboardList, 
+  LucideFileText,
+  LucideMenu,
+  LucideX,
+  LucideUser,
+  LucideLogOut
+} from '@lucide/angular';
 
 interface UserProfile {
   id: string;
@@ -36,7 +48,17 @@ interface UserProfile {
     SidebarComponent,
     CountdownBannerComponent,
     ProfileCompletionModalComponent,
-    RouterOutlet
+    LogoComponent,
+    RouterOutlet,
+    LucideTrophy, 
+    LucideUsers, 
+    LucideCalendar, 
+    LucideClipboardList, 
+    LucideFileText,
+    LucideMenu,
+    LucideX,
+    LucideUser,
+    LucideLogOut
   ],
   templateUrl: './app.html',
   styleUrl: './app.css',
@@ -46,6 +68,9 @@ export class App {
   private readonly apiBaseUrl = API_BASE_URL;
   private readonly session = inject(SessionService);
   private readonly router = inject(Router);
+
+  // Mobile menu open state signal
+  protected readonly isMobileMenuOpen = signal(false);
 
   // Signals bound to shared SessionService
   protected readonly token = this.session.token;
@@ -185,6 +210,14 @@ export class App {
       profile: '/perfil'
     };
     this.router.navigate([paths[tab]]);
+  }
+
+  protected isActive(path: string): boolean {
+    return this.router.url.startsWith(path);
+  }
+
+  protected navigate(path: string): void {
+    this.router.navigate([path]);
   }
 
   protected logout(): void {

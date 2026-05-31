@@ -5,22 +5,225 @@
     <!-- Top Countdown Banner Component -->
     <app-countdown-banner></app-countdown-banner>
 
+    <!-- Mobile Top Header -->
+    <header class="md:hidden w-full flex items-center justify-between px-4 py-3 bg-[#0d1321]/90 border-b border-white/5 backdrop-blur-md sticky top-0 z-40 shadow-md shadow-black/20 shrink-0">
+      <div class="flex items-center gap-3">
+        <button (click)="isMobileMenuOpen.set(true)" class="flex items-center justify-center text-slate-300 hover:text-white bg-transparent border-none cursor-pointer outline-none">
+          <svg lucideMenu class="w-5.5 h-5.5"></svg>
+        </button>
+        <app-logo (click)="navigate('/ranking')" class="cursor-pointer"></app-logo>
+      </div>
+      
+      <!-- User profile avatar linking to My Profile -->
+      <div class="flex items-center">
+        <button (click)="viewMyProfile()" class="relative shrink-0 select-none outline-none border-none bg-transparent cursor-pointer">
+          @if (user()?.avatar_url) {
+            <img [src]="user()?.avatar_url" alt="Avatar" class="w-8 h-8 rounded-full object-cover border border-white/10" />
+          } @else {
+            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-red-500 to-red-800 text-white flex items-center justify-center text-xs font-black border border-white/10">
+              {{ user()?.name?.charAt(0)?.toUpperCase() }}
+            </div>
+          }
+        </button>
+      </div>
+    </header>
+
     <!-- Content Area below Banner -->
     <div class="flex flex-1 overflow-hidden">
-      <!-- Left Sidebar Component -->
+      <!-- Left Sidebar Component - Hidden on Mobile -->
       <app-sidebar 
+        class="hidden md:block shrink-0 h-full"
         [user]="user()" 
         (logoutRequested)="logout()"
       ></app-sidebar>
 
       <!-- Main Content Pane -->
-      <main class="flex-1 overflow-y-auto p-8 bg-[#090d16] flex flex-col">
+      <main class="flex-1 overflow-y-auto p-4 pb-24 md:p-8 bg-[#090d16] flex flex-col">
         <!-- Dynamic Pages wrapper -->
         <div class="max-w-6xl w-full mx-auto">
           <router-outlet></router-outlet>
         </div>
       </main>
     </div>
+
+    <!-- Mobile Bottom Navigation Bar -->
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#0d1321]/95 backdrop-blur-md border-t border-white/5 px-2 py-2 flex items-center justify-around shadow-[0_-8px_30px_rgba(0,0,0,0.45)]">
+      <!-- Item 1: Trophy / Classificação -->
+      <button 
+        (click)="navigate('/ranking')"
+        class="flex flex-col items-center justify-center gap-1.5 py-1 px-3 bg-transparent border-none cursor-pointer transition-all duration-200 outline-none"
+        [class.text-red-500]="isActive('/ranking')"
+        [class.text-slate-400]="!isActive('/ranking')"
+      >
+        <svg lucideTrophy class="w-4.5 h-4.5"></svg>
+        <span class="text-[8px] font-black uppercase tracking-wider">Ranking</span>
+      </button>
+
+      <!-- Item 2: Users / Participantes -->
+      <button 
+        (click)="navigate('/participantes')"
+        class="flex flex-col items-center justify-center gap-1.5 py-1 px-3 bg-transparent border-none cursor-pointer transition-all duration-200 outline-none"
+        [class.text-red-500]="isActive('/participantes')"
+        [class.text-slate-400]="!isActive('/participantes')"
+      >
+        <svg lucideUsers class="w-4.5 h-4.5"></svg>
+        <span class="text-[8px] font-black uppercase tracking-wider">Membros</span>
+      </button>
+
+      <!-- Item 3: Calendar / Partidas -->
+      <button 
+        (click)="navigate('/partidas')"
+        class="flex flex-col items-center justify-center gap-1.5 py-1 px-3 bg-transparent border-none cursor-pointer transition-all duration-200 outline-none"
+        [class.text-red-500]="isActive('/partidas')"
+        [class.text-slate-400]="!isActive('/partidas')"
+      >
+        <svg lucideCalendar class="w-4.5 h-4.5"></svg>
+        <span class="text-[8px] font-black uppercase tracking-wider">Jogos</span>
+      </button>
+
+      <!-- Item 4: ClipboardList / Palpitar -->
+      <button 
+        (click)="navigate('/cartela')"
+        class="flex flex-col items-center justify-center gap-1.5 py-1 px-3 bg-transparent border-none cursor-pointer transition-all duration-200 outline-none"
+        [class.text-red-500]="isActive('/cartela')"
+        [class.text-slate-400]="!isActive('/cartela')"
+      >
+        <svg lucideClipboardList class="w-4.5 h-4.5"></svg>
+        <span class="text-[8px] font-black uppercase tracking-wider">Palpitar</span>
+      </button>
+
+      <!-- Item 5: FileText / Regras -->
+      <button 
+        (click)="navigate('/regras')"
+        class="flex flex-col items-center justify-center gap-1.5 py-1 px-3 bg-transparent border-none cursor-pointer transition-all duration-200 outline-none"
+        [class.text-red-500]="isActive('/regras')"
+        [class.text-slate-400]="!isActive('/regras')"
+      >
+        <svg lucideFileText class="w-4.5 h-4.5"></svg>
+        <span class="text-[8px] font-black uppercase tracking-wider">Regras</span>
+      </button>
+    </nav>
+
+    <!-- Slide-out Left Mobile Drawer Overlay & Sidebar Content -->
+    @if (isMobileMenuOpen()) {
+      <!-- Dark backdrop overlay -->
+      <div 
+        class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] animate-fadeIn" 
+        (click)="isMobileMenuOpen.set(false)"
+      ></div>
+
+      <!-- Mobile drawer sidebar -->
+      <aside 
+        class="fixed top-0 bottom-0 left-0 w-64 bg-[#0d1321] border-r border-white/5 flex flex-col justify-between p-6 z-[70] shadow-2xl animate-slideInLeft select-none"
+      >
+        <div class="flex flex-col gap-6">
+          <!-- Logo & Close button in drawer header -->
+          <div class="flex items-center justify-between">
+            <app-logo (click)="isMobileMenuOpen.set(false); navigate('/ranking')" class="cursor-pointer"></app-logo>
+            <button (click)="isMobileMenuOpen.set(false)" class="text-slate-400 hover:text-white bg-transparent border-none cursor-pointer p-1">
+              <svg lucideX class="w-5 h-5"></svg>
+            </button>
+          </div>
+
+          <!-- Vertical drawer navigation links -->
+          <nav class="flex flex-col gap-2 mt-4 text-left">
+            <button 
+              (click)="isMobileMenuOpen.set(false); navigate('/ranking')" 
+              class="flex items-center gap-3 py-3.5 px-4 rounded-xl font-bold text-xs uppercase tracking-wider text-left transition-all duration-150 border-none cursor-pointer"
+              [class.bg-red-500/10]="isActive('/ranking')"
+              [class.text-red-500]="isActive('/ranking')"
+              [class.text-slate-400]="!isActive('/ranking')"
+              [class.hover:text-slate-200]="!isActive('/ranking')"
+            >
+              <svg lucideTrophy class="w-4.5 h-4.5"></svg>
+              Classificação
+            </button>
+
+            <button 
+              (click)="isMobileMenuOpen.set(false); navigate('/participantes')" 
+              class="flex items-center gap-3 py-3.5 px-4 rounded-xl font-bold text-xs uppercase tracking-wider text-left transition-all duration-150 border-none cursor-pointer"
+              [class.bg-red-500/10]="isActive('/participantes')"
+              [class.text-red-500]="isActive('/participantes')"
+              [class.text-slate-400]="!isActive('/participantes')"
+              [class.hover:text-slate-200]="!isActive('/participantes')"
+            >
+              <svg lucideUsers class="w-4.5 h-4.5"></svg>
+              Participantes
+            </button>
+
+            <button 
+              (click)="isMobileMenuOpen.set(false); navigate('/partidas')" 
+              class="flex items-center gap-3 py-3.5 px-4 rounded-xl font-bold text-xs uppercase tracking-wider text-left transition-all duration-150 border-none cursor-pointer"
+              [class.bg-red-500/10]="isActive('/partidas')"
+              [class.text-red-500]="isActive('/partidas')"
+              [class.text-slate-400]="!isActive('/partidas')"
+              [class.hover:text-slate-200]="!isActive('/partidas')"
+            >
+              <svg lucideCalendar class="w-4.5 h-4.5"></svg>
+              Partidas
+            </button>
+
+            <button 
+              (click)="isMobileMenuOpen.set(false); navigate('/cartela')" 
+              class="flex items-center gap-3 py-3.5 px-4 rounded-xl font-bold text-xs uppercase tracking-wider text-left transition-all duration-150 border-none cursor-pointer"
+              [class.bg-red-500/10]="isActive('/cartela')"
+              [class.text-red-500]="isActive('/cartela')"
+              [class.text-slate-400]="!isActive('/cartela')"
+              [class.hover:text-slate-200]="!isActive('/cartela')"
+            >
+              <svg lucideClipboardList class="w-4.5 h-4.5"></svg>
+              Palpitar
+            </button>
+
+            <button 
+              (click)="isMobileMenuOpen.set(false); navigate('/regras')" 
+              class="flex items-center gap-3 py-3.5 px-4 rounded-xl font-bold text-xs uppercase tracking-wider text-left transition-all duration-150 border-none cursor-pointer"
+              [class.bg-red-500/10]="isActive('/regras')"
+              [class.text-red-500]="isActive('/regras')"
+              [class.text-slate-400]="!isActive('/regras')"
+              [class.hover:text-slate-200]="!isActive('/regras')"
+            >
+              <svg lucideFileText class="w-4.5 h-4.5"></svg>
+              Regras
+            </button>
+
+            <button 
+              (click)="isMobileMenuOpen.set(false); navigate('/perfil')" 
+              class="flex items-center gap-3 py-3.5 px-4 rounded-xl font-bold text-xs uppercase tracking-wider text-left transition-all duration-150 border-none cursor-pointer"
+              [class.bg-red-500/10]="isActive('/perfil')"
+              [class.text-red-500]="isActive('/perfil')"
+              [class.text-slate-400]="!isActive('/perfil')"
+              [class.hover:text-slate-200]="!isActive('/perfil')"
+            >
+              <svg lucideUser class="w-4.5 h-4.5"></svg>
+              Meu Perfil
+            </button>
+          </nav>
+        </div>
+
+        <!-- Reusable User Footer at the bottom of the drawer -->
+        <div class="border-t border-white/5 pt-4">
+          <div class="flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3 min-w-0">
+              @if (user()?.avatar_url) {
+                <img [src]="user()?.avatar_url" alt="Avatar" class="w-9 h-9 rounded-full object-cover border border-white/10 shrink-0 animate-fadeIn" />
+              } @else {
+                <div class="w-9 h-9 rounded-full bg-gradient-to-br from-red-500 to-red-800 text-white flex items-center justify-center text-sm font-black border border-white/10 shrink-0">
+                  {{ user()?.name?.charAt(0)?.toUpperCase() }}
+                </div>
+              }
+              <div class="flex flex-col text-left min-w-0">
+                <span class="text-xs font-bold text-white truncate leading-tight">{{ user()?.name }}</span>
+                <span class="text-[9px] text-slate-500 truncate leading-none mt-0.5">{{ user()?.email }}</span>
+              </div>
+            </div>
+            <button (click)="isMobileMenuOpen.set(false); logout()" class="p-2 bg-white/2 hover:bg-red-950/20 text-slate-400 hover:text-red-400 border border-white/5 hover:border-red-500/20 rounded-xl cursor-pointer transition-all duration-200 outline-none" title="Sair">
+              <svg lucideLogOut class="w-4 h-4"></svg>
+            </button>
+          </div>
+        </div>
+      </aside>
+    }
   </div>
 
   <app-profile-completion-modal

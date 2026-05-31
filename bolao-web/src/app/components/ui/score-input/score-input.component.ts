@@ -9,15 +9,15 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './score-input.component.html',
 })
 export class ScoreInputComponent {
-  value = input.required<number>();
+  value = input.required<number | null>();
   disabled = input<boolean>(false);
 
-  valueChange = output<number>();
+  valueChange = output<number | null>();
   inputChange = output<void>();
   blur = output<void>();
 
   onModelChange(newVal: any): void {
-    const numericVal = newVal === null || newVal === undefined || newVal === '' ? 0 : Number(newVal);
+    const numericVal = newVal === null || newVal === undefined || newVal === '' ? null : Number(newVal);
     this.valueChange.emit(numericVal);
     this.inputChange.emit();
   }

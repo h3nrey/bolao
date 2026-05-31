@@ -109,3 +109,14 @@ body::after {
   background: #ef4444;
 }
 
+/* Hide scrollbars for chrome/safari/opera and others */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+/* Hide scrollbars for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+
