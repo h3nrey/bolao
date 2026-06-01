@@ -198,6 +198,20 @@
               <svg lucideUser class="w-4.5 h-4.5"></svg>
               Meu Perfil
             </button>
+
+            @if (user()?.is_admin) {
+              <button 
+                (click)="isMobileMenuOpen.set(false); navigate('/admin')" 
+                class="flex items-center gap-3 py-3.5 px-4 rounded-xl font-bold text-xs uppercase tracking-wider text-left transition-all duration-150 border-none cursor-pointer"
+                [class.bg-red-500/10]="isActive('/admin')"
+                [class.text-red-500]="isActive('/admin')"
+                [class.text-slate-400]="!isActive('/admin')"
+                [class.hover:text-slate-200]="!isActive('/admin')"
+              >
+                <svg lucideShield class="w-4.5 h-4.5"></svg>
+                Painel Admin
+              </button>
+            }
           </nav>
         </div>
 

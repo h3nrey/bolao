@@ -11,6 +11,7 @@ interface UserProfile {
   avatar_url?: string | null;
   project?: ProjectValue | null;
   seniority?: SeniorityValue | null;
+  is_admin?: boolean;
   created_at?: string;
   updated_at?: string;
   can_edit?: boolean;

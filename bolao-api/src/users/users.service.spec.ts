@@ -17,14 +17,34 @@ describe('UsersService', () => {
   };
 
   const mockPrismaService = {
+    $transaction: jest.fn().mockImplementation((cb) => cb(mockPrismaService)),
+    prediction: {
+      findMany: jest.fn().mockResolvedValue([{ id: 'pred-1' }]),
+      deleteMany: jest.fn().mockResolvedValue({ count: 1 }),
+    },
+    predictionPoint: {
+      deleteMany: jest.fn().mockResolvedValue({ count: 1 }),
+    },
+    predictionItem: {
+      deleteMany: jest.fn().mockResolvedValue({ count: 1 }),
+    },
+    ranking: {
+      deleteMany: jest.fn().mockResolvedValue({ count: 1 }),
+    },
+    oauthAccount: {
+      deleteMany: jest.fn().mockResolvedValue({ count: 1 }),
+    },
     user: {
       findUnique: jest.fn().mockResolvedValue(mockUser),
+      findMany: jest.fn().mockResolvedValue([mockUser]),
+      delete: jest.fn().mockResolvedValue(mockUser),
       update: jest.fn().mockImplementation(({ data }) => {
         return Promise.resolve({
           ...mockUser,
           name: data.name,
           project: data.project,
           seniority: data.seniority,
+          is_admin: data.is_admin,
         });
       }),
     },
@@ -115,6 +135,60 @@ describe('UsersService', () => {
         expect(result.project).toBe(project);
         expect(result.seniority).toBe('clt');
       }
+    });
+  });
+
+  describe('findAll', () => {
+    it('should return all users ordered by name', async () => {
+      const result = await service.findAll();
+      expect(result).toEqual([mockUser]);
+      expect(prisma.user.findMany).toHaveBeenCalledWith({
+        orderBy: { name: 'asc' },
+      });
+    });
+  });
+
+  describe('adminUpdate', () => {
+    it('should successfully update user details as an admin', async () => {
+      mockPrismaService.user.findUnique.mockResolvedValueOnce(mockUser);
+
+      const dto = {
+        name: 'Admin Updated',
+        project: 'jump' as any,
+        seniority: 'pmo' as any,
+        is_admin: true,
+      };
+
+      const result = await service.adminUpdate(mockUser.id, dto);
+
+      expect(result.name).toBe('Admin Updated');
+      expect(result.project).toBe('jump');
+      expect(result.seniority).toBe('pmo');
+      expect(result.is_admin).toBe(true);
+
+      expect(prisma.user.update).toHaveBeenCalledWith({
+        where: { id: mockUser.id },
+        data: {
+          name: dto.name,
+          project: dto.project,
+          seniority: dto.seniority,
+          is_admin: dto.is_admin,
+        },
+      });
+    });
+  });
+
+  describe('deleteUser', () => {
+    it('should safely delete user and all dependent relations in a transaction', async () => {
+      mockPrismaService.user.findUnique.mockResolvedValueOnce(mockUser);
+
+      const result = await service.deleteUser(mockUser.id);
+
+      expect(result).toEqual(mockUser);
+      expect(prisma.$transaction).toHaveBeenCalled();
+      expect(prisma.user.delete).toHaveBeenCalledWith({
+        where: { id: mockUser.id },
+      });
     });
   });
 });

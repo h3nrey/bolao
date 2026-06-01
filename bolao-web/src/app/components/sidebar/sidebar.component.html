@@ -46,6 +46,16 @@
       >
         <svg lucideFileText class="w-5 h-5"></svg>
       </app-sidebar-item>
+
+      @if (user()?.is_admin) {
+        <app-sidebar-item 
+          (click)="navigate('/admin')" 
+          [active]="isActive('/admin')" 
+          label="Administração"
+        >
+          <svg lucideShield class="w-5 h-5"></svg>
+        </app-sidebar-item>
+      }
     </nav>
   </div>
 

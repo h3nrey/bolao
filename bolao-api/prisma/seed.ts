@@ -100,6 +100,7 @@ async function main() {
       name: 'Pedro Santos',
       email: 'pedro@example.com',
       avatar_url: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&h=150&q=80',
+      is_admin: true,
     },
   });
 

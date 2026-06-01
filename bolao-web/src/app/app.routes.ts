@@ -5,6 +5,7 @@ import { PartidasComponent } from './pages/partidas/partidas.component';
 import { CartelaComponent } from './pages/cartela/cartela.component';
 import { RegrasComponent } from './pages/regras/regras.component';
 import { PerfilComponent } from './pages/perfil/perfil.component';
+import { AdminComponent } from './pages/admin/admin.component';
 
 export const routes: Routes = [
   { path: 'ranking', component: RankingComponent },
@@ -14,6 +15,7 @@ export const routes: Routes = [
   { path: 'regras', component: RegrasComponent },
   { path: 'perfil', component: PerfilComponent },
   { path: 'perfil/:id', component: PerfilComponent },
+  { path: 'admin', component: AdminComponent },
   { path: '', redirectTo: 'ranking', pathMatch: 'full' },
   { path: '**', redirectTo: 'ranking' }
 ];

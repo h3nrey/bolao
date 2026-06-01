@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { SidebarItemComponent } from '../ui/sidebar-item/sidebar-item.component';
 import { UserProfileFooterComponent } from '../ui/user-profile-footer/user-profile-footer.component';
 import { LogoComponent } from '../ui/logo/logo.component';
-import { LucideTrophy, LucideUsers, LucideCalendar, LucideClipboardList, LucideFileText } from '@lucide/angular';
+import { LucideTrophy, LucideUsers, LucideCalendar, LucideClipboardList, LucideFileText, LucideShield } from '@lucide/angular';
 
 interface UserProfile {
   id: string;
@@ -13,6 +13,7 @@ interface UserProfile {
   avatar_url?: string | null;
   project?: string | null;
   seniority?: string | null;
+  is_admin?: boolean;
   created_at?: string;
   updated_at?: string;
 }
@@ -29,7 +30,8 @@ interface UserProfile {
     LucideUsers, 
     LucideCalendar, 
     LucideClipboardList, 
-    LucideFileText
+    LucideFileText,
+    LucideShield
   ],
   templateUrl: './sidebar.component.html',
 })

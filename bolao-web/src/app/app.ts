@@ -24,7 +24,8 @@ import {
   LucideMenu,
   LucideX,
   LucideUser,
-  LucideLogOut
+  LucideLogOut,
+  LucideShield
 } from '@lucide/angular';
 
 interface UserProfile {
@@ -34,6 +35,7 @@ interface UserProfile {
   avatar_url?: string | null;
   project?: ProjectValue | null;
   seniority?: SeniorityValue | null;
+  is_admin?: boolean;
   created_at?: string;
   updated_at?: string;
   can_edit?: boolean;
@@ -58,7 +60,8 @@ interface UserProfile {
     LucideMenu,
     LucideX,
     LucideUser,
-    LucideLogOut
+    LucideLogOut,
+    LucideShield
   ],
   templateUrl: './app.html',
   styleUrl: './app.css',
