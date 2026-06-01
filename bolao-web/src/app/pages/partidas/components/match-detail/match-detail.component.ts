@@ -1,27 +1,29 @@
-import { Component, input, output, inject, OnInit, computed, signal } from '@angular/core';
+import { Component, inject, OnInit, computed, signal } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { ActivatedRoute, Router } from '@angular/router';
 import { LoadingSpinnerComponent } from '../../../../components/ui/loading-spinner/loading-spinner.component';
 import { ScoreStepperComponent } from '../../../../components/ui/score-stepper/score-stepper.component';
 import { API_BASE_URL } from '../../../../config/api.constants';
+import { SessionService } from '../../../../services/session.service';
+import { LucideArrowLeft, LucideBarChart2, LucideCircle, LucideCircleCheck, LucideClock3, LucideGlobe2, LucideLock, LucideRadio, LucideTimer, LucideUsers } from '@lucide/angular';
 
 @Component({
   selector: 'app-match-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, DatePipe, LoadingSpinnerComponent, ScoreStepperComponent],
+  imports: [CommonModule, FormsModule, DatePipe, LoadingSpinnerComponent, ScoreStepperComponent, LucideArrowLeft, LucideBarChart2, LucideCircle, LucideCircleCheck, LucideClock3, LucideGlobe2, LucideLock, LucideRadio, LucideTimer, LucideUsers],
   templateUrl: './match-detail.component.html',
 })
 export class MatchDetailComponent implements OnInit {
-  // Inputs
-  matchId = input.required<string>();
-  token = input.required<string>();
-
-  // Events
-  back = output<void>();
-
   private readonly http = inject(HttpClient);
   private readonly apiBaseUrl = API_BASE_URL;
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly session = inject(SessionService);
+
+  protected readonly token = this.session.token;
+  protected readonly matchId = signal('');
 
   // Match data
   protected readonly match = signal<any | null>(null);
@@ -49,10 +51,16 @@ export class MatchDetailComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    this.matchId.set(this.route.snapshot.paramMap.get('id') ?? '');
     this.loadMatch();
   }
 
   private loadMatch(): void {
+    if (!this.matchId()) {
+      this.router.navigate(['/partidas']);
+      return;
+    }
+
     this.loadingMatch.set(true);
     const headers = this.buildHeaders();
 
@@ -121,7 +129,7 @@ export class MatchDetailComponent implements OnInit {
       next: () => {
         this.savingPrediction.set(false);
         this.isEditingPrediction.set(true);
-        this.predictionMessage.set({ text: 'Seu palpite foi salvo com sucesso! 🎉', isError: false });
+        this.predictionMessage.set({ text: 'Seu palpite foi salvo com sucesso!', isError: false });
       },
       error: () => {
         this.savingPrediction.set(false);
@@ -135,7 +143,7 @@ export class MatchDetailComponent implements OnInit {
   }
 
   protected goBack(): void {
-    this.back.emit();
+    this.router.navigate(['/partidas']);
   }
 
   private buildHeaders(): HttpHeaders {

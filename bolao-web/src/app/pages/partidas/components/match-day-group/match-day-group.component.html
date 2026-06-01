@@ -2,14 +2,14 @@
 
   <!-- Date label header -->
   <div class="flex items-center gap-3">
-    <span class="text-xs font-black uppercase text-amber-500 tracking-wider bg-amber-500/10 border border-amber-500/10 px-3 py-1.5 rounded-xl select-none">
+    <span class="text-[10px] font-black uppercase text-[#9B9BAD] tracking-widest bg-[#14151A] border border-[#2A2B36] px-2.5 py-1.5 rounded-[4px] select-none font-ui">
       {{ dateLabel() }}
     </span>
-    <div class="flex-1 h-[1px] bg-white/5"></div>
+    <div class="flex-1 h-px bg-[#2A2B36]"></div>
   </div>
 
   <!-- Match cards grid -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-3 w-full">
     @for (match of matches(); track match.id) {
       <app-match-card
         [match]="match"

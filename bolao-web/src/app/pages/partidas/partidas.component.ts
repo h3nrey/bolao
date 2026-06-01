@@ -1,14 +1,15 @@
-import { Component, input, signal, inject, OnInit, computed } from '@angular/core';
+import { Component, signal, inject, OnInit, computed } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { TabSelectorComponent, TabOption } from '../../components/ui/tab-selector/tab-selector.component';
 import { KnockoutBracketComponent } from '../../components/ui/knockout-bracket/knockout-bracket.component';
 import { LoadingSpinnerComponent } from '../../components/ui/loading-spinner/loading-spinner.component';
 import { MatchCardData } from './components/match-card/match-card.component';
-import { MatchDetailComponent } from './components/match-detail/match-detail.component';
 import { MatchDayGroupComponent } from './components/match-day-group/match-day-group.component';
 import { SessionService } from '../../services/session.service';
 import { API_BASE_URL } from '../../config/api.constants';
+import { LucideCalendar, LucideTrophy } from '@lucide/angular';
 
 interface Match {
   id: string;
@@ -35,8 +36,9 @@ interface Match {
     TabSelectorComponent,
     KnockoutBracketComponent,
     LoadingSpinnerComponent,
-    MatchDetailComponent,
     MatchDayGroupComponent,
+    LucideCalendar,
+    LucideTrophy,
   ],
   templateUrl: './partidas.component.html',
 })
@@ -44,6 +46,7 @@ export class PartidasComponent implements OnInit {
   private readonly http = inject(HttpClient);
   private readonly apiBaseUrl = API_BASE_URL;
   private readonly session = inject(SessionService);
+  private readonly router = inject(Router);
 
   protected readonly token = this.session.token;
 
@@ -51,9 +54,6 @@ export class PartidasComponent implements OnInit {
   protected readonly matches = signal<Match[]>([]);
   protected readonly loadingMatches = signal(false);
   protected readonly activeStage = signal<'groups' | 'knockout'>('groups');
-
-  // Navigation: which match is selected (shows detail view)
-  protected readonly selectedMatchId = signal<string | null>(null);
 
   // Tab options
   protected readonly stageTabs: TabOption[] = [
@@ -138,11 +138,6 @@ export class PartidasComponent implements OnInit {
   }
 
   protected selectMatch(matchId: string): void {
-    this.selectedMatchId.set(matchId);
-  }
-
-  protected goBack(): void {
-    this.selectedMatchId.set(null);
-    this.fetchMatches();
+    this.router.navigate(['/partidas', matchId]);
   }
 }

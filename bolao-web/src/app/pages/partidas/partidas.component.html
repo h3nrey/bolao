@@ -1,19 +1,25 @@
-<!-- Match Detail View (when a match is selected) -->
-@if (selectedMatchId(); as matchId) {
-  <app-match-detail
-    [matchId]="matchId"
-    [token]="token()"
-    (back)="goBack()"
-  />
-} @else {
-
-  <!-- Calendar / List View -->
-  <div class="flex flex-col gap-6 w-full animate-fadeIn">
+<!-- Calendar / List View -->
+<div class="flex flex-col gap-6 w-full animate-fadeIn text-left">
 
     <!-- Header -->
-    <div class="flex flex-col text-left border-b border-white/5 pb-6 mb-2">
-      <h1 class="text-3xl font-extrabold text-white tracking-tight leading-none mb-2">Partidas</h1>
-      <p class="text-xs text-slate-400 font-medium">Jogos do torneio divididos por andamento e resultados oficiais.</p>
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-[#2A2B36] pb-5">
+      <div class="flex flex-col gap-2">
+        <span class="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#9B9BAD] font-ui">
+          <span class="w-2 h-2 bg-[#E8001D] rounded-[2px] inline-block"></span>
+          Calendário Oficial
+        </span>
+        <h1 class="text-3xl font-black text-[#F0F0F5] tracking-tight leading-none font-body">
+          Partidas
+        </h1>
+        <p class="text-xs text-[#9B9BAD] font-medium max-w-2xl">
+          Jogos do torneio divididos por andamento, fase e resultados oficiais.
+        </p>
+      </div>
+
+      <div class="hidden md:flex h-9 items-center gap-2 px-3 bg-[#14151A] border border-[#2A2B36] border-l-2 border-l-[#E8001D] rounded-[6px] text-[10px] font-black uppercase tracking-widest text-[#9B9BAD] font-ui">
+        <svg lucideCalendar class="w-4 h-4 text-[#E8001D]"></svg>
+        Agenda de jogos
+      </div>
     </div>
 
     <!-- Stage Tabs -->
@@ -31,14 +37,21 @@
       <!-- === KNOCKOUT TAB === -->
       @if (activeStage() === 'knockout') {
         <div class="flex flex-col gap-4 w-full animate-fadeIn text-left">
-          <div class="flex flex-col text-left">
-            <h2 class="text-sm font-extrabold text-white tracking-wider uppercase">Chaves Eliminatórias</h2>
-            <p class="text-[11px] text-slate-400 mt-1">Acompanhe o caminho de cada time rumo ao título mundial.</p>
+          <div class="flex flex-col gap-1">
+            <h2 class="text-sm font-black text-[#F0F0F5] tracking-wider uppercase font-ui">
+              Chaves Eliminatórias
+            </h2>
+            <p class="text-[11px] text-[#9B9BAD]">
+              Acompanhe o caminho de cada time rumo ao título mundial.
+            </p>
           </div>
-          <div class="bg-[#0d1321] border border-white/5 rounded-2xl p-6 shadow-2xl overflow-hidden">
-            <div class="flex items-center gap-2 mb-5">
-              <span class="text-lg">🏆</span>
-              <span class="text-xs font-black uppercase tracking-widest text-slate-300">Chave Completa</span>
+
+          <div class="bg-[#14151A] border border-[#2A2B36] border-l-2 border-l-[#E8001D] rounded-[8px] p-4 md:p-6 shadow-sm overflow-hidden">
+            <div class="flex items-center gap-2 mb-5 pb-3 border-b border-[#2A2B36]">
+              <svg lucideTrophy class="w-4 h-4 text-[#E8001D]"></svg>
+              <span class="text-[10px] font-black uppercase tracking-widest text-[#9B9BAD] font-ui">
+                Chave Completa
+              </span>
             </div>
             <app-knockout-bracket />
           </div>
@@ -50,11 +63,11 @@
 
         <!-- Empty state -->
         @if (groupedMatches().length === 0) {
-          <div class="py-16 px-6 text-center text-slate-400 border border-dashed border-white/10 rounded-2xl bg-slate-900/10">
-            <svg class="w-12 h-12 text-slate-500 mx-auto mb-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            <p class="text-sm font-semibold">Nenhuma partida agendada.</p>
+          <div class="py-16 px-6 flex flex-col items-center text-center gap-3 text-[#9B9BAD] border border-dashed border-[#2A2B36] bg-[#14151A] rounded-[8px]">
+            <div class="w-10 h-10 bg-[#0D0D0F] border border-[#2A2B36] rounded-[6px] flex items-center justify-center">
+              <svg lucideCalendar class="w-5 h-5 text-[#5C5C72]"></svg>
+            </div>
+            <p class="text-sm font-bold text-[#F0F0F5]">Nenhuma partida agendada.</p>
           </div>
 
         } @else {
@@ -74,5 +87,4 @@
       }
 
     }
-  </div>
-}
+</div>

@@ -2,6 +2,7 @@ import { Component, input, signal, inject, OnInit, computed } from '@angular/cor
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { API_BASE_URL } from '../../config/api.constants';
+import { LucideTrophy } from '@lucide/angular';
 
 interface Tournament {
   id: string;
@@ -25,7 +26,7 @@ import { SessionService } from '../../services/session.service';
 @Component({
   selector: 'app-ranking',
   standalone: true,
-  imports: [CommonModule, LeaderboardTableComponent],
+  imports: [CommonModule, LeaderboardTableComponent, LucideTrophy],
   templateUrl: './ranking.component.html',
 })
 export class RankingComponent implements OnInit {

@@ -1,68 +1,64 @@
-<div class="w-full overflow-hidden rounded-2xl border border-white/5 bg-[#0d1321] shadow-2xl">
+<div class="w-full overflow-hidden rounded-[8px] border border-[#2A2B36] bg-[#14151A] shadow-sm">
   <div class="overflow-x-auto">
     <table class="w-full border-collapse text-left text-sm select-none">
       <thead>
-        <tr class="bg-white/2 border-b border-white/5 text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-          <th class="py-4 px-6 text-center w-20">Posição</th>
-          <th class="py-4 px-6">Participante</th>
-          <th class="py-4 px-6 text-center w-36">Pontos</th>
+        <tr class="bg-[#0D0D0F] border-b border-[#2A2B36] text-[10px] text-[#9B9BAD] font-black uppercase tracking-wider font-ui">
+          <th class="py-3 px-4 md:px-6 text-center w-20">Posição</th>
+          <th class="py-3 px-4 md:px-6">Participante</th>
+          <th class="py-3 px-4 md:px-6 text-center w-36">Pontos</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody class="divide-y divide-[#2A2B36]">
         @for (row of rankings(); track row.user_id) {
-        <tr class="border-b border-white/5 transition-all duration-200"
-          [class.bg-dark/5]="row.position === 1 && row.user_id !== userId()"
-          [class.border-l-4]="row.user_id === userId()" [class.border-l-red-500]="row.user_id === userId()"
-          [class.hover:bg-white/5]="row.user_id !== userId()">
-          <!-- Position -->
-          <td class="py-4 px-6 text-center">
-            <span class="font-extrabold text-slate-300 text-sm">
-              {{ row.position }}
-            </span>
-          </td>
+          <tr
+            class="transition-colors duration-80 hover:bg-[#22232D]"
+            [class.border-l-2]="row.user_id === userId()"
+            [class.border-l-[#E8001D]]="row.user_id === userId()"
+          >
+            <!-- Position -->
+            <td class="py-4 px-4 md:px-6 text-center">
+              <span class="font-black text-[#F0F0F5] text-sm font-display">
+                {{ row.position }}
+              </span>
+            </td>
 
-          <!-- Participant Details -->
-          <td class="py-4 px-6">
-            <div class="flex items-center gap-3">
-              <!-- Profile Pic -->
-              <div class="relative">
-                @if (row.user_avatar) {
-                <img [src]="row.user_avatar" alt="Avatar"
-                  class="w-9 h-9 rounded-full object-cover border border-white/10" />
-                } @else {
-                <div
-                  class="w-9 h-9 rounded-full bg-gradient-to-br from-red-500 to-red-800 text-white flex items-center justify-center text-xs font-extrabold border border-white/10">
-                  {{ row.user_name.charAt(0).toUpperCase() }}
-                </div>
-                }
-
-                <!-- Glow highlight for active user -->
-                @if (row.user_id === userId()) {
-                <span
-                  class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 border border-slate-950 rounded-full"></span>
-                }
-              </div>
-
-              <!-- Name -->
-              <div class="flex flex-col items-start text-left">
-                <span class="font-bold text-white flex items-center gap-1.5 text-sm">
-                  {{ row.user_name }}
-                  @if (row.user_id === userId()) {
-                  <span
-                    class="text-[9px] font-black uppercase bg-red-600 text-white px-2 py-0.5 rounded-full tracking-wider">Você</span>
+            <!-- Participant Details -->
+            <td class="py-4 px-4 md:px-6">
+              <div class="flex items-center gap-3 min-w-0">
+                <!-- Profile Pic -->
+                <div class="relative shrink-0">
+                  @if (row.user_avatar) {
+                    <img [src]="row.user_avatar" alt="Avatar" class="w-9 h-9 rounded-full object-cover border border-[#2A2B36]" />
+                  } @else {
+                    <div class="w-9 h-9 rounded-full bg-[#E8001D] text-white flex items-center justify-center text-xs font-black border border-[#2A2B36] font-ui">
+                      {{ row.user_name.charAt(0).toUpperCase() }}
+                    </div>
                   }
-                </span>
-              </div>
-            </div>
-          </td>
 
-          <!-- Points -->
-          <td class="py-4 px-6 text-center">
-            <span class="font-black text-sm text-white">
-              {{ row.pts_total }}
-            </span>
-          </td>
-        </tr>
+                  @if (row.user_id === userId()) {
+                    <span class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-[#00D68F] border border-[#0D0D0F] rounded-[2px]"></span>
+                  }
+                </div>
+
+                <!-- Name -->
+                <div class="flex flex-col items-start text-left min-w-0">
+                  <span class="font-bold text-[#F0F0F5] flex items-center gap-1.5 text-sm truncate max-w-full">
+                    {{ row.user_name }}
+                    @if (row.user_id === userId()) {
+                      <span class="text-[9px] font-black uppercase bg-[#14151A] text-[#E8001D] border border-[#E8001D] px-2 py-0.5 rounded-[4px] tracking-wider font-ui shrink-0">Você</span>
+                    }
+                  </span>
+                </div>
+              </div>
+            </td>
+
+            <!-- Points -->
+            <td class="py-4 px-4 md:px-6 text-center">
+              <span class="font-black text-sm text-[#F0F0F5] font-display">
+                {{ row.pts_total }}
+              </span>
+            </td>
+          </tr>
         }
       </tbody>
     </table>

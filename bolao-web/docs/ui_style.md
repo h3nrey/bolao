@@ -30,7 +30,7 @@ This design system is built for high-density, data-driven interfaces. Inspired b
 |---|---|---|
 | `--color-bg-base` | `#0D0D0F` | App background |
 | `--color-bg-surface` | `#14151A` | Cards, panels, containers |
-| `--color-bg-elevated` | `#1C1D24` | Dropdowns, tooltips, modals |
+| `--color-bg-elevated` | `#1C1D24` | Reserved for dropdowns, tooltips, modals, and snackbars only |
 | `--color-bg-hover` | `#22232D` | Row hovers, interactive highlights |
 | `--color-border` | `#2A2B36` | Dividers, card borders |
 | `--color-border-strong` | `#3D3E4D` | Focus rings, active borders |
@@ -627,13 +627,24 @@ box-shadow: 0 4px 12px rgba(0, 0, 0, 0.65);
 
 /* ✅ PREFERRED — use borders and background shifts for emphasis */
 border: 1px solid var(--color-primary);
-background: var(--color-bg-elevated);
+background: var(--color-bg-hover);
 ```
 
 To signal active, focused, or highlighted state, use:
 - A solid `border` or `border-left` with a system color
-- A background step up (`--color-bg-hover`, `--color-bg-elevated`)
+- A background step up (`--color-bg-hover`) for common hover/selected states
 - A colored `outline` for focus rings — but pure solid, not blurred
+
+### Reserved High-Emphasis Surfaces
+
+Do not use high-emphasis dark fills as generic decoration. These colors are reserved:
+
+| Color | Allowed use | Avoid in |
+|---|---|---|
+| `#1C1D24` / `--color-bg-elevated` | Dropdowns, tooltips, modals, snackbars, popovers | Match cards, date chips, status badges, empty states, normal row/card hovers |
+| `#2A0008` / red danger surface | Destructive snackbars, blocking error alerts, critical confirmation panels | Live badges, normal status chips, date labels, cards, table rows |
+
+For ordinary chips and labels, use `#14151A` with `#2A2B36` and text `#9B9BAD`. Use semantic color mainly on the icon, left accent border, or text when the state truly needs emphasis.
 
 ### No Low-Opacity Colors
 
@@ -649,9 +660,9 @@ color: rgba(240, 240, 245, 0.5);
 border-color: rgba(232, 0, 29, 0.3);
 background: #FF1A3514;
 
-/* ✅ CORRECT — use a solid derived color from the palette */
-background: #2A0008;          /* dark-red surface, not transparent red */
-background: #1E1428;          /* dark-purple surface, not transparent purple */
+/* ✅ CORRECT — use neutral solid surfaces for common UI */
+background: #14151A;             /* default surface */
+background: #22232D;             /* hover surface */
 color: var(--color-text-muted);  /* #5C5C72 — a real opaque muted tone */
 border-color: var(--color-border); /* #2A2B36 — solid border */
 ```
@@ -665,7 +676,8 @@ When tempted to use a transparent color, use these solid equivalents instead:
 | Avoid | Use instead | Token |
 |---|---|---|
 | `rgba(232,0,29,0.08)` — ghost red bg | `#1A0005` | `--color-primary-surface` |
-| `rgba(232,0,29,0.15)` — light red bg | `#2A0008` | `--color-primary-subtle` |
+| `rgba(232,0,29,0.15)` — light red bg | `#14151A` + red text/icon/border | common UI |
+| `rgba(232,0,29,0.15)` — blocking destructive bg | `#2A0008` | destructive snackbar / critical alert only |
 | `rgba(191,90,242,0.10)` — ghost purple | `#16101E` | `--color-ai-surface` |
 | `rgba(191,90,242,0.15)` — light purple | `#1E1428` | `--color-ai-subtle` |
 | `rgba(0,214,143,0.10)` — ghost green | `#0A1E18` | `--color-success-surface` |

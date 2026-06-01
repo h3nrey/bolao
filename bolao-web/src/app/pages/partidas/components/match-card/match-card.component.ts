@@ -1,5 +1,6 @@
 import { Component, input, output } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
+import { LucideCircleCheck, LucideClock3, LucideGlobe2, LucideRadio } from '@lucide/angular';
 
 export interface MatchCardData {
   id: string;
@@ -15,7 +16,7 @@ export interface MatchCardData {
 @Component({
   selector: 'app-match-card',
   standalone: true,
-  imports: [CommonModule, DatePipe],
+  imports: [CommonModule, DatePipe, LucideCircleCheck, LucideClock3, LucideGlobe2, LucideRadio],
   templateUrl: './match-card.component.html',
 })
 export class MatchCardComponent {
