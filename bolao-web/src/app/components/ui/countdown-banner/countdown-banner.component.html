@@ -1,46 +1,45 @@
-<div class="w-full bg-[#0d1321]/95 border-b border-white/5 px-4 py-3 md:px-8 md:py-3.5 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-6 select-none z-50 backdrop-blur-md">
-  
+<div class="w-full bg-[#E8001D] px-4 py-3 md:px-8 md:py-3.5 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-6 select-none z-50">
   <!-- Left Side: Official WebP Logo & Details -->
   <div class="flex items-center gap-3 md:gap-4 text-left w-full sm:w-auto justify-center sm:justify-start">
-    <div class="relative flex items-center justify-center bg-black/10 rounded-xl p-1 md:p-1.5 border border-white/5 shadow-inner shrink-0">
+    <div class="relative flex items-center justify-center bg-[#14151A] rounded-md p-1 md:p-1.5 border border-[#2A2B36] shadow-sm shrink-0">
       <img src="assets/world-cup-2026-logo.webp" alt="Copa do Mundo 2026" class="h-8 md:h-10 w-auto object-contain" />
     </div>
     <div class="flex flex-col gap-0.5">
-      <h2 class="text-xs md:text-sm font-extrabold text-white tracking-tight uppercase flex items-center gap-1.5 md:gap-2">
+      <h2 class="text-xs md:text-sm font-extrabold text-[#0D0D0F] tracking-tight uppercase flex items-center gap-1.5 md:gap-2">
         Copa do Mundo 2026
-        <span class="text-[8px] md:text-[9px] font-black uppercase bg-red-600 text-white px-1.5 py-0.5 md:px-2 rounded-full tracking-widest animate-pulse">FIFA</span>
+        <span class="text-[8px] md:text-[9px] font-black uppercase bg-white text-[#E8001D] px-1.5 py-0.5 md:px-2 rounded-full tracking-widest">FIFA</span>
       </h2>
-      <p class="text-[10px] font-semibold text-slate-400 hidden sm:block">O maior espetáculo da Terra começa em breve. Prepare seus palpites!</p>
+      <p class="text-[10px] font-semibold text-[#0D0D0F] hidden sm:block">O maior espetáculo da Terra começa em breve. Prepare seus palpites!</p>
     </div>
   </div>
-  
+
   <!-- Right Side: Countdown Boxes -->
   <div class="flex items-center gap-1 sm:gap-2">
     <!-- Days -->
-    <div class="flex items-center gap-1.5 sm:gap-2 bg-black/40 border border-white/5 rounded-xl px-2 py-1 md:px-3 md:py-1.5 shadow-inner">
-      <span class="text-xs sm:text-sm font-black text-white leading-none tracking-tight">{{ countdownDays() }}</span>
-      <span class="text-[7px] sm:text-[8px] font-bold uppercase text-slate-500">Dias</span>
+    <div class="flex items-center gap-1.5 sm:gap-2 bg-[#14151A] border border-[#2A2B36] rounded-md px-2 py-1 md:px-3 md:py-1.5 shadow-sm">
+      <span class="text-xs sm:text-sm font-black text-[#F0F0F5] leading-none tracking-tight">{{ countdownDays() }}</span>
+      <span class="text-[7px] sm:text-[8px] font-bold uppercase text-[#9B9BAD]">Dias</span>
     </div>
-    <span class="text-slate-700 font-bold text-[9px] sm:text-[10px]">:</span>
-    
+    <span class="text-[#F0F0F5] font-bold text-[9px] sm:text-[10px]">:</span>
+
     <!-- Hours -->
-    <div class="flex items-center gap-1.5 sm:gap-2 bg-black/40 border border-white/5 rounded-xl px-2 py-1 md:px-3 md:py-1.5 shadow-inner">
-      <span class="text-xs sm:text-sm font-black text-white leading-none tracking-tight">{{ countdownHours() }}</span>
-      <span class="text-[7px] sm:text-[8px] font-bold uppercase text-slate-500">Hrs</span>
+    <div class="flex items-center gap-1.5 sm:gap-2 bg-[#14151A] border border-[#2A2B36] rounded-md px-2 py-1 md:px-3 md:py-1.5 shadow-sm">
+      <span class="text-xs sm:text-sm font-black text-[#F0F0F5] leading-none tracking-tight">{{ countdownHours() }}</span>
+      <span class="text-[7px] sm:text-[8px] font-bold uppercase text-[#9B9BAD]">Hrs</span>
     </div>
-    <span class="text-slate-700 font-bold text-[9px] sm:text-[10px]">:</span>
-    
+    <span class="text-[#5C5C72] font-bold text-[9px] sm:text-[10px]">:</span>
+
     <!-- Minutes -->
-    <div class="flex items-center gap-1.5 sm:gap-2 bg-black/40 border border-white/5 rounded-xl px-2 py-1 md:px-3 md:py-1.5 shadow-inner">
-      <span class="text-xs sm:text-sm font-black text-white leading-none tracking-tight">{{ countdownMinutes() }}</span>
-      <span class="text-[7px] sm:text-[8px] font-bold uppercase text-slate-500">Min</span>
+    <div class="flex items-center gap-1.5 sm:gap-2 bg-[#14151A] border border-[#2A2B36] rounded-md px-2 py-1 md:px-3 md:py-1.5 shadow-sm">
+      <span class="text-xs sm:text-sm font-black text-[#F0F0F5] leading-none tracking-tight">{{ countdownMinutes() }}</span>
+      <span class="text-[7px] sm:text-[8px] font-bold uppercase text-[#9B9BAD]">Min</span>
     </div>
-    <span class="text-slate-700 font-bold text-[9px] sm:text-[10px]">:</span>
-    
-    <!-- Seconds -->
-    <div class="flex items-center gap-1.5 sm:gap-2 bg-red-950/20 border border-red-500/20 rounded-xl px-2 py-1 md:px-3 md:py-1.5 shadow-inner">
-      <span class="text-xs sm:text-sm font-black text-red-500 leading-none tracking-tight">{{ countdownSeconds() }}</span>
-      <span class="text-[7px] sm:text-[8px] font-bold uppercase text-red-500/70">Seg</span>
+    <span class="text-[#F0F0F5] font-bold text-[9px] sm:text-[10px]">:</span>
+
+    <!-- Seconds (live accent with left border) -->
+    <div class="flex items-center gap-1.5 sm:gap-2 bg-[#14151A] border border-[#2A2B36] rounded-md px-2 py-1 md:px-3 md:py-1.5 shadow-sm" style="border-left-width:4px; border-left-color:#F0F0F5;">
+      <span class="text-xs sm:text-sm font-black text-[#F0F0F5] leading-none tracking-tight">{{ countdownSeconds() }}</span>
+      <span class="text-[7px] sm:text-[8px] font-bold uppercase text-[#F0F0F5]">Seg</span>
     </div>
   </div>
 </div>
