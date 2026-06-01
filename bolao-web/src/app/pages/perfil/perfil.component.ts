@@ -1,9 +1,10 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { SessionService } from '../../services/session.service';
 import { API_BASE_URL } from '../../config/api.constants';
+import { LucideCalendar, LucideClipboardList, LucideLoaderCircle, LucideLogOut, LucideUser } from '@lucide/angular';
 import {
   PROJECT_LABELS,
   ProjectValue,
@@ -57,7 +58,7 @@ interface Prediction {
 @Component({
   selector: 'app-perfil',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink, LucideCalendar, LucideClipboardList, LucideLoaderCircle, LucideLogOut, LucideUser],
   templateUrl: './perfil.component.html',
 })
 export class PerfilComponent implements OnInit {
