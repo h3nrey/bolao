@@ -1,9 +1,9 @@
 <a href="#" (click)="onClick($event)"
-  class="bg-slate-950/40 backdrop-blur-xl border border-white/5 hover:border-white/15 rounded-2xl p-5 flex items-center justify-between gap-4 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-black/10 relative overflow-hidden group/card no-underline">
+  class="bg-[#14151A] border border-[#2A2B36] border-l-3 border-transparent hover:border-l-[#E8001D] hover:border-[#E8001D] rounded-[6px] p-5 flex items-center justify-between gap-4 transition-all duration-80 hover:bg-[#1C1D24] shadow-sm hover:shadow-md relative overflow-hidden group/card no-underline">
   <div class="flex items-center gap-4 min-w-0 flex-1">
-    <!-- Rank Position (Podium highlights without emojis) -->
+    <!-- Rank Position (Opaque, Rounded Badges) -->
     <div class="absolute top-3 right-3 z-10">
-      <span class="px-2 py-0.5 bg-white/5 border border-white/10 text-slate-400 text-[10px] font-bold rounded-full">
+      <span class="px-2 py-0.5 bg-[#1C1D24] border border-[#2A2B36] text-slate-400 text-[10px] font-bold rounded-[4px] font-ui">
         #{{ user().position }}
       </span>
     </div>
@@ -12,10 +12,10 @@
     <div class="relative shrink-0">
       @if (user().user_avatar) {
       <img [src]="user().user_avatar" alt="Avatar"
-        class="w-14 h-14 rounded-full object-cover border-2 border-red-500/30 group-hover/card:border-red-500/60 transition-all duration-300 shadow-lg" />
+        class="w-13 h-13 rounded-full object-cover border-2 border-[#2A2B36] shadow-sm" />
       } @else {
       <div
-        class="w-14 h-14 rounded-full bg-gradient-to-br from-red-600 to-red-900 text-white flex items-center justify-center text-xl font-black border-2 border-red-500/30 group-hover/card:border-red-500/60 shadow-lg transition-all duration-300">
+        class="w-13 h-13 rounded-full bg-[#E8001D] text-white flex items-center justify-center text-lg font-black border-2 border-[#2A2B36] shadow-sm font-ui uppercase">
         {{ user().user_name.charAt(0).toUpperCase() }}
       </div>
       }
@@ -24,27 +24,27 @@
     <!-- Name and Vínculo -->
     <div class="flex flex-col text-left gap-1 overflow-hidden pr-8 flex-1">
       <h3
-        class="text-sm font-extrabold text-white tracking-tight leading-tight truncate group-hover/card:text-red-400 transition-colors duration-200">
+        class="text-xs font-extrabold text-[#F0F0F5] tracking-tight leading-tight truncate font-body">
         {{ user().user_name }}
       </h3>
 
       <div class="flex items-center gap-2 mt-0.5">
-        <!-- Vínculo Badge -->
+        <!-- Vínculo Badge (Solid & Opaque) -->
         <span
-          class="px-2 py-0.5 bg-white/2 border border-white/5 text-[9px] font-bold text-slate-400 uppercase tracking-wide rounded-md">
+          class="px-2 py-0.5 bg-[#1C1D24] border border-[#2A2B36] text-[9px] font-black text-slate-400 uppercase tracking-wider rounded-[4px] font-ui">
           {{ getSeniorityLabel(user().user_seniority) }}
         </span>
       </div>
     </div>
   </div>
 
-  <!-- Points Block (with more emphasis, no emoji) -->
+  <!-- Points Block (Dense numeric score display using dm-mono monospace font) -->
   <div class="text-right shrink-0 pr-8">
     <div
-      class="text-2xl font-black text-red-500 leading-none group-hover/card:text-red-400 transition-colors duration-200">
+      class="text-2xl font-black text-[#E8001D] leading-none transition-colors duration-80 font-display">
       {{ user().pts_total }}
     </div>
-    <div class="text-[8px] font-bold text-slate-500 uppercase tracking-widest mt-1">
+    <div class="text-[8px] font-black text-slate-500 uppercase tracking-widest mt-1.5 font-ui">
       Pontos
     </div>
   </div>

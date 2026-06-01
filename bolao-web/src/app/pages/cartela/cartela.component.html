@@ -1,21 +1,21 @@
 <div class="flex flex-col gap-6 w-full animate-fadeIn text-left pb-16">
   
   <!-- Header Section -->
-  <div class="flex flex-col text-left border-b border-white/5 pb-6 mb-2 select-none">
-    <h1 class="text-3xl font-extrabold text-white tracking-tight leading-none mb-2">
+  <div class="flex flex-col text-left border-b border-[#2A2B36] pb-6 mb-2 select-none">
+    <h1 class="text-3xl font-black text-white tracking-tight leading-none mb-2 font-ui uppercase">
       Fase de Grupos
     </h1>
-    <p class="text-xs text-slate-400 font-medium">Classificação em tempo real &bull; Palpite a rodada toda</p>
+    <p class="text-xs text-slate-400 font-medium font-body">Classificação em tempo real &bull; Palpite a rodada toda</p>
   </div>
 
   <!-- Sticky Group Selector Bar -->
-  <div class="sticky top-[73px] z-20 backdrop-blur-md bg-[#090d16]/90 border border-white/5 py-2.5 rounded-full px-4 mb-6 flex items-center gap-2 overflow-x-auto no-scrollbar shadow-lg shadow-black/30">
-    <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest mr-2 select-none shrink-0">Navegar para:</span>
+  <div class="sticky top-[73px] z-20 bg-[#14151A] border border-[#2A2B36] py-2.5 rounded-[6px] px-4 mb-6 flex items-center gap-2 overflow-x-auto no-scrollbar shadow-md">
+    <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest mr-2 select-none shrink-0 font-ui">Navegar para:</span>
     <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
       @for (section of groupSections(); track section.name) {
         <button 
           (click)="scrollToGroup(section.name)"
-          class="px-3.5 py-1 bg-white/2 hover:bg-white/10 border border-white/5 hover:border-white/10 rounded-full text-xs font-bold text-slate-400 hover:text-white transition-all cursor-pointer select-none shrink-0"
+          class="px-3.5 py-1 bg-[#1C1D24] hover:bg-[#22232D] border border-[#2A2B36] hover:border-slate-500 rounded-[4px] text-xs font-bold text-slate-400 hover:text-white transition-all cursor-pointer select-none shrink-0 font-ui uppercase tracking-wider"
         >
           {{ section.name }}
         </button>
@@ -24,9 +24,9 @@
   </div>
 
   @if (loading()) {
-    <div class="flex flex-col items-center justify-center py-24 gap-3 w-full">
-      <div class="w-10 h-10 border-3 border-white/5 border-t-red-500 rounded-full animate-spin"></div>
-      <p class="text-xs text-slate-400">Carregando cartela de jogos...</p>
+    <div class="flex flex-col items-center justify-center py-24 gap-3 w-full bg-[#14151A] border border-[#2A2B36] rounded-[8px]">
+      <div class="w-10 h-10 border-3 border-[#2A2B36] border-t-[#E8001D] rounded-full animate-spin"></div>
+      <p class="text-xs text-slate-400 font-body">Carregando cartela de jogos...</p>
     </div>
   } @else {
     <div class="flex flex-col gap-8 w-full">
@@ -34,11 +34,11 @@
         <!-- Group Card Container -->
         <div 
           [id]="'group-' + section.name.replace(' ', '-')" 
-          class="bg-[#0b101b] border border-white/5 rounded-2xl p-6 transition-all duration-300 relative overflow-hidden flex flex-col gap-6 shadow-md shadow-black/20"
+          class="bg-[#14151A] border border-[#2A2B36] rounded-[8px] p-6 transition-all duration-300 relative overflow-hidden flex flex-col gap-6 shadow-sm"
         >
           <!-- Header of Group Card -->
-          <div class="flex items-center justify-between border-b border-white/5 pb-4 select-none">
-            <h2 class="text-xl font-extrabold text-white tracking-tight uppercase">
+          <div class="flex items-center justify-between border-b border-[#2A2B36] pb-4 select-none">
+            <h2 class="text-lg font-black text-white tracking-tight uppercase font-ui">
               {{ section.name }}
             </h2>
             
@@ -61,15 +61,15 @@
             </div>
 
             <!-- Sleek Desktop Vertical Divider / Mobile Horizontal Spacing -->
-            <div class="hidden lg:block lg:col-span-1 w-px bg-white/5 h-full mx-auto select-none pointer-events-none"></div>
+            <div class="hidden lg:block lg:col-span-1 w-px bg-[#2A2B36] h-full mx-auto select-none pointer-events-none"></div>
 
             <!-- Right Column: Fixtures list using Match Component -->
             <div class="lg:col-span-6 flex flex-col gap-2">
-              <div class="text-[9px] font-black text-slate-500 uppercase tracking-widest select-none pb-1">
+              <div class="text-[9px] font-black text-slate-500 uppercase tracking-widest select-none pb-1 font-ui">
                 Jogos
               </div>
               
-              <div class="flex flex-col divide-y divide-white/5 bg-[#080d16]/30 border border-white/5 rounded-xl p-2">
+              <div class="flex flex-col divide-y divide-[#2A2B36] bg-[#1C1D24] border border-[#2A2B36] rounded-[6px] p-2">
                 @for (match of section.matches; track match.id) {
                   <app-cartela-match 
                     [match]="match"

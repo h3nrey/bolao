@@ -5,11 +5,11 @@
 
 ## Overview
 
-This design system is built for high-density, data-driven interfaces. Inspired by Sofascore's sharp, no-fluff visual language — where information density meets visual clarity. The aesthetic is bold, angular, and sports-tech: zero softness, maximum signal.
+This design system is built for high-density, data-driven interfaces. Inspired by Sofascore's sharp, no-fluff visual language — where information density meets visual clarity. The aesthetic is bold, angular, and sports-tech, utilizing a refined, modern border radius (4px - 8px) to combine structural precision with visual premium.
 
 **Icon Library:** [Lucide Icons](https://lucide.dev)  
 **Primary Brand Color:** Red  
-**Design Philosophy:** Sharp corners, vibrant saturation, dense information hierarchy
+**Design Philosophy:** Subtle 4px-8px curves, vibrant saturation, dense information hierarchy
 
 ---
 
@@ -118,17 +118,16 @@ Base unit: `4px`
 
 ## Border Radius
 
-This system favors **sharp, angular corners**. Softness is reserved for only the smallest interactive elements.
+This system favors a **refined, modern border radius (4px - 8px)** to maintain sharp precision while providing a premium, polished sports-tech finish.
 
 | Token | Value | Usage |
 |---|---|---|
-| `--radius-none` | `0px` | Cards, panels, containers, modals |
-| `--radius-xs` | `2px` | Badges, tags, small chips |
-| `--radius-sm` | `3px` | Buttons, inputs |
-| `--radius-md` | `4px` | Tooltips, dropdowns |
+| `--radius-sm` | `4px` | Small interactive elements, badges, chips, buttons, inputs |
+| `--radius-md` | `6px` | Default cards, panels, containers, item rows |
+| `--radius-lg` | `8px` | Larger containers, modals, primary layout wrappers |
 | `--radius-full` | `9999px` | Avatar images, toggle pills only |
 
-> **Rule:** Default to `--radius-none`. Only use larger radii when the element is interactive and inline (button, badge). Never use `8px+` radii on layout containers.
+> **Rule:** Default to `--radius-md` (6px) for cards, containers, and panels. Use `--radius-lg` (8px) for major layout wrappers or modals, and `--radius-sm` (4px) for smaller controls. Never use completely rounded `12px+` layout corners.
 
 ---
 
@@ -680,12 +679,12 @@ Add these to your `:root` token definitions and use them instead of inline `rgba
 
 | ✅ Do | ❌ Don't |
 |---|---|
-| Use `border-radius: 0` on cards and panels | Round container corners |
+| Use refined border-radius (4px-8px) on cards and panels | Use raw `0px` or extreme `12px+` layout corners |
 | Use Lucide at `16px` default size | Mix icon libraries |
 | Saturate colors fully — this system is vibrant | Use washed-out or pastel tones |
 | Left-border accents to signal state | Top or full borders for state |
 | Monospace font for numeric data | Use proportional fonts for scores |
-| `3px` max radius on buttons | Use `8px+` radius on any interactive element |
+| `4px` max radius on buttons/inputs | Use `12px+` radius on interactive elements |
 | Uppercase small labels with letter-spacing | Lowercase micro-labels |
 | Fast transitions (`80–200ms`) | Slow decorative fades (`>400ms`) |
 | Purple (`--color-ai-accent`) for AI features | Red for AI (red = primary action) |

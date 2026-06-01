@@ -1,14 +1,17 @@
 <button 
-  class="flex items-center gap-3 px-4 py-3 text-sm font-semibold rounded-xl transition-all duration-200 cursor-pointer border-none text-left w-full select-none"
-  [class.bg-red-500]="active()"
+  class="flex items-center gap-3 px-4 py-2 text-[11px] font-semibold transition-all duration-80 cursor-pointer border-none text-left w-full select-none h-10 border-l-2 uppercase tracking-wider font-ui rounded-[4px]"
+  [class.bg-[#1C1D24]]="active()"
+  [class.border-[#E8001D]]="active()"
   [class.text-white]="active()"
-  [class.shadow-lg]="active()"
-  [class.shadow-red-500/20]="active()"
   [class.bg-transparent]="!active()"
-  [class.text-slate-400]="!active()"
-  [class.hover:text-white]="!active()"
-  [class.hover:bg-white/5]="!active()"
+  [class.border-transparent]="!active()"
+  [class.text-[#9B9BAD]]="!active()"
+  [class.hover:text-[#F0F0F5]]="!active()"
+  [class.hover:bg-[#14151A]]="!active()"
+  [class.hover:border-[#2A2B36]]="!active()"
 >
-  <ng-content></ng-content>
+  <div class="flex items-center justify-center shrink-0" [class.text-[#E8001D]]="active()" [class.text-[#9B9BAD]]="!active()">
+    <ng-content></ng-content>
+  </div>
   <span>{{ label() }}</span>
 </button>

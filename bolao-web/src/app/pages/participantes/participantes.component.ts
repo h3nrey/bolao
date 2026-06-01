@@ -6,6 +6,7 @@ import { ParticipantCardComponent } from './components/participant-card/particip
 import { Router } from '@angular/router';
 import { SessionService } from '../../services/session.service';
 import { API_BASE_URL } from '../../config/api.constants';
+import { LucideUsers } from '@lucide/angular';
 import {
   PROJECT_LABELS,
   PROJECT_VALUES,
@@ -42,7 +43,7 @@ interface ProjectGroup {
 @Component({
   selector: 'app-participantes',
   standalone: true,
-  imports: [CommonModule, TabSelectorComponent, ParticipantCardComponent],
+  imports: [CommonModule, TabSelectorComponent, ParticipantCardComponent, LucideUsers],
   templateUrl: './participantes.component.html',
 })
 export class ParticipantesComponent implements OnInit {

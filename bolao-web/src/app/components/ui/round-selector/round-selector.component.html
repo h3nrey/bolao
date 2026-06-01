@@ -1,18 +1,18 @@
-<div class="flex items-center gap-3 text-xs font-bold text-emerald-400 select-none">
+<div class="flex items-center gap-2 select-none">
   <button 
     (click)="prev.emit()"
     [disabled]="!hasPrevRound()"
-    class="text-slate-500 hover:text-emerald-400 disabled:text-slate-800 disabled:hover:text-slate-800 transition-all cursor-pointer disabled:cursor-not-allowed bg-transparent border-none py-1 px-2 text-sm font-black flex items-center justify-center"
+    class="w-7 h-7 bg-[#1C1D24] hover:bg-[#22232D] border border-[#2A2B36] hover:border-slate-500 rounded-[4px] text-slate-400 hover:text-white transition-all cursor-pointer disabled:cursor-not-allowed disabled:opacity-20 flex items-center justify-center text-xs font-bold font-ui"
   >
     &lt;
   </button>
-  <span class="tracking-wider uppercase text-xs md:text-sm font-black w-24 text-center text-emerald-400">
+  <span class="tracking-wider uppercase text-[10px] font-black w-24 text-center text-white bg-[#1C1D24] border border-[#2A2B36] py-1 px-2.5 rounded-[4px] font-ui">
     {{ activeRoundLabel() }}
   </span>
   <button 
     (click)="next.emit()"
     [disabled]="!hasNextRound()"
-    class="text-slate-500 hover:text-emerald-400 disabled:text-slate-800 disabled:hover:text-slate-800 transition-all cursor-pointer disabled:cursor-not-allowed bg-transparent border-none py-1 px-2 text-sm font-black flex items-center justify-center"
+    class="w-7 h-7 bg-[#1C1D24] hover:bg-[#22232D] border border-[#2A2B36] hover:border-slate-500 rounded-[4px] text-slate-400 hover:text-white transition-all cursor-pointer disabled:cursor-not-allowed disabled:opacity-20 flex items-center justify-center text-xs font-bold font-ui"
   >
     &gt;
   </button>

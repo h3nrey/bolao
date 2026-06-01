@@ -1,38 +1,38 @@
 <app-modal [open]="open()" size="sm">
-  <div class="flex flex-col text-left select-none rounded-none bg-[#14151A]">
+  <div class="flex flex-col text-left select-none rounded-[6px] bg-[#14151A] overflow-hidden">
     <!-- Header -->
-    <div class="flex items-center justify-between px-5 py-3.5 border-b border-[#2A2B36] bg-[#1A0005] rounded-none">
+    <div class="flex items-center justify-between px-5 py-3.5 border-b border-[#2A2B36] bg-[#1C1D24] rounded-t-[6px]">
       <h3 class="text-xs font-black text-[#E8001D] uppercase tracking-wider flex items-center gap-2 font-ui">
         <svg lucideTrash2 class="w-4 h-4"></svg>
         Confirmar Exclusão
       </h3>
-      <button 
-        (click)="onCancel()" 
+      <button (click)="onCancel()"
         class="text-slate-500 hover:text-white bg-transparent border-none cursor-pointer p-1.5 transition-colors duration-150"
-        aria-label="Fechar modal de exclusão"
-      >
+        aria-label="Fechar modal de exclusão">
         <svg lucideX class="w-4 h-4"></svg>
       </button>
     </div>
 
     <!-- Body -->
     <div class="p-5 flex flex-col gap-4">
-      
+
       <!-- Error Message -->
       @if (error()) {
-        <div class="p-3 bg-[#2A0008] border-l-3 border-[#E8001D] text-red-300 text-[11px] font-semibold rounded-none flex items-center gap-2">
-          <svg lucideTriangleAlert class="w-4 h-4 text-[#E8001D] shrink-0"></svg>
-          <span>{{ error() }}</span>
-        </div>
+      <div
+        class="p-3 bg-[#2A0008] border-l-3 border-[#E8001D] text-red-300 text-[11px] font-semibold rounded-[4px] flex items-center gap-2">
+        <svg lucideTriangleAlert class="w-4 h-4 text-[#E8001D] shrink-0"></svg>
+        <span>{{ error() }}</span>
+      </div>
       }
 
       <div class="flex flex-col gap-2">
         <p class="text-xs text-slate-300 leading-relaxed font-body">
           Deseja realmente remover o usuário <span class="font-bold text-white">"{{ userName() }}"</span>?
         </p>
-        
+
         <!-- Red Danger Warning Box (Sofascore Left Accent Style) -->
-        <div class="p-3.5 bg-[#1A0005] border border-[#2A2B36] border-l-3 border-[#E8001D] rounded-none text-red-400 text-[11px] leading-relaxed mt-1">
+        <div
+          class="p-3.5 bg-[#1C1D24] border border-[#2A2B36] border-l-3 border-[#E8001D] rounded-[6px] text-red-400 text-[11px] leading-relaxed mt-1">
           <div class="flex items-center gap-2 mb-1.5 text-white font-bold uppercase tracking-wider font-ui">
             <svg lucideTriangleAlert class="w-4 h-4 text-[#E8001D] shrink-0"></svg>
             <span>Atenção - Ação Irreversível</span>
@@ -49,24 +49,19 @@
       </div>
     </div>
 
-    <!-- Footer Actions (Compact layout, 3px rounded buttons) -->
-    <div class="px-5 py-3.5 bg-[#14151A] border-t border-[#2A2B36] flex justify-end gap-2.5 rounded-none">
-      <button 
-        (click)="onCancel()" 
-        class="h-9 px-4 bg-[#1C1D24] hover:bg-[#22232D] border border-[#2A2B36] text-xs font-semibold text-slate-300 cursor-pointer rounded-[3px] transition-colors duration-80 outline-none select-none font-ui uppercase tracking-wider"
-      >
+    <!-- Footer Actions (Compact layout, 4px rounded buttons) -->
+    <div class="px-5 py-3.5 bg-[#14151A] border-t border-[#2A2B36] flex justify-end gap-2.5 rounded-b-[6px]">
+      <button (click)="onCancel()"
+        class="h-9 px-4 bg-[#14151A] hover:bg-[#0D0D0F] border border-[#2A2B36] text-xs font-semibold text-slate-300 cursor-pointer rounded-[4px] transition-colors duration-80 outline-none select-none font-ui uppercase tracking-wider">
         Cancelar
       </button>
-      <button 
-        (click)="onConfirm()" 
-        [disabled]="loading()"
-        class="h-9 px-4 bg-[#E8001D] hover:bg-[#B8001A] text-white text-xs font-bold shadow-sm hover:shadow-md cursor-pointer rounded-[3px] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-80 flex items-center justify-center gap-2 outline-none select-none font-ui uppercase tracking-wider"
-      >
+      <button (click)="onConfirm()" [disabled]="loading()"
+        class="h-9 px-4 bg-[#E8001D] hover:bg-[#B8001A] text-white text-xs font-bold shadow-sm hover:shadow-md cursor-pointer rounded-[4px] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-80 flex items-center justify-center gap-2 outline-none select-none font-ui uppercase tracking-wider">
         @if (loading()) {
-          <div class="w-3.5 h-3.5 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
-          <span>Removendo...</span>
+        <div class="w-3.5 h-3.5 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+        <span>Removendo...</span>
         } @else {
-          <span>Excluir Definitivamente</span>
+        <span>Excluir Definitivamente</span>
         }
       </button>
     </div>
