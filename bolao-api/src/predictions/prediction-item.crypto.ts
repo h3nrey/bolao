@@ -1,7 +1,9 @@
 import { createCipheriv, createDecipheriv, createHash, randomBytes } from 'crypto';
 
+import { PredictionType } from '@prisma/client';
+
 export type PredictionItemPayload = {
-  type: string;
+  type: string | PredictionType;
   value_int?: number | null;
   value_team_id?: string | null;
   value_player_id?: string | null;
@@ -45,7 +47,7 @@ export function decryptPredictionItem(encryptedValue: string): PredictionItemPay
 
 export function hydratePredictionItems(
   items: {
-    type: string;
+    type: string | PredictionType;
     encrypted_value?: string | null;
     value_int?: number | null;
     value_team_id?: string | null;

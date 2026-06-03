@@ -40,14 +40,11 @@ export class MatchDetailComponent implements OnInit {
   protected readonly otherPredictions = signal<any[]>([]);
   protected readonly loadingOthers = signal(false);
 
-  // Stats bar ratios (simulated from match ID hash)
+  // Stats bar ratios (real values from backend)
   protected readonly statsRatios = computed(() => {
     const m = this.match();
-    if (!m) return { a: 50, draw: 25, b: 25 };
-    const sum = m.id.charCodeAt(0) + m.id.charCodeAt(m.id.length - 1);
-    const a = 40 + (sum % 35);
-    const draw = 10 + (sum % 15);
-    return { a, draw, b: 100 - a - draw };
+    if (!m || !m.community_trends) return { a: 0, draw: 0, b: 0 };
+    return m.community_trends;
   });
 
   ngOnInit(): void {
@@ -55,13 +52,15 @@ export class MatchDetailComponent implements OnInit {
     this.loadMatch();
   }
 
-  private loadMatch(): void {
+  private loadMatch(showSpinner = true): void {
     if (!this.matchId()) {
       this.router.navigate(['/partidas']);
       return;
     }
 
-    this.loadingMatch.set(true);
+    if (showSpinner) {
+      this.loadingMatch.set(true);
+    }
     const headers = this.buildHeaders();
 
     this.http.get<any>(`${this.apiBaseUrl}/matches/${this.matchId()}`, { headers }).subscribe({
@@ -130,6 +129,7 @@ export class MatchDetailComponent implements OnInit {
         this.savingPrediction.set(false);
         this.isEditingPrediction.set(true);
         this.predictionMessage.set({ text: 'Seu palpite foi salvo com sucesso!', isError: false });
+        this.loadMatch(false);
       },
       error: () => {
         this.savingPrediction.set(false);

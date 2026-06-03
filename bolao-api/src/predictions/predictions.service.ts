@@ -21,7 +21,7 @@ export class PredictionsService {
 
     return predictions.map((prediction) => ({
       ...prediction,
-      items: hydratePredictionItems(prediction.items as any),
+      items: hydratePredictionItems(prediction.items),
     }));
   }
 
@@ -45,7 +45,7 @@ export class PredictionsService {
 
     return {
       ...prediction,
-      items: hydratePredictionItems(prediction.items as any),
+      items: hydratePredictionItems(prediction.items),
     };
   }
 
@@ -71,7 +71,7 @@ export class PredictionsService {
 
     return predictions.map((prediction) => ({
       ...prediction,
-      items: hydratePredictionItems(prediction.items as any),
+      items: hydratePredictionItems(prediction.items),
     }));
   }
 
@@ -122,7 +122,7 @@ export class PredictionsService {
       return updated
         ? {
             ...updated,
-            items: hydratePredictionItems(updated.items as any),
+            items: hydratePredictionItems(updated.items),
           }
         : updated;
     }
@@ -147,7 +147,7 @@ export class PredictionsService {
 
     return {
       ...created,
-      items: hydratePredictionItems(created.items as any),
+      items: hydratePredictionItems(created.items),
     };
   }
 }

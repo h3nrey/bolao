@@ -4,6 +4,7 @@ import { CreateMatchDto } from './dto/match.dto';
 import { CreateExtraPeriodDto, UpdateExtraPeriodDto } from './dto/match-extra-period.dto';
 import { ScoringService } from '../predictions/scoring.service';
 import { RankingsService } from '../rankings/rankings.service';
+import { calculateCommunityTrends } from './matches.helper';
 
 @Injectable()
 export class MatchesService {
@@ -70,15 +71,20 @@ export class MatchesService {
 
     const score = await this.getScore(id);
     const currentMinute = this.getCurrentMinute(match);
-    const predictionsCount = await this.prisma.prediction.count({
+    const predictions = await this.prisma.prediction.findMany({
       where: { match_id: id },
+      include: { items: true },
     });
+
+    const predictionsCount = predictions.length;
+    const communityTrends = calculateCommunityTrends(predictions);
 
     return {
       ...match,
       score,
       current_minute: currentMinute,
       predictions_count: predictionsCount,
+      community_trends: communityTrends,
     };
   }
 
