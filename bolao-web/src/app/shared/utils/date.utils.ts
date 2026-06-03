@@ -1,4 +1,4 @@
-import { MONTHS_PT, WEEKDAYS_PT } from '../constants/date-constants';
+import { MONTHS_PT, WEEKDAYS_PT, WEEKDAYS_SHORT_PT } from '../constants/date-constants';
 
 export function getGroupDateLabel(scheduledAt: string): string {
   const dateObj = new Date(scheduledAt);
@@ -17,4 +17,11 @@ export function getGroupDateLabel(scheduledAt: string): string {
   } else {
     return `${WEEKDAYS_PT[dateObj.getDay()]}, ${dateObj.getDate()} de ${MONTHS_PT[dateObj.getMonth()]}`;
   }
+}
+
+export function getShortMatchDateLabel(dateStr: string): string {
+  const d = new Date(dateStr);
+  const day = String(d.getDate()).padStart(2, '0');
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  return `${WEEKDAYS_SHORT_PT[d.getDay()]}, ${day}/${month}`;
 }

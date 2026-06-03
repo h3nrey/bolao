@@ -1,5 +1,4 @@
-import { Component, input, signal, inject, OnInit, computed } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Component, signal, inject, OnInit, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { forkJoin } from 'rxjs';
@@ -7,7 +6,9 @@ import { CartelaTableComponent } from './components/cartela-table/cartela-table.
 import { CartelaMatchComponent } from './components/cartela-match/cartela-match.component';
 import { RoundSelectorComponent } from '../../components/ui/round-selector/round-selector.component';
 import { SessionService } from '../../services/session.service';
-import { API_BASE_URL } from '../../config/api.constants';
+import { MatchesService } from '../../services/matches.service';
+import { getShortMatchDateLabel } from '../../shared/utils/date.utils';
+import { calculateGroupStandings } from '../../shared/utils/standings.utils';
 
 interface MatchTeam {
   id: string;
@@ -52,8 +53,7 @@ interface LocalPrediction {
   templateUrl: './cartela.component.html',
 })
 export class CartelaComponent implements OnInit {
-  private readonly http = inject(HttpClient);
-  private readonly apiBaseUrl = API_BASE_URL;
+  private readonly matchesService = inject(MatchesService);
   private readonly session = inject(SessionService);
 
   protected readonly token = this.session.token;
@@ -108,71 +108,8 @@ export class CartelaComponent implements OnInit {
       // Filter matches by active round
       const filteredMatches = g.matches.filter(m => m.round === activeRound);
 
-      // Calculate standings for this group (using all group matches)
-      const teamMap: { [teamId: string]: { team: MatchTeam; P: number; J: number; V: number; E: number; D: number; SG: number; GP: number; GC: number } } = {};
-
-      for (const m of g.matches) {
-        if (m.team_a && !teamMap[m.team_a.id]) {
-          teamMap[m.team_a.id] = { team: m.team_a, P: 0, J: 0, V: 0, E: 0, D: 0, SG: 0, GP: 0, GC: 0 };
-        }
-        if (m.team_b && !teamMap[m.team_b.id]) {
-          teamMap[m.team_b.id] = { team: m.team_b, P: 0, J: 0, V: 0, E: 0, D: 0, SG: 0, GP: 0, GC: 0 };
-        }
-      }
-
-      for (const m of g.matches) {
-        if (!m.team_a || !m.team_b) continue;
-
-        let played = false;
-        let scoreA = 0;
-        let scoreB = 0;
- 
-        const localPred = preds[m.id];
-        if (localPred && localPred.scoreA !== null && localPred.scoreB !== null) {
-          scoreA = localPred.scoreA;
-          scoreB = localPred.scoreB;
-          played = true;
-        }
-
-        if (played) {
-          const tA = teamMap[m.team_a.id];
-          const tB = teamMap[m.team_b.id];
-
-          tA.J++;
-          tB.J++;
-          tA.GP += scoreA;
-          tA.GC += scoreB;
-          tB.GP += scoreB;
-          tB.GC += scoreA;
-
-          if (scoreA > scoreB) {
-            tA.V++;
-            tA.P += 3;
-            tB.D++;
-          } else if (scoreB > scoreA) {
-            tB.V++;
-            tB.P += 3;
-            tA.D++;
-          } else {
-            tA.E++;
-            tA.P += 1;
-            tB.E++;
-            tB.P += 1;
-          }
-        }
-      }
-
-      const standingsList = Object.values(teamMap).map(t => {
-        t.SG = t.GP - t.GC;
-        return t;
-      });
-
-      standingsList.sort((a, b) => {
-        if (b.P !== a.P) return b.P - a.P;
-        if (b.SG !== a.SG) return b.SG - a.SG;
-        if (b.GP !== a.GP) return b.GP - a.GP;
-        return a.team.name.localeCompare(b.team.name);
-      });
+      // Calculate standings for this group via standings utility
+      const standingsList = calculateGroupStandings(g.matches, preds);
 
       return {
         id: g.id,
@@ -220,19 +157,16 @@ export class CartelaComponent implements OnInit {
 
   protected fetchData(): void {
     this.loading.set(true);
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token()}`);
 
     forkJoin({
-      matchesList: this.http.get<Match[]>(`${this.apiBaseUrl}/matches`, { headers }),
-      myPredictions: this.http.get<any[]>(`${this.apiBaseUrl}/predictions/me`, { headers }),
+      matchesList: this.matchesService.getMatches('chronological'),
+      myPredictions: this.matchesService.getMyPredictions(),
     }).subscribe({
       next: ({ matchesList, myPredictions }) => {
-        // Sort matches chronologically
-        const sorted = matchesList.sort((a, b) => new Date(a.scheduled_at).getTime() - new Date(b.scheduled_at).getTime());
-        this.matches.set(sorted);
+        this.matches.set(matchesList);
 
         const dict: { [matchId: string]: LocalPrediction } = {};
-        for (const match of sorted) {
+        for (const match of matchesList) {
           const pred = myPredictions.find(p => p.match_id === match.id);
           if (pred) {
             const itemA = pred.items?.find((i: any) => i.type === 'score_a');
@@ -283,15 +217,7 @@ export class CartelaComponent implements OnInit {
     pred.error = null;
     this.localPredictions.set(dict);
 
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token()}`);
-    const payload = {
-      items: [
-        { type: 'score_a', value_int: pred.scoreA },
-        { type: 'score_b', value_int: pred.scoreB }
-      ]
-    };
-
-    this.http.post<any>(`${this.apiBaseUrl}/matches/${matchId}/predictions`, payload, { headers }).subscribe({
+    this.matchesService.savePrediction(matchId, pred.scoreA, pred.scoreB).subscribe({
       next: () => {
         const updatedDict = { ...this.localPredictions() };
         if (updatedDict[matchId]) {
@@ -320,10 +246,6 @@ export class CartelaComponent implements OnInit {
   }
 
   protected getMatchDateLabel(dateStr: string): string {
-    const d = new Date(dateStr);
-    const weekdays = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
-    const day = String(d.getDate()).padStart(2, '0');
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    return `${weekdays[d.getDay()]}, ${day}/${month}`;
+    return getShortMatchDateLabel(dateStr);
   }
 }

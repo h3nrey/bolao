@@ -18,8 +18,9 @@ export class MatchesController {
     @Query('phase_id') phaseId?: string,
     @Query('status') status?: string,
     @Query('group_id') groupId?: string,
+    @Query('sort') sort?: 'status' | 'chronological',
   ) {
-    return this.matchesService.findAll(phaseId, status, groupId);
+    return this.matchesService.findAll(phaseId, status, groupId, sort);
   }
 
   @Get('matches/:id')

@@ -101,7 +101,7 @@ export class PartidasComponent implements OnInit {
 
   protected fetchMatches(): void {
     this.loadingMatches.set(true);
-    this.matchesService.getMatches().subscribe({
+    this.matchesService.getMatches('status').subscribe({
       next: (list) => {
         this.matches.set(list);
         this.loadingMatches.set(false);

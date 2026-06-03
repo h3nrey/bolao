@@ -10,8 +10,9 @@ export class MatchesService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = API_BASE_URL;
 
-  getMatches(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/matches`);
+  getMatches(sort?: 'status' | 'chronological'): Observable<any[]> {
+    const url = sort ? `${this.apiUrl}/matches?sort=${sort}` : `${this.apiUrl}/matches`;
+    return this.http.get<any[]>(url);
   }
 
   getMatch(id: string): Observable<any> {
@@ -20,6 +21,10 @@ export class MatchesService {
 
   getMyPrediction(matchId: string): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/matches/${matchId}/predictions/me`);
+  }
+
+  getMyPredictions(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/predictions/me`);
   }
 
   getOtherPredictions(matchId: string): Observable<any[]> {
