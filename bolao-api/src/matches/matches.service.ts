@@ -30,21 +30,29 @@ export class MatchesService {
       },
     });
 
-    return matches.map((match) => {
-      const currentMinute = this.getCurrentMinute(match);
-      return {
-        ...match,
-        score: {
-          score_a: match.score_a + match.score_a_extra,
-          score_b: match.score_b + match.score_b_extra,
-          score_a_regular: match.score_a,
-          score_b_regular: match.score_b,
-          score_a_extra: match.score_a_extra,
-          score_b_extra: match.score_b_extra,
-        },
-        current_minute: currentMinute,
-      };
-    });
+    return matches
+      .map((match) => {
+        const currentMinute = this.getCurrentMinute(match);
+        return {
+          ...match,
+          score: {
+            score_a: match.score_a + match.score_a_extra,
+            score_b: match.score_b + match.score_b_extra,
+            score_a_regular: match.score_a,
+            score_b_regular: match.score_b,
+            score_a_extra: match.score_a_extra,
+            score_b_extra: match.score_b_extra,
+          },
+          current_minute: currentMinute,
+        };
+      })
+      .sort((a, b) => {
+        const order: Record<string, number> = { live: 0, upcoming: 1, finished: 2, cancelled: 3 };
+        const oa = order[a.status] ?? 4, ob = order[b.status] ?? 4;
+        if (oa !== ob) return oa - ob;
+        const da = new Date(a.scheduled_at).getTime(), db = new Date(b.scheduled_at).getTime();
+        return a.status === 'finished' ? db - da : da - db;
+      });
   }
 
   async findOne(id: string) {

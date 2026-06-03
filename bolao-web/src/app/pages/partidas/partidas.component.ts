@@ -1,5 +1,4 @@
 import { Component, signal, inject, OnInit, computed } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { TabSelectorComponent, TabOption } from '../../components/ui/tab-selector/tab-selector.component';
@@ -8,7 +7,8 @@ import { LoadingSpinnerComponent } from '../../components/ui/loading-spinner/loa
 import { MatchCardData } from './components/match-card/match-card.component';
 import { MatchDayGroupComponent } from './components/match-day-group/match-day-group.component';
 import { SessionService } from '../../services/session.service';
-import { API_BASE_URL } from '../../config/api.constants';
+import { MatchesService } from '../../services/matches.service';
+import { getGroupDateLabel } from '../../shared/utils/date.utils';
 import { LucideCalendar, LucideTrophy } from '@lucide/angular';
 
 interface Match {
@@ -43,12 +43,9 @@ interface Match {
   templateUrl: './partidas.component.html',
 })
 export class PartidasComponent implements OnInit {
-  private readonly http = inject(HttpClient);
-  private readonly apiBaseUrl = API_BASE_URL;
+  private readonly matchesService = inject(MatchesService);
   private readonly session = inject(SessionService);
   private readonly router = inject(Router);
-
-  protected readonly token = this.session.token;
 
   // List state
   protected readonly matches = signal<Match[]>([]);
@@ -84,25 +81,9 @@ export class PartidasComponent implements OnInit {
       (groups[key] ??= []).push(match);
     }
 
-    const months = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
-    const weekDays = ['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
-
-    const today = new Date();
-    const todayKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-    const tomorrow = new Date(today); tomorrow.setDate(today.getDate() + 1);
-    const tomorrowKey = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth() + 1).padStart(2, '0')}-${String(tomorrow.getDate()).padStart(2, '0')}`;
-
     return Object.keys(groups).sort().map(key => {
       const matchesInGroup = groups[key];
-      const dateObj = new Date(matchesInGroup[0].scheduled_at);
-      let dateLabel = '';
-      if (key === todayKey) {
-        dateLabel = `Hoje, ${dateObj.getDate()} de ${months[dateObj.getMonth()]}`;
-      } else if (key === tomorrowKey) {
-        dateLabel = `Amanhã, ${dateObj.getDate()} de ${months[dateObj.getMonth()]}`;
-      } else {
-        dateLabel = `${weekDays[dateObj.getDay()]}, ${dateObj.getDate()} de ${months[dateObj.getMonth()]}`;
-      }
+      const dateLabel = getGroupDateLabel(matchesInGroup[0].scheduled_at);
       return { dateLabel, matches: matchesInGroup };
     });
   });
@@ -120,17 +101,9 @@ export class PartidasComponent implements OnInit {
 
   protected fetchMatches(): void {
     this.loadingMatches.set(true);
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token()}`);
-    this.http.get<Match[]>(`${this.apiBaseUrl}/matches`, { headers }).subscribe({
+    this.matchesService.getMatches().subscribe({
       next: (list) => {
-        const sorted = list.sort((a, b) => {
-          const order = { live: 0, upcoming: 1, finished: 2, cancelled: 3 };
-          const oa = order[a.status] ?? 4, ob = order[b.status] ?? 4;
-          if (oa !== ob) return oa - ob;
-          const da = new Date(a.scheduled_at).getTime(), db = new Date(b.scheduled_at).getTime();
-          return a.status === 'finished' ? db - da : da - db;
-        });
-        this.matches.set(sorted);
+        this.matches.set(list);
         this.loadingMatches.set(false);
       },
       error: () => this.loadingMatches.set(false),

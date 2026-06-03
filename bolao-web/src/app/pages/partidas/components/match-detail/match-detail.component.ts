@@ -1,12 +1,11 @@
 import { Component, inject, OnInit, computed, signal } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LoadingSpinnerComponent } from '../../../../components/ui/loading-spinner/loading-spinner.component';
 import { ScoreStepperComponent } from '../../../../components/ui/score-stepper/score-stepper.component';
-import { API_BASE_URL } from '../../../../config/api.constants';
 import { SessionService } from '../../../../services/session.service';
+import { MatchesService } from '../../../../services/matches.service';
 import { LucideArrowLeft, LucideBarChart2, LucideCircle, LucideCircleCheck, LucideClock3, LucideGlobe2, LucideLock, LucideRadio, LucideTimer, LucideUsers } from '@lucide/angular';
 
 @Component({
@@ -16,13 +15,10 @@ import { LucideArrowLeft, LucideBarChart2, LucideCircle, LucideCircleCheck, Luci
   templateUrl: './match-detail.component.html',
 })
 export class MatchDetailComponent implements OnInit {
-  private readonly http = inject(HttpClient);
-  private readonly apiBaseUrl = API_BASE_URL;
+  private readonly matchesService = inject(MatchesService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly session = inject(SessionService);
-
-  protected readonly token = this.session.token;
   protected readonly matchId = signal('');
 
   // Match data
@@ -61,9 +57,8 @@ export class MatchDetailComponent implements OnInit {
     if (showSpinner) {
       this.loadingMatch.set(true);
     }
-    const headers = this.buildHeaders();
 
-    this.http.get<any>(`${this.apiBaseUrl}/matches/${this.matchId()}`, { headers }).subscribe({
+    this.matchesService.getMatch(this.matchId()).subscribe({
       next: (m) => {
         this.match.set(m);
         this.loadingMatch.set(false);
@@ -75,8 +70,7 @@ export class MatchDetailComponent implements OnInit {
   }
 
   private fetchMyPrediction(): void {
-    const headers = this.buildHeaders();
-    this.http.get<any>(`${this.apiBaseUrl}/matches/${this.matchId()}/predictions/me`, { headers }).subscribe({
+    this.matchesService.getMyPrediction(this.matchId()).subscribe({
       next: (pred) => {
         const itemA = pred.items?.find((i: any) => i.type === 'score_a');
         const itemB = pred.items?.find((i: any) => i.type === 'score_b');
@@ -94,8 +88,7 @@ export class MatchDetailComponent implements OnInit {
 
   private fetchOtherPredictions(): void {
     this.loadingOthers.set(true);
-    const headers = this.buildHeaders();
-    this.http.get<any[]>(`${this.apiBaseUrl}/matches/${this.matchId()}/predictions`, { headers }).subscribe({
+    this.matchesService.getOtherPredictions(this.matchId()).subscribe({
       next: (preds) => {
         this.otherPredictions.set(preds);
         this.loadingOthers.set(false);
@@ -117,14 +110,7 @@ export class MatchDetailComponent implements OnInit {
     this.savingPrediction.set(true);
     this.predictionMessage.set(null);
 
-    const payload = {
-      items: [
-        { type: 'score_a', value_int: this.scoreA() },
-        { type: 'score_b', value_int: this.scoreB() },
-      ],
-    };
-
-    this.http.post<any>(`${this.apiBaseUrl}/matches/${m.id}/predictions`, payload, { headers: this.buildHeaders() }).subscribe({
+    this.matchesService.savePrediction(m.id, this.scoreA(), this.scoreB()).subscribe({
       next: () => {
         this.savingPrediction.set(false);
         this.isEditingPrediction.set(true);
@@ -144,9 +130,5 @@ export class MatchDetailComponent implements OnInit {
 
   protected goBack(): void {
     this.router.navigate(['/partidas']);
-  }
-
-  private buildHeaders(): HttpHeaders {
-    return new HttpHeaders().set('Authorization', `Bearer ${this.token()}`);
   }
 }
