@@ -13,23 +13,26 @@
   --font-display: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
   /* Colors */
-  --color-brand-red: #ef4444;
-  --color-brand-red-dark: #b91c1c;
-  --color-brand-red-light: #f87171;
+  --color-brand-red: #E8001D;
+  --color-brand-red-dark: #B8001A;
+  --color-brand-red-light: #FF1A35;
   
-  --color-primary: #ef4444;
-  --color-primary-hover: #dc2626;
+  --color-primary: #E8001D;
+  --color-primary-hover: #B8001A;
   
-  --color-bg-dark: #090d16;
-  --color-bg-sidebar: #0d1321;
-  --color-bg-card: #121824;
+  --color-bg-dark: #07080a;
+  --color-bg-sidebar: #0D0D0F;
+  --color-bg-card: #14151A;
 
-  --color-text-primary: #f8fafc;
-  --color-text-secondary: #94a3b8;
-  --color-text-muted: #64748b;
+  --color-text-primary: #F0F0F5;
+  --color-text-secondary: #9B9BAD;
+  --color-text-muted: #5C5C72;
+
+  --color-border: #2A2B36;
+  --color-border-strong: #3D3E4D;
   
   /* Glassmorphism elements */
-  --color-glass-bg: rgba(13, 19, 33, 0.7);
+  --color-glass-bg: rgba(20, 21, 26, 0.7);
   --color-glass-border: rgba(255, 255, 255, 0.05);
 }
 
@@ -38,10 +41,10 @@
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
   /* HSL base fallback variables */
-  --bg-primary: 224 40% 6%;
-  --bg-secondary: 224 35% 10%;
-  --primary: 0 84% 60%;
-  --text-primary: 0 0% 98%;
+  --bg-primary: 240 10% 3.9%;
+  --bg-secondary: 240 10% 5.9%;
+  --primary: 352 100% 45.5%;
+  --text-primary: 240 10% 95.1%;
 }
 
 
@@ -61,8 +64,8 @@ app-root {
 
 body {
   font-family: var(--font-sans);
-  background-color: #090d16;
-  color: #f8fafc;
+  background-color: #07080a;
+  color: #F0F0F5;
   position: relative;
 }
 
@@ -75,7 +78,7 @@ body::before {
   width: 70vw;
   height: 70vw;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(239, 68, 68, 0.08) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(232, 0, 29, 0.06) 0%, transparent 70%);
   z-index: -1;
   pointer-events: none;
 }
@@ -88,7 +91,7 @@ body::after {
   width: 60vw;
   height: 60vw;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(185, 28, 28, 0.05) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(184, 0, 26, 0.04) 0%, transparent 70%);
   z-index: -1;
   pointer-events: none;
 }
@@ -98,15 +101,15 @@ body::after {
   width: 6px;
 }
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: #0d1321;
+  background: #0D0D0F;
   border-radius: 0 0 4px 0;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #b91c1c;
+  background: #B8001A;
   border-radius: 3px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #ef4444;
+  background: #E8001D;
 }
 
 /* Hide scrollbars for chrome/safari/opera and others */

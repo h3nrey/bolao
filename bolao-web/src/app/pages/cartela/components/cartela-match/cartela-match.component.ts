@@ -37,9 +37,23 @@ export class CartelaMatchComponent {
   isSaving = input.required<boolean>();
   isPastDeadline = input.required<boolean>();
   dateLabel = input.required<string>();
+  size = input<'sm' | 'lg'>('sm');
 
   scoreAChange = output<number | null>();
   scoreBChange = output<number | null>();
   inputChange = output<void>();
   blur = output<void>();
+
+  protected stageLabel(stage: string): string {
+    const labels: Record<string, string> = {
+      groups: 'Fase de Grupos',
+      round_of_32: '16 avos de Final',
+      round_of_16: 'Oitavas de Final',
+      quarterfinal: 'Quartas de Final',
+      semifinal: 'Semifinal',
+      third_place: 'Disputa de 3º Lugar',
+      final: 'Final',
+    };
+    return labels[stage] || stage;
+  }
 }

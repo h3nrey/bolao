@@ -1,0 +1,54 @@
+<div class="flex flex-col gap-6 w-full text-left">
+
+  @if (loading()) {
+  <div
+    class="flex flex-col items-center justify-center py-24 gap-3 w-full bg-[#14151A] border border-[#2A2B36] rounded-[8px]">
+    <div class="w-10 h-10 border-3 border-[#2A2B36] border-t-[#E8001D] rounded-full animate-spin"></div>
+    <p class="text-xs text-slate-400 font-body">Carregando cartela eliminatória...</p>
+  </div>
+  } @else {
+  <div class="transition-all duration-300 relative overflow-hidden flex flex-col gap-6 shadow-sm">
+
+    <!-- Matches Grouped by Date Container -->
+    @if (groupedMatches().length === 0) {
+    <div class="flex flex-col items-center justify-center py-16 gap-2 text-slate-500 select-none">
+      <svg class="w-8 h-8 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+      <span class="text-xs font-bold font-ui uppercase tracking-wider">Nenhuma partida agendada para esta fase</span>
+    </div>
+    } @else {
+    <div class="flex flex-col gap-8 w-full text-left">
+      @for (group of groupedMatches(); track group.dateLabel) {
+      <div class="flex flex-col gap-4 w-full">
+        <!-- Date label header -->
+        <div class="flex items-center gap-3">
+          <span
+            class="text-[10px] font-black uppercase text-[#9B9BAD] tracking-widest bg-[#14151A] border border-[#2A2B36] px-2.5 py-1.5 rounded-[4px] select-none font-ui">
+            {{ group.dateLabel }}
+          </span>
+          <div class="flex-1 h-px bg-[#2A2B36]"></div>
+        </div>
+
+        <!-- Match cards grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 w-full">
+          @for (match of group.matches; track match.id) {
+          <app-cartela-match [match]="match" [scoreA]="localPredictions()[match.id].scoreA"
+            [scoreB]="localPredictions()[match.id].scoreB" [isSaved]="localPredictions()[match.id].isSaved"
+            [isModified]="localPredictions()[match.id].isModified" [isSaving]="localPredictions()[match.id].isSaving"
+            [isPastDeadline]="isPastDeadline(match)" [dateLabel]="getMatchDateLabel(match.scheduled_at)"
+            (scoreAChange)="localPredictions()[match.id].scoreA = $event"
+            (scoreBChange)="localPredictions()[match.id].scoreB = $event" (inputChange)="onInputChange(match.id)"
+            (blur)="savePrediction(match.id)"></app-cartela-match>
+          }
+        </div>
+      </div>
+      }
+    </div>
+    }
+
+  </div>
+  }
+</div>

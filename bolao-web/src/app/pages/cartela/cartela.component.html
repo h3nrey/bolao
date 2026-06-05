@@ -1,98 +1,60 @@
 <div class="flex flex-col gap-6 w-full animate-fadeIn text-left pb-16">
-  
+
   <!-- Header Section -->
-  <div class="flex flex-col text-left border-b border-[#2A2B36] pb-6 mb-2 select-none">
+  <div class="flex flex-col text-left select-none">
     <h1 class="text-3xl font-black text-white tracking-tight leading-none mb-2 font-ui uppercase">
-      Fase de Grupos
+      Palpites
     </h1>
-    <p class="text-xs text-slate-400 font-medium font-body">Classificação em tempo real &bull; Palpite a rodada toda</p>
+    <p class="text-xs text-slate-400 font-medium font-body uppercase tracking-wider">Envie seus palpites e simule as
+      classificações</p>
   </div>
 
-  <!-- Sticky Group Selector Bar -->
-  <div class="sticky top-[73px] z-20 bg-[#14151A] border border-[#2A2B36] py-2.5 rounded-[6px] px-4 mb-6 flex items-center gap-2 overflow-x-auto no-scrollbar shadow-md">
-    <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest mr-2 select-none shrink-0 font-ui">Navegar para:</span>
-    <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
-      @for (section of groupSections(); track section.name) {
-        <button 
-          (click)="scrollToGroup(section.name)"
-          class="px-3.5 py-1 bg-[#1C1D24] hover:bg-[#22232D] border border-[#2A2B36] hover:border-slate-500 rounded-[4px] text-xs font-bold text-slate-400 hover:text-white transition-all cursor-pointer select-none shrink-0 font-ui uppercase tracking-wider"
-        >
-          {{ section.name }}
-        </button>
-      }
+  <!-- Premium Timeline Progress Bar with Glowing Background -->
+  @if (hasTournamentStarted()) {
+  <div
+    class="relative w-full p-6 md:p-8 rounded-[8px] border border-[#2A2B36] bg-[#14151A]/60 backdrop-blur-md overflow-hidden shadow-lg select-none mb-4">
+    <!-- Glowing color gradient background -->
+    <div
+      class="absolute inset-0 opacity-15 pointer-events-none blur-[40px] bg-gradient-to-r from-[#E8001D] via-[#00D68F] via-[#0A84FF] via-[#FFB800] to-[#BF5AF2]">
     </div>
-  </div>
 
-  @if (loading()) {
-    <div class="flex flex-col items-center justify-center py-24 gap-3 w-full bg-[#14151A] border border-[#2A2B36] rounded-[8px]">
-      <div class="w-10 h-10 border-3 border-[#2A2B36] border-t-[#E8001D] rounded-full animate-spin"></div>
-      <p class="text-xs text-slate-400 font-body">Carregando cartela de jogos...</p>
-    </div>
-  } @else {
-    <div class="flex flex-col gap-8 w-full">
-      @for (section of groupSections(); track section.name) {
-        <!-- Group Card Container -->
-        <div 
-          [id]="'group-' + section.name.replace(' ', '-')" 
-          class="bg-[#14151A] border border-[#2A2B36] rounded-[8px] p-6 transition-all duration-300 relative overflow-hidden flex flex-col gap-6 shadow-sm"
-        >
-          <!-- Header of Group Card -->
-          <div class="flex items-center justify-between border-b border-[#2A2B36] pb-4 select-none">
-            <h2 class="text-lg font-black text-white tracking-tight uppercase font-ui">
-              {{ section.name }}
-            </h2>
-            
-            <!-- Pagination indicator functional component -->
-            <app-round-selector
-              [activeRoundLabel]="section.activeRoundLabel"
-              [hasPrevRound]="section.hasPrevRound"
-              [hasNextRound]="section.hasNextRound"
-              (prev)="prevRound(section.name, section.allRounds.length)"
-              (next)="nextRound(section.name, section.allRounds.length)"
-            ></app-round-selector>
-          </div>
+    <div class="relative w-full">
+      <!-- Progress track line -->
+      <div class="absolute top-[7px] left-[7px] right-[7px] h-0.5 bg-[#2A2B36] rounded-full"></div>
 
-          <!-- Card Grid Columns with Divider -->
-          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-            
-            <!-- Left Column: Classification Standing Table Component -->
-            <div class="lg:col-span-5 flex flex-col gap-3">
-              <app-cartela-table [standings]="section.standings"></app-cartela-table>
-            </div>
+      <!-- Active progress line filled dynamically -->
+      <div class="absolute top-[7px] left-[7px] h-0.5 bg-white transition-all duration-300 rounded-full"
+        [style.width.%]="(activeStepIndex() / (steps.length - 1)) * 98"></div>
 
-            <!-- Sleek Desktop Vertical Divider / Mobile Horizontal Spacing -->
-            <div class="hidden lg:block lg:col-span-1 w-px bg-[#2A2B36] h-full mx-auto select-none pointer-events-none"></div>
+      <!-- Nodes Container -->
+      <div class="relative flex justify-between items-center w-full z-10">
+        @for (step of steps; track step.id; let idx = $index) {
+        <div class="flex flex-col items-center">
+          <!-- Node Dot -->
+          <div [class.bg-white]="idx <= activeStepIndex()" [class.border-white]="idx <= activeStepIndex()"
+            [class.bg-[#0D0D0F]]="idx > activeStepIndex()" [class.border-[#2A2B36]]="idx > activeStepIndex()"
+            class="w-3.5 h-3.5 rounded-full border-2 transition-all duration-200"></div>
 
-            <!-- Right Column: Fixtures list using Match Component -->
-            <div class="lg:col-span-6 flex flex-col gap-2">
-              <div class="text-[9px] font-black text-slate-500 uppercase tracking-widest select-none pb-1 font-ui">
-                Jogos
-              </div>
-              
-              <div class="flex flex-col divide-y divide-[#2A2B36] bg-[#1C1D24] border border-[#2A2B36] rounded-[6px] p-2">
-                @for (match of section.matches; track match.id) {
-                  <app-cartela-match 
-                    [match]="match"
-                    [scoreA]="localPredictions()[match.id].scoreA"
-                    [scoreB]="localPredictions()[match.id].scoreB"
-                    [isSaved]="localPredictions()[match.id].isSaved"
-                    [isModified]="localPredictions()[match.id].isModified"
-                    [isSaving]="localPredictions()[match.id].isSaving"
-                    [isPastDeadline]="isPastDeadline(match)"
-                    [dateLabel]="getMatchDateLabel(match.scheduled_at)"
-                    (scoreAChange)="localPredictions()[match.id].scoreA = $event"
-                    (scoreBChange)="localPredictions()[match.id].scoreB = $event"
-                    (inputChange)="onInputChange(match.id)"
-                    (blur)="savePrediction(match.id)"
-                  ></app-cartela-match>
-                }
-              </div>
-            </div>
-
-          </div>
+          <!-- Node Label -->
+          <span [class.text-white]="idx === activeStepIndex()" [class.font-black]="idx === activeStepIndex()"
+            [class.text-slate-400]="idx !== activeStepIndex()"
+            class="text-[10px] font-bold uppercase tracking-wider mt-3 font-ui transition-all">
+            {{ step.label }}
+          </span>
         </div>
-      }
+        }
+      </div>
     </div>
+  </div>
   }
-  
+
+  <!-- Stage Navigation Tab Selector -->
+  <div class="w-full mb-2">
+    <app-tab-selector [options]="tabOptions" [activeId]="activeTabId()"
+      (tabChange)="onTabChange($event)"></app-tab-selector>
+  </div>
+
+  <!-- Child routes render here -->
+  <router-outlet></router-outlet>
+
 </div>

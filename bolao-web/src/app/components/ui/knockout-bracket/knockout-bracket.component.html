@@ -1,176 +1,201 @@
-<div class="w-full overflow-x-auto pb-4">
+<div class="bracket-container" [class.is-fullscreen]="isFullscreen()">
 
-  <!-- Round Column Headers -->
-  <div class="flex items-center min-w-max mb-4 pb-2 border-b border-white/5">
-    @for (cell of headerCells; track cell.id) {
-      @if (!cell.isConnector) {
-        <div [style.width.px]="cell.width" class="flex justify-center">
-          <span
-            class="text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full"
-            [class.text-red-400]="cell.id === 'final'"
-            [class.bg-red-500/10]="cell.id === 'final'"
-            [class.text-slate-500]="cell.id !== 'final'"
-            [class.bg-white/5]="cell.id !== 'final'"
-          >
-            @if (cell.id === 'final') { 🏆 } {{ cell.label }}
-          </span>
-        </div>
-      } @else {
-        <div [style.width.px]="cell.width"></div>
+  <!-- Controls header row -->
+  <div class="flex items-center justify-between mb-5 gap-4">
+    <div>
+      <!-- Optional title or left-side indicator can be here -->
+    </div>
+
+    <!-- Right side controls -->
+    <div class="bracket-controls">
+
+      <!-- Round Dropdown Select -->
+      <div class="round-select-wrapper">
+        <app-form-select id="round-select" label="" [options]="selectOptions" [value]="activeRoundFocus()"
+          placeholder="Selecione a fase" (valueChange)="setFocusRound($event)"></app-form-select>
+      </div>
+
+      <!-- Prev/Next Chevron navigation -->
+      <button class="control-btn" [disabled]="!canPrev" (click)="prevRound()" title="Etapa Anterior">
+        <svg lucideChevronLeft class="w-4 h-4"></svg>
+      </button>
+      <button class="control-btn" [disabled]="!canNext" (click)="nextRound()" title="Próxima Etapa">
+        <svg lucideChevronRight class="w-4 h-4"></svg>
+      </button>
+
+      <!-- Fullscreen Toggle -->
+      <button class="control-btn" (click)="toggleFullscreen()" title="Alternar Tela Cheia">
+        @if (isFullscreen()) {
+        <svg lucideMinimize2 class="w-4 h-4"></svg>
+        } @else {
+        <svg lucideMaximize2 class="w-4 h-4"></svg>
+        }
+      </button>
+
+      @if (isFullscreen()) {
+      <!-- Zoom Out -->
+      <button class="control-btn" (click)="zoomOut()" [disabled]="zoomLevel() <= 0.6" title="Diminuir Zoom">
+        <svg lucideZoomOut class="w-4 h-4"></svg>
+      </button>
+
+      <!-- Zoom Level Indicator / Reset -->
+      <button class="control-btn px-2 text-[10px] font-bold" (click)="resetZoom()" title="Redefinir Zoom">
+        {{ (zoomLevel() * 100) | number:'1.0-0' }}%
+      </button>
+
+      <!-- Zoom In -->
+      <button class="control-btn" (click)="zoomIn()" [disabled]="zoomLevel() >= 1.5" title="Aumentar Zoom">
+        <svg lucideZoomIn class="w-4 h-4"></svg>
+      </button>
       }
-    }
+    </div>
   </div>
 
-  <!-- Bracket Body: SVG + Absolutely-positioned cards -->
-  <div
-    class="relative min-w-max"
-    [style.width.px]="totalWidth"
-    [style.height.px]="bracketBodyHeight"
-  >
+  <!-- Scrollable body for bracket structure -->
+  <div #scrollContainer class="bracket-scroll-area">
 
-    <!-- SVG connector lines overlay -->
-    <svg
-      class="absolute inset-0 pointer-events-none"
-      [attr.width]="totalWidth"
-      [attr.height]="bracketBodyHeight"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      @for (path of svgPaths; track path.key) {
-        <path
-          [attr.d]="path.d"
-          fill="none"
-          stroke="rgba(255,255,255,0.08)"
-          stroke-width="1.5"
-          stroke-linejoin="miter"
-          stroke-linecap="square"
-        />
-      }
-    </svg>
-
-    <!-- Main bracket match cards -->
-    @for (card of bracketCards; track $index) {
-      <div
-        class="absolute flex flex-col rounded-lg border overflow-hidden select-none transition-colors duration-150 hover:border-white/20"
-        [class.border-white/10]="card.match.status !== 'live' && !card.isFinal"
-        [class.border-red-500/40]="card.match.status === 'live'"
-        [class.cursor-pointer]="!!card.match.id"
-        [style.left.px]="card.left"
-        [style.top.px]="card.top"
-        [style.width.px]="CARD_WIDTH"
-        [style.height.px]="CARD_HEIGHT"
-        [style.border-color]="card.isFinal && card.match.status !== 'live' ? 'rgba(250,204,21,0.2)' : null"
-        (click)="handleMatchClick(card.match)"
-      >
-        <!-- Team A row -->
-        <div
-          class="flex items-center gap-1.5 px-2.5 flex-1 border-b border-white/5"
-          [style.background]="getRowBg(card.match, 'a')"
-        >
-          @if (card.match.team_a?.flag_emoji) {
-            <span class="text-sm leading-none shrink-0">{{ card.match.team_a!.flag_emoji }}</span>
+    <!-- Sticky Headers Wrapper (pinned vertically, scrolls horizontally with zoom scale) -->
+    <div class="sticky-headers bg-sidebar" [style.width.px]="totalWidth * zoomLevel()">
+      <div [style.transform]="'scale(' + zoomLevel() + ')'" [style.width.px]="totalWidth"
+        style="transform-origin: top left;">
+        <div class="flex items-center min-w-max pb-2 bg-sidebar" style="padding-left: 24px; padding-right: 24px;">
+          @for (cell of headerCells; track cell.id) {
+          @if (!cell.isConnector) {
+          <div [style.width.px]="cell.width" class="flex justify-center" [attr.data-round-id]="cell.id">
+            <span class="text-[9px] font-black uppercase tracking-widest text-[#9B9BAD]">
+              {{ cell.label }}
+            </span>
+          </div>
           } @else {
-            <div class="w-4 h-3 rounded-sm shrink-0 bg-white/5 border border-white/10"></div>
+          <div [style.width.px]="cell.width"></div>
           }
-          <span class="text-[11px] font-medium text-white truncate flex-1 min-w-0">
-            {{ card.match.team_a?.name ?? card.match.label ?? 'TBD' }}
-          </span>
-          @if ((card.match.status === 'finished' || card.match.status === 'live') && card.match.score_a != null) {
-            <span
-              class="text-[11px] font-black shrink-0 ml-1"
-              [class.text-emerald-400]="isWinner(card.match, 'a')"
-              [class.text-slate-300]="!isWinner(card.match, 'a')"
-            >{{ card.match.score_a }}</span>
-          }
-        </div>
-
-        <!-- Team B row -->
-        <div
-          class="flex items-center gap-1.5 px-2.5 flex-1"
-          [style.background]="getRowBg(card.match, 'b')"
-        >
-          @if (card.match.team_b?.flag_emoji) {
-            <span class="text-sm leading-none shrink-0">{{ card.match.team_b!.flag_emoji }}</span>
-          } @else {
-            <div class="w-4 h-3 rounded-sm shrink-0 bg-white/5 border border-white/10"></div>
-          }
-          <span class="text-[11px] font-medium text-white truncate flex-1 min-w-0">
-            {{ card.match.team_b?.name ?? 'TBD' }}
-          </span>
-          @if ((card.match.status === 'finished' || card.match.status === 'live') && card.match.score_b != null) {
-            <span
-              class="text-[11px] font-black shrink-0 ml-1"
-              [class.text-emerald-400]="isWinner(card.match, 'b')"
-              [class.text-slate-300]="!isWinner(card.match, 'b')"
-            >{{ card.match.score_b }}</span>
           }
         </div>
       </div>
-    }
+    </div>
 
-    <!-- 3rd Place Match -->
-    @if (thirdPlace) {
-      <!-- Label -->
-      <div
-        class="absolute text-center text-[9px] font-black uppercase tracking-widest text-amber-500/70"
-        [style.left.px]="thirdPlaceLeft"
-        [style.top.px]="thirdPlaceTop - 16"
-        [style.width.px]="CARD_WIDTH"
-      >
-        🥉 3º Lugar
-      </div>
+    <!-- Zoomable layout container for the main canvas -->
+    <div [style.width.px]="totalWidth * zoomLevel()" [style.height.px]="bracketBodyHeight * zoomLevel()"
+      style="position: relative;">
+      <div [style.transform]="'scale(' + zoomLevel() + ')'" [style.width.px]="totalWidth"
+        [style.height.px]="bracketBodyHeight" style="transform-origin: top left; position: absolute; top: 0; left: 0;">
 
-      <!-- Card -->
-      <div
-        class="absolute flex flex-col rounded-lg border border-amber-500/20 overflow-hidden select-none transition-colors duration-150 hover:border-amber-500/35"
-        [class.cursor-pointer]="!!thirdPlace.id"
-        [style.left.px]="thirdPlaceLeft"
-        [style.top.px]="thirdPlaceTop"
-        [style.width.px]="CARD_WIDTH"
-        [style.height.px]="CARD_HEIGHT"
-        (click)="handleMatchClick(thirdPlace)"
-      >
-        <div
-          class="flex items-center gap-1.5 px-2.5 flex-1 border-b border-white/5"
-          style="background: rgba(245,158,11,0.05)"
-        >
-          @if (thirdPlace.team_a?.flag_emoji) {
-            <span class="text-sm leading-none shrink-0">{{ thirdPlace.team_a!.flag_emoji }}</span>
-          } @else {
-            <div class="w-4 h-3 rounded-sm shrink-0 bg-white/5 border border-white/10"></div>
+        <!-- Bracket Body Canvas: SVG connectors + positioned cards -->
+        <div class="relative min-w-max" [style.width.px]="totalWidth" [style.height.px]="bracketBodyHeight">
+
+          <!-- Selected Round Column Highlight Box -->
+          @if (showHighlightBox) {
+          <div class="absolute selected-round-highlight-box" [style.left.px]="highlightBoxLeft"
+            [style.top.px]="highlightBoxTop" [style.width.px]="highlightBoxWidth"
+            [style.height.px]="highlightBoxHeight">
+          </div>
           }
-          <span class="text-[11px] font-medium text-white truncate flex-1">
-            {{ thirdPlace.team_a?.name ?? 'TBD' }}
-          </span>
-          @if (thirdPlace.status === 'finished' && thirdPlace.score_a != null) {
-            <span
-              class="text-[11px] font-black shrink-0 ml-1"
-              [class.text-amber-400]="isWinner(thirdPlace, 'a')"
-              [class.text-slate-300]="!isWinner(thirdPlace, 'a')"
-            >{{ thirdPlace.score_a }}</span>
+
+          <!-- SVG Connector lines -->
+          <svg class="absolute inset-0 pointer-events-none" [attr.width]="totalWidth" [attr.height]="bracketBodyHeight"
+            xmlns="http://www.w3.org/2000/svg">
+            @for (path of svgPaths; track path.key) {
+            <path [attr.d]="path.d" fill="none" stroke="#2A2B36" stroke-width="1.25" stroke-linejoin="miter"
+              stroke-linecap="square" />
+            }
+          </svg>
+
+          <!-- Main Bracket Match Cards -->
+          @for (card of bracketCards; track $index) {
+          <div class="absolute flex flex-col justify-center match-card select-none"
+            [class.is-live]="card.match.status === 'live'" [class.cursor-pointer]="!!card.match.id"
+            [style.left.px]="card.left" [style.top.px]="card.top" [style.width.px]="CARD_WIDTH"
+            [style.height.px]="CARD_HEIGHT" (click)="handleMatchClick(card.match)">
+            <!-- Team A row -->
+            <div class="flex items-center gap-2 px-3 flex-1 border-b border-white/[0.04] team-row"
+              [class.is-winner]="isWinner(card.match, 'a')" [class.is-loser]="isLoser(card.match, 'a')">
+              @if (card.match.team_a?.flag_emoji) {
+              <span class="text-sm leading-none shrink-0">{{ card.match.team_a!.flag_emoji }}</span>
+              } @else {
+              <div class="w-4 h-3 rounded-sm shrink-0 bg-white/5 border border-white/10"></div>
+              }
+              <span class="text-[11px] font-medium text-slate-300 truncate flex-1 min-w-0">
+                {{ card.match.team_a?.name ?? card.match.label ?? 'TBD' }}
+              </span>
+              <span class="text-[11px] shrink-0 font-bold tabular-nums ml-1 text-slate-200">
+                {{ getTeamScore(card.match, 'a') }}
+              </span>
+            </div>
+
+            <!-- Team B row -->
+            <div class="flex items-center gap-2 px-3 flex-1 team-row" [class.is-winner]="isWinner(card.match, 'b')"
+              [class.is-loser]="isLoser(card.match, 'b')">
+              @if (card.match.team_b?.flag_emoji) {
+              <span class="text-sm leading-none shrink-0">{{ card.match.team_b!.flag_emoji }}</span>
+              } @else {
+              <div class="w-4 h-3 rounded-sm shrink-0 bg-white/5 border border-white/10"></div>
+              }
+              <span class="text-[11px] font-medium text-slate-300 truncate flex-1 min-w-0">
+                {{ card.match.team_b?.name ?? 'TBD' }}
+              </span>
+              <span class="text-[11px] shrink-0 font-bold tabular-nums ml-1 text-slate-200">
+                {{ getTeamScore(card.match, 'b') }}
+              </span>
+            </div>
+
+            <!-- Final match badge (Pill label) -->
+            @if (card.isFinal) {
+            <div class="absolute left-1/2 -translate-x-1/2 top-[calc(100%-7px)] z-10">
+              <span class="badge-pill badge-final">Final</span>
+            </div>
+            }
+          </div>
           }
+
+          <!-- 3rd Place Match -->
+          @if (thirdPlace) {
+          <div class="absolute flex flex-col justify-center match-card select-none"
+            [class.is-live]="thirdPlace.status === 'live'" [class.cursor-pointer]="!!thirdPlace.id"
+            [style.left.px]="thirdPlaceLeft" [style.top.px]="thirdPlaceTop" [style.width.px]="CARD_WIDTH"
+            [style.height.px]="CARD_HEIGHT" (click)="handleMatchClick(thirdPlace)">
+            <!-- Team A row -->
+            <div class="flex items-center gap-2 px-3 flex-1 border-b border-white/[0.04] team-row"
+              [class.is-winner]="isWinner(thirdPlace, 'a')" [class.is-loser]="isLoser(thirdPlace, 'a')">
+              @if (thirdPlace.team_a?.flag_emoji) {
+              <span class="text-sm leading-none shrink-0">{{ thirdPlace.team_a!.flag_emoji }}</span>
+              } @else {
+              <div class="w-4 h-3 rounded-sm shrink-0 bg-white/5 border border-white/10"></div>
+              }
+              <span class="text-[11px] font-medium text-slate-300 truncate flex-1 min-w-0">
+                {{ thirdPlace.team_a?.name ?? 'TBD' }}
+              </span>
+              <span class="text-[11px] shrink-0 font-bold tabular-nums ml-1 text-slate-200">
+                {{ getTeamScore(thirdPlace, 'a') }}
+              </span>
+            </div>
+
+            <!-- Team B row -->
+            <div class="flex items-center gap-2 px-3 flex-1 team-row" [class.is-winner]="isWinner(thirdPlace, 'b')"
+              [class.is-loser]="isLoser(thirdPlace, 'b')">
+              @if (thirdPlace.team_b?.flag_emoji) {
+              <span class="text-sm leading-none shrink-0">{{ thirdPlace.team_b!.flag_emoji }}</span>
+              } @else {
+              <div class="w-4 h-3 rounded-sm shrink-0 bg-white/5 border border-white/10"></div>
+              }
+              <span class="text-[11px] font-medium text-slate-300 truncate flex-1 min-w-0">
+                {{ thirdPlace.team_b?.name ?? 'TBD' }}
+              </span>
+              <span class="text-[11px] shrink-0 font-bold tabular-nums ml-1 text-slate-200">
+                {{ getTeamScore(thirdPlace, 'b') }}
+              </span>
+            </div>
+
+            <!-- 3rd place badge (Pill label) -->
+            <div class="absolute left-1/2 -translate-x-1/2 top-[calc(100%-7px)] z-10">
+              <span class="badge-pill badge-third">3º lugar</span>
+            </div>
+          </div>
+          }
+
         </div>
-        <div
-          class="flex items-center gap-1.5 px-2.5 flex-1"
-          style="background: rgba(245,158,11,0.03)"
-        >
-          @if (thirdPlace.team_b?.flag_emoji) {
-            <span class="text-sm leading-none shrink-0">{{ thirdPlace.team_b!.flag_emoji }}</span>
-          } @else {
-            <div class="w-4 h-3 rounded-sm shrink-0 bg-white/5 border border-white/10"></div>
-          }
-          <span class="text-[11px] font-medium text-white truncate flex-1">
-            {{ thirdPlace.team_b?.name ?? 'TBD' }}
-          </span>
-          @if (thirdPlace.status === 'finished' && thirdPlace.score_b != null) {
-            <span
-              class="text-[11px] font-black shrink-0 ml-1"
-              [class.text-amber-400]="isWinner(thirdPlace, 'b')"
-              [class.text-slate-300]="!isWinner(thirdPlace, 'b')"
-            >{{ thirdPlace.score_b }}</span>
-          }
-        </div>
-      </div>
-    }
 
+      </div>
+    </div>
   </div>
+
 </div>

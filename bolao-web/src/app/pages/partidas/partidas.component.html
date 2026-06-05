@@ -1,90 +1,71 @@
 <!-- Calendar / List View -->
 <div class="flex flex-col gap-6 w-full animate-fadeIn text-left">
 
-    <!-- Header -->
-    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-[#2A2B36] pb-5">
-      <div class="flex flex-col gap-2">
-        <span class="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#9B9BAD] font-ui">
-          <span class="w-2 h-2 bg-[#E8001D] rounded-[2px] inline-block"></span>
-          Calendário Oficial
-        </span>
-        <h1 class="text-3xl font-black text-[#F0F0F5] tracking-tight leading-none font-body">
-          Partidas
-        </h1>
-        <p class="text-xs text-[#9B9BAD] font-medium max-w-2xl">
-          Jogos do torneio divididos por andamento, fase e resultados oficiais.
-        </p>
-      </div>
-
-      <div class="hidden md:flex h-9 items-center gap-2 px-3 bg-[#14151A] border border-[#2A2B36] border-l-2 border-l-[#E8001D] rounded-[6px] text-[10px] font-black uppercase tracking-widest text-[#9B9BAD] font-ui">
-        <svg lucideCalendar class="w-4 h-4 text-[#E8001D]"></svg>
-        Agenda de jogos
-      </div>
+  <!-- Header -->
+  <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-[#2A2B36] pb-5">
+    <div class="flex flex-col gap-2">
+      <span
+        class="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#9B9BAD] font-ui">
+        <span class="w-2 h-2 bg-[#E8001D] rounded-[2px] inline-block"></span>
+        Calendário Oficial
+      </span>
+      <h1 class="text-3xl font-black text-[#F0F0F5] tracking-tight leading-none font-body">
+        Partidas
+      </h1>
+      <p class="text-xs text-[#9B9BAD] font-medium max-w-2xl">
+        Jogos do torneio divididos por andamento, fase e resultados oficiais.
+      </p>
     </div>
 
-    <!-- Stage Tabs -->
-    <app-tab-selector
-      [options]="stageTabs"
-      [activeId]="activeStage()"
-      (tabChange)="setActiveStage($event)"
-    />
+    <div
+      class="hidden md:flex h-9 items-center gap-2 px-3 bg-[#14151A] border border-[#2A2B36] border-l-2 border-l-[#E8001D] rounded-[6px] text-[10px] font-black uppercase tracking-widest text-[#9B9BAD] font-ui">
+      <svg lucideCalendar class="w-4 h-4 text-[#E8001D]"></svg>
+      Agenda
+    </div>
+  </div>
 
-    <!-- Loading -->
-    @if (loadingMatches()) {
-      <app-loading-spinner message="Carregando partidas..." />
-    } @else {
+  <!-- Stage Tabs -->
+  <app-tab-selector [options]="stageTabs" [activeId]="activeStage()" (tabChange)="setActiveStage($event)" />
 
-      <!-- === KNOCKOUT TAB === -->
-      @if (activeStage() === 'knockout') {
-        <div class="flex flex-col gap-4 w-full animate-fadeIn text-left">
-          <div class="flex flex-col gap-1">
-            <h2 class="text-sm font-black text-[#F0F0F5] tracking-wider uppercase font-ui">
-              Chaves Eliminatórias
-            </h2>
-            <p class="text-[11px] text-[#9B9BAD]">
-              Acompanhe o caminho de cada time rumo ao título mundial.
-            </p>
-          </div>
+  <!-- Loading -->
+  @if (loadingMatches()) {
+  <app-loading-spinner message="Carregando partidas..." />
+  } @else {
 
-          <div class="bg-[#14151A] border border-[#2A2B36] border-l-2 border-l-[#E8001D] rounded-[8px] p-4 md:p-6 shadow-sm overflow-hidden">
-            <div class="flex items-center gap-2 mb-5 pb-3 border-b border-[#2A2B36]">
-              <svg lucideTrophy class="w-4 h-4 text-[#E8001D]"></svg>
-              <span class="text-[10px] font-black uppercase tracking-widest text-[#9B9BAD] font-ui">
-                Chave Completa
-              </span>
-            </div>
-            <app-knockout-bracket />
-          </div>
-        </div>
-      }
+  <!-- === KNOCKOUT TAB === -->
+  @if (activeStage() === 'knockout') {
+  <div class="flex flex-col gap-4 w-full animate-fadeIn text-left">
 
-      <!-- === GROUPS TAB === -->
-      @if (activeStage() === 'groups') {
+    <app-knockout-bracket [matches]="matches()" [onMatchClick]="selectMatch.bind(this)" />
 
-        <!-- Empty state -->
-        @if (groupedMatches().length === 0) {
-          <div class="py-16 px-6 flex flex-col items-center text-center gap-3 text-[#9B9BAD] border border-dashed border-[#2A2B36] bg-[#14151A] rounded-[8px]">
-            <div class="w-10 h-10 bg-[#0D0D0F] border border-[#2A2B36] rounded-[6px] flex items-center justify-center">
-              <svg lucideCalendar class="w-5 h-5 text-[#5C5C72]"></svg>
-            </div>
-            <p class="text-sm font-bold text-[#F0F0F5]">Nenhuma partida agendada.</p>
-          </div>
+  </div>
+  }
 
-        } @else {
+  <!-- === GROUPS TAB === -->
+  @if (activeStage() === 'groups') {
 
-          <!-- Grouped by date -->
-          <div class="flex flex-col gap-8 w-full text-left">
-            @for (group of groupedMatches(); track group.dateLabel) {
-              <app-match-day-group
-                [dateLabel]="group.dateLabel"
-                [matches]="toCardData(group.matches)"
-                (matchClick)="selectMatch($event)"
-              />
-            }
-          </div>
+  <!-- Empty state -->
+  @if (groupedMatches().length === 0) {
+  <div
+    class="py-16 px-6 flex flex-col items-center text-center gap-3 text-[#9B9BAD] border border-dashed border-[#2A2B36] bg-[#14151A] rounded-[8px]">
+    <div class="w-10 h-10 bg-[#0D0D0F] border border-[#2A2B36] rounded-[6px] flex items-center justify-center">
+      <svg lucideCalendar class="w-5 h-5 text-[#5C5C72]"></svg>
+    </div>
+    <p class="text-sm font-bold text-[#F0F0F5]">Nenhuma partida agendada.</p>
+  </div>
 
-        }
-      }
+  } @else {
 
+  <!-- Grouped by date -->
+  <div class="flex flex-col gap-8 w-full text-left">
+    @for (group of groupedMatches(); track group.dateLabel) {
+    <app-match-day-group [dateLabel]="group.dateLabel" [matches]="toCardData(group.matches)"
+      (matchClick)="selectMatch($event)" />
     }
+  </div>
+
+  }
+  }
+
+  }
 </div>

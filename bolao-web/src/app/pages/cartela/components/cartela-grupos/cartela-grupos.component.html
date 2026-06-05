@@ -1,0 +1,93 @@
+<div class="flex flex-col gap-6 w-full text-left">
+  
+  <!-- Group Tab Selector -->
+  @if (groupNames().length > 0) {
+    <div class="bg-[#14151A] border border-[#2A2B36] p-1.5 rounded-[8px] flex items-center gap-1 overflow-x-auto no-scrollbar shadow-sm select-none">
+      @for (name of groupNames(); track name) {
+        <button 
+          (click)="selectGroup(name)"
+          [class.bg-[#E8001D]]="activeGroup() === name"
+          [class.text-white]="activeGroup() === name"
+          [class.border-[#E8001D]]="activeGroup() === name"
+          [class.bg-transparent]="activeGroup() !== name"
+          [class.text-slate-400]="activeGroup() !== name"
+          [class.border-transparent]="activeGroup() !== name"
+          [class.hover:text-white]="activeGroup() !== name"
+          [class.hover:bg-[#1C1D24]]="activeGroup() !== name"
+          class="px-4 py-2 border rounded-[6px] text-xs font-black transition-all cursor-pointer uppercase tracking-wider font-ui shrink-0 outline-none"
+        >
+          {{ name }}
+        </button>
+      }
+    </div>
+  }
+
+  @if (loading()) {
+    <div class="flex flex-col items-center justify-center py-24 gap-3 w-full bg-[#14151A] border border-[#2A2B36] rounded-[8px]">
+      <div class="w-10 h-10 border-3 border-[#2A2B36] border-t-[#E8001D] rounded-full animate-spin"></div>
+      <p class="text-xs text-slate-400 font-body">Carregando cartela de grupos...</p>
+    </div>
+  } @else {
+    <div class="flex flex-col gap-8 w-full">
+      @for (section of filteredGroupSections(); track section.name) {
+        <!-- Group Card Container -->
+        <div class="bg-[#14151A] border border-[#2A2B36] rounded-[8px] p-6 transition-all duration-300 relative overflow-hidden flex flex-col gap-6 shadow-sm">
+          
+          <!-- Header of Group Card -->
+          <div class="flex items-center justify-between border-b border-[#2A2B36] pb-4 select-none">
+            <h2 class="text-lg font-black text-white tracking-tight uppercase font-ui">
+              Classificação & Rodadas - {{ section.name }}
+            </h2>
+            
+            <app-round-selector
+              [activeRoundLabel]="section.activeRoundLabel"
+              [hasPrevRound]="section.hasPrevRound"
+              [hasNextRound]="section.hasNextRound"
+              (prev)="prevRound(section.name, section.allRounds.length)"
+              (next)="nextRound(section.name, section.allRounds.length)"
+            ></app-round-selector>
+          </div>
+
+          <!-- Card Grid Columns -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+            
+            <!-- Left Column: Classification Standing Table Component -->
+            <div class="lg:col-span-5 flex flex-col gap-3">
+              <app-cartela-table [standings]="section.standings"></app-cartela-table>
+            </div>
+
+            <!-- Sleek Desktop Vertical Divider -->
+            <div class="hidden lg:block lg:col-span-1 w-px bg-[#2A2B36] h-full mx-auto select-none pointer-events-none"></div>
+
+            <!-- Right Column: Fixtures list -->
+            <div class="lg:col-span-6 flex flex-col gap-2">
+              <div class="text-[9px] font-black text-slate-500 uppercase tracking-widest select-none pb-1 font-ui">
+                Jogos
+              </div>
+              
+              <div class="flex flex-col gap-3 w-full">
+                @for (match of section.matches; track match.id) {
+                  <app-cartela-match 
+                    [match]="match"
+                    [scoreA]="localPredictions()[match.id].scoreA"
+                    [scoreB]="localPredictions()[match.id].scoreB"
+                    [isSaved]="localPredictions()[match.id].isSaved"
+                    [isModified]="localPredictions()[match.id].isModified"
+                    [isSaving]="localPredictions()[match.id].isSaving"
+                    [isPastDeadline]="isPastDeadline(match)"
+                    [dateLabel]="getMatchDateLabel(match.scheduled_at)"
+                    (scoreAChange)="localPredictions()[match.id].scoreA = $event"
+                    (scoreBChange)="localPredictions()[match.id].scoreB = $event"
+                    (inputChange)="onInputChange(match.id)"
+                    (blur)="savePrediction(match.id)"
+                  ></app-cartela-match>
+                }
+              </div>
+            </div>
+
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

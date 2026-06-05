@@ -9,7 +9,7 @@ import { MatchDayGroupComponent } from './components/match-day-group/match-day-g
 import { SessionService } from '../../services/session.service';
 import { MatchesService } from '../../services/matches.service';
 import { getGroupDateLabel } from '../../shared/utils/date.utils';
-import { LucideCalendar, LucideTrophy } from '@lucide/angular';
+import { LucideCalendar } from '@lucide/angular';
 
 interface Match {
   id: string;
@@ -38,7 +38,6 @@ interface Match {
     LoadingSpinnerComponent,
     MatchDayGroupComponent,
     LucideCalendar,
-    LucideTrophy,
   ],
   templateUrl: './partidas.component.html',
 })

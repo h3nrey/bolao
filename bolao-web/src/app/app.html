@@ -3,7 +3,9 @@
   <div class="h-screen w-full flex flex-col bg-[#0D0D0F] text-slate-100 font-sans overflow-hidden animate-fadeIn select-none">
     
     <!-- Top Countdown Banner Component -->
-    <app-countdown-banner></app-countdown-banner>
+    @if (!hasTournamentStarted()) {
+      <app-countdown-banner></app-countdown-banner>
+    }
 
     <!-- Mobile Top Header -->
     <header class="md:hidden w-full flex items-center justify-between px-4 py-3 bg-[#14151A] border-b border-[#2A2B36] sticky top-0 z-40 shadow-sm shrink-0">

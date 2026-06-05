@@ -15,6 +15,7 @@ import {
   SeniorityValue,
 } from './shared/constants/profile-options';
 import { API_BASE_URL } from './config/api.constants';
+import { hasTournamentStarted } from './shared/utils/date.utils';
 import { 
   LucideTrophy, 
   LucideUsers, 
@@ -83,6 +84,7 @@ export class App {
 
   protected readonly loading = signal(false);
   protected readonly error = signal<string | null>(null);
+  protected readonly hasTournamentStarted = signal(hasTournamentStarted());
 
   // Complete profile form signals
   protected readonly completeProfileName = signal('');

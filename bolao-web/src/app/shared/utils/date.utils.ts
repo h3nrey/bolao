@@ -1,4 +1,8 @@
-import { MONTHS_PT, WEEKDAYS_PT, WEEKDAYS_SHORT_PT } from '../constants/date-constants';
+import { MONTHS_PT, WEEKDAYS_PT, WEEKDAYS_SHORT_PT, TOURNAMENT_START_DATE } from '../constants/date-constants';
+
+export function hasTournamentStarted(): boolean {
+  return new Date() >= TOURNAMENT_START_DATE;
+}
 
 export function getGroupDateLabel(scheduledAt: string): string {
   const dateObj = new Date(scheduledAt);

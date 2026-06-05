@@ -1,75 +1,100 @@
-<div class="flex items-center justify-between py-3 px-1 hover:bg-[#22232D]/40 transition-colors rounded-[6px]">
-
-  <!-- Match Date Info -->
-  <div class="flex flex-col text-left select-none w-2/12 shrink-0">
-    <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider font-ui">
-      {{ dateLabel() }}
+<div
+  class="bg-[#14151A] border border-[#2A2B36] border-l-2 border-l-transparent rounded-[6px] p-4 hover:bg-[#22232D]/60 hover:border-[#3D3E4D] hover:border-l-[#E8001D] transition-all duration-80 flex flex-col gap-4 select-none shadow-sm w-full"
+>
+  <!-- Card Header: Stage and Status info -->
+  <div class="flex items-center justify-between border-b border-[#2A2B36] pb-3 gap-3">
+    <span class="text-[10px] font-black text-[#9B9BAD] uppercase tracking-widest flex items-center gap-1.5 min-w-0 font-ui">
+      <!-- Globe Icon -->
+      <svg class="w-3.5 h-3.5 text-[#5C5C72] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 002 2h2a2.5 2.5 0 002.5-2.5V10a2 2 0 00-2-2h-1a2 2 0 00-2-2v-1a2 2 0 012-2h2.5M12 21a9 9 0 100-18 9 9 0 000 18z"></path>
+      </svg>
+      <span class="truncate">{{ stageLabel(match().stage) }}</span>
     </span>
-  </div>
 
-  <!-- Match Interactive Score Box -->
-  <div class="flex items-center justify-center gap-3 w-8/12 px-2">
-    <!-- Team A short name and flag -->
-    <div class="flex items-center justify-end gap-2.5 w-5/12 overflow-hidden text-right">
-      <span class="text-[11px] font-black text-slate-100 uppercase tracking-wide truncate font-ui"
-        [title]="match().team_a?.name">
-        {{ match().team_a?.name ? (match().team_a?.name?.substring(0, 3)?.toUpperCase()) : '' }}
-      </span>
-      @if (match().team_a?.flag_url) {
-      <img [src]="match().team_a?.flag_url"
-        class="w-4.5 h-4.5 rounded-full object-cover shrink-0 select-none shadow-[0_0_4px_rgba(0,0,0,0.6)]"
-        [alt]="match().team_a?.name" />
-      }
-    </div>
-
-    <!-- Scores inputs -->
-    <div class="flex flex-col items-center gap-1 shrink-0">
-      <div class="flex items-center justify-center gap-1.5">
-        @if (isPastDeadline()) {
-        <!-- Prediction locked -->
-        <div
-          class="flex items-center gap-1 px-2.5 py-1 bg-[#14151A] border border-[#2A2B36] rounded-[4px] text-xs font-black text-slate-400 select-none font-display">
-          <span>{{ scoreA() !== null ? scoreA() : '-' }}</span>
-          <span class="text-slate-600 font-light">&bull;</span>
-          <span>{{ scoreB() !== null ? scoreB() : '-' }}</span>
-        </div>
-        } @else {
-        <!-- Prediction interactive inputs -->
-        <app-score-input [value]="scoreA()" (valueChange)="scoreAChange.emit($event)" (inputChange)="inputChange.emit()"
-          (blur)="blur.emit()"></app-score-input>
-        <span class="text-slate-600 font-bold text-xs select-none">x</span>
-        <app-score-input [value]="scoreB()" (valueChange)="scoreBChange.emit($event)" (inputChange)="inputChange.emit()"
-          (blur)="blur.emit()"></app-score-input>
-        }
-      </div>
-    </div>
-
-    <!-- Team B flag and short name -->
-    <div class="flex items-center justify-start gap-2.5 w-5/12 overflow-hidden text-left">
-      @if (match().team_b?.flag_url) {
-      <img [src]="match().team_b?.flag_url"
-        class="w-4.5 h-4.5 rounded-full object-cover shrink-0 select-none shadow-[0_0_4px_rgba(0,0,0,0.6)]"
-        [alt]="match().team_b?.name" />
-      }
-      <span class="text-[11px] font-black text-slate-100 uppercase tracking-wide truncate font-ui"
-        [title]="match().team_b?.name">
-        {{ match().team_b?.name ? (match().team_b?.name?.substring(0, 3)?.toUpperCase()) : '' }}
-      </span>
-    </div>
-  </div>
-
-  <!-- Scheduled Time and Status info -->
-  <div class="flex flex-col items-end justify-center w-2/12 shrink-0 select-none">
     @if (isPastDeadline()) {
-      <span class="px-2 py-0.5 bg-[#14151A] border border-[#2A2B36] text-[8px] text-slate-500 font-extrabold uppercase tracking-wider rounded-[3px] font-ui">
-        FIM
+      <span class="flex items-center gap-1.5 text-[9px] font-black bg-[#14151A] text-[#9B9BAD] border border-[#2A2B36] px-2 py-1 rounded-[4px] uppercase tracking-wider font-ui">
+        <!-- Lock Icon -->
+        <svg class="w-3 h-3 text-[#5C5C72]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+        </svg>
+        Fechado
+      </span>
+    } @else if (match().status === 'live') {
+      <span class="flex items-center gap-1.5 text-[9px] font-black bg-[#14151A] text-[#FF1A35] border border-[#E8001D] px-2 py-1 rounded-[4px] uppercase tracking-wider font-ui">
+        <!-- Live Icon -->
+        <svg class="w-3 h-3 text-[#FF1A35] animate-pulse" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15.536a5 5 0 000-7.072m-2.828 9.9a9 9 0 000-12.728M12 14a2 2 0 100-4 2 2 0 000 4z"></path>
+        </svg>
+        Ao Vivo
       </span>
     } @else {
-      <!-- Neutral scheduled time -->
-      <span class="text-[10px] font-black text-slate-400 tracking-wider font-display">
-        {{ match().scheduled_at | date: 'HH:mm' }}
+      <span class="flex items-center gap-1.5 text-[9px] font-black bg-[#14151A] text-[#9B9BAD] border border-[#2A2B36] px-2 py-1 rounded-[4px] uppercase tracking-wider font-ui">
+        <!-- Clock Icon -->
+        <svg class="w-3 h-3 text-[#5C5C72]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        Aberto
       </span>
     }
   </div>
 
+  <!-- Card Body: Grid of Team A | Score Inputs | Team B -->
+  <div class="grid grid-cols-[minmax(0,1fr)_120px_minmax(0,1fr)] items-center w-full gap-3">
+    <!-- Team A -->
+    <div class="flex flex-col items-center gap-2 text-center min-w-0">
+      @if (match().team_a?.flag_emoji) {
+        <span class="text-3xl md:text-4xl leading-none select-none">{{ match().team_a!.flag_emoji }}</span>
+      } @else if (match().team_a?.flag_url) {
+        <img [src]="match().team_a!.flag_url" class="w-10 h-10 rounded-full object-cover shrink-0 select-none shadow-md" [alt]="match().team_a?.name" />
+      } @else {
+        <div class="w-10 h-10 bg-[#0D0D0F] border border-[#2A2B36] rounded-[6px] flex items-center justify-center font-black text-[#5C5C72] select-none">?</div>
+      }
+      <span class="text-xs md:text-sm font-bold text-[#F0F0F5] truncate max-w-full font-body">
+        {{ match().team_a?.name ?? '?' }}
+      </span>
+    </div>
+
+    <!-- Center Column: Prediction inputs or locked score -->
+    <div class="flex flex-col items-center justify-center min-w-0">
+      @if (isPastDeadline()) {
+        <!-- Locked prediction display -->
+        <div class="flex items-center gap-1.5 text-xl font-black text-[#F0F0F5] tracking-normal font-display bg-[#0D0D0F] border border-[#2A2B36] px-3.5 py-1.5 rounded-[6px] select-none shadow-inner">
+          <span>{{ scoreA() !== null ? scoreA() : '-' }}</span>
+          <span class="text-xs text-[#5C5C72] px-0.5">-</span>
+          <span>{{ scoreB() !== null ? scoreB() : '-' }}</span>
+        </div>
+      } @else {
+        <!-- Interactive score inputs -->
+        <div class="flex items-center justify-center gap-1">
+          <app-score-input 
+            [value]="scoreA()" 
+            (valueChange)="scoreAChange.emit($event)" 
+            (inputChange)="inputChange.emit()"
+            (blur)="blur.emit()"
+          ></app-score-input>
+          <span class="text-slate-600 font-black text-xs select-none px-1">x</span>
+          <app-score-input 
+            [value]="scoreB()" 
+            (valueChange)="scoreBChange.emit($event)" 
+            (inputChange)="inputChange.emit()"
+            (blur)="blur.emit()"
+          ></app-score-input>
+        </div>
+      }
+    </div>
+
+    <!-- Team B -->
+    <div class="flex flex-col items-center gap-2 text-center min-w-0">
+      @if (match().team_b?.flag_emoji) {
+        <span class="text-3xl md:text-4xl leading-none select-none">{{ match().team_b!.flag_emoji }}</span>
+      } @else if (match().team_b?.flag_url) {
+        <img [src]="match().team_b!.flag_url" class="w-10 h-10 rounded-full object-cover shrink-0 select-none shadow-md" [alt]="match().team_b?.name" />
+      } @else {
+        <div class="w-10 h-10 bg-[#0D0D0F] border border-[#2A2B36] rounded-[6px] flex items-center justify-center font-black text-[#5C5C72] select-none">?</div>
+      }
+      <span class="text-xs md:text-sm font-bold text-[#F0F0F5] truncate max-w-full font-body">
+        {{ match().team_b?.name ?? '?' }}
+      </span>
+    </div>
+  </div>
 </div>
