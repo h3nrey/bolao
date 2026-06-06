@@ -33,6 +33,43 @@
     </div>
   </div>
 
+  <!-- Special Predictions Rules Section -->
+  <div class="flex flex-col gap-4 mt-4">
+    <h2 class="text-lg font-black text-[#F0F0F5] tracking-tight uppercase flex items-center gap-2">
+      Palpites Especiais
+    </h2>
+    <div class="p-5 bg-[#14151A] border border-[#2A2B36] rounded-xl leading-relaxed text-text-secondary text-xs md:text-sm">
+      <p class="font-bold text-white mb-2 uppercase tracking-wider text-xs">⚠️ ATENÇÃO E REGRAS</p>
+      Os palpites especiais devem ser enviados antes do início do torneio (<strong>11 de Junho de 2026</strong>). Após o início da Copa, os palpites especiais serão bloqueados.
+      
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-5 w-full">
+        <app-rule-card title="Campeão" [points]="30"
+          description="Acertar qual seleção será a campeã da Copa do Mundo FIFA 2026.">
+        </app-rule-card>
+        
+        <app-rule-card title="Vice-Campeão" [points]="20"
+          description="Acertar qual seleção será a vice-campeã (2º lugar) do torneio.">
+        </app-rule-card>
+        
+        <app-rule-card title="Terceiro Lugar" [points]="20"
+          description="Acertar qual seleção terminará a Copa em terceiro lugar.">
+        </app-rule-card>
+        
+        <app-rule-card title="Zebra / Surpresa" [points]="20"
+          description="Acertar a seleção zebra/surpresa indicada da Copa.">
+        </app-rule-card>
+        
+        <app-rule-card title="Artilheiro" [points]="20"
+          description="Acertar qual jogador será o artilheiro (maior goleador) da competição.">
+        </app-rule-card>
+        
+        <app-rule-card title="Melhor Jogador" [points]="20"
+          description="Acertar o jogador eleito como o craque (MVP) oficial da Copa.">
+        </app-rule-card>
+      </div>
+    </div>
+  </div>
+
   <!-- World Cup Information Section -->
   <div class="flex flex-col gap-6 mt-4 text-left">
     <h2 class="text-2xl font-extrabold text-[#F0F0F5]">

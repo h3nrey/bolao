@@ -1,0 +1,93 @@
+<div class="flex flex-col gap-1.5">
+  <div class="flex items-center justify-between">
+    <span class="text-[10px] font-black uppercase tracking-widest font-ui"
+      [class.text-[#FFB800]]="accentColor() === 'gold'"
+      [class.text-[#9B9BAD]]="accentColor() === 'silver' || accentColor() === 'bronze'"
+      [class.text-[#E8001D]]="accentColor() === 'red'">
+      {{ category() }}
+    </span>
+
+    <span class="text-[9px] font-black px-2 py-0.5 rounded-full uppercase font-ui shrink-0 select-none"
+      [class.bg-[#FFB800]]="accentColor() === 'gold'"
+      [class.text-black]="accentColor() === 'gold' || accentColor() === 'silver'"
+      [class.bg-[#9B9BAD]]="accentColor() === 'silver'" [class.bg-[#3D3E4D]]="accentColor() === 'bronze'"
+      [class.text-white]="accentColor() === 'bronze' || accentColor() === 'red'"
+      [class.bg-[#E8001D]]="accentColor() === 'red'">
+      +{{ points() }} PTS
+    </span>
+  </div>
+  <h3 class="text-lg font-black text-white uppercase tracking-wider font-ui select-none">{{ title() }}</h3>
+</div>
+
+<div class="relative w-full mt-3">
+  <!-- Search Input Box -->
+  <div
+    class="relative flex items-center bg-[#0D0D0F] border border-[#2A2B36] rounded-md px-3.5 py-2.5 focus-within:border-brand-red-light transition-all">
+    <svg lucideSearch class="w-4 h-4 text-[#5C5C72] shrink-0 mr-2.5"></svg>
+    <input type="text" class="bg-transparent text-xs text-white placeholder-[#5C5C72] outline-none w-full font-body"
+      [placeholder]="placeholder()" [value]="searchQuery()" [disabled]="disabled()"
+      (input)="onSearchInput($any($event.target).value)" (focus)="onFocus()" />
+  </div>
+
+  <!-- Dropdown Option List -->
+  @if (isOpen() && filteredOptions().length > 0) {
+  <div
+    class="absolute left-0 right-0 top-[50%] bg-bg-dark z-[100] mt-1.5 max-h-48 overflow-y-auto bg-bg-elevated border border-brand-red rounded-md shadow-[0_12px_40px_rgba(0,0,0,0.65)] custom-scrollbar">
+    @for (option of filteredOptions(); track option.value) {
+    @if (option.value !== '') {
+    <button type="button"
+      class="w-full px-4 py-3 text-left text-xs font-bold transition-colors duration-150 border-b border-[#2A2B36] last:border-b-0 hover:bg-[#22232D] text-text-primary"
+      [class.bg-brand-red]="option.value === value()" (click)="selectOption(option.value)">
+      {{ option.label }}
+    </button>
+    }
+    }
+  </div>
+  }
+
+  <!-- Selection Status Container -->
+  <div
+    class="mt-3.5 border border-dashed border-[#2A2B36] rounded-md px-4 py-3 flex items-center justify-between bg-[#0D0D0F]/15 select-none min-h-[48px]">
+    <div class="flex items-center gap-3 min-w-0">
+
+      <!-- Icon indicator: ONLY shown if empty (no prediction selection) -->
+      @if (!value()) {
+      @switch (emptyIcon()) {
+      @case ('trophy') {
+      <svg lucideTrophy class="w-4 h-4 text-[#5C5C72] shrink-0"></svg>
+      }
+      @case ('soccer') {
+      <svg lucideSportShoe class="w-4 h-4 text-[#5C5C72] shrink-0"></svg>
+      }
+      @case ('award') {
+      <svg lucideAward class="w-4 h-4 text-[#5C5C72] shrink-0"></svg>
+      }
+      @case ('zap') {
+      <svg lucideZap class="w-4 h-4 text-[#5C5C72] shrink-0"></svg>
+      }
+      @case ('target') {
+      <svg lucideTarget class="w-4 h-4 text-[#5C5C72] shrink-0"></svg>
+      }
+      @case ('star') {
+      <svg lucideStar class="w-4 h-4 text-[#5C5C72] shrink-0"></svg>
+      }
+      }
+      }
+
+      <!-- Selection label -->
+      <span class="truncate" [class.text-xs]="!value()" [class.font-bold]="!value()" [class.text-[#5C5C72]]="!value()"
+        [class.text-sm]="value()" [class.font-extrabold]="value()" [class.text-white]="value()">
+        {{ selectedLabel() || emptyText() }}
+      </span>
+    </div>
+
+    <!-- Clear prediction button -->
+    @if (value() && !disabled()) {
+    <button type="button"
+      class="text-[#5C5C72] hover:text-white p-0.5 bg-transparent border-none cursor-pointer flex items-center justify-center transition-colors shrink-0"
+      (click)="clearSelection()" title="Limpar palpite">
+      <svg lucideX class="w-4 h-4"></svg>
+    </button>
+    }
+  </div>
+</div>

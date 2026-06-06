@@ -21,6 +21,7 @@ model User {
   oauth_accounts  OauthAccount[]
   predictions     Prediction[]
   rankings        Ranking[]
+  special_prediction SpecialPrediction?
 }
 
 model OauthAccount {
@@ -46,6 +47,20 @@ model Tournament {
 
   phases   Phase[]
   rankings Ranking[]
+
+  champion_team_id      String?
+  runner_up_team_id     String?
+  third_place_team_id   String?
+  top_scorer_player_id  String?
+  best_player_player_id String?
+  surprise_team_id      String?
+
+  champion_team        Team?   @relation("TournamentChampion", fields: [champion_team_id], references: [id])
+  runner_up_team       Team?   @relation("TournamentRunnerUp", fields: [runner_up_team_id], references: [id])
+  third_place_team     Team?   @relation("TournamentThirdPlace", fields: [third_place_team_id], references: [id])
+  top_scorer_player    Player? @relation("TournamentTopScorer", fields: [top_scorer_player_id], references: [id])
+  best_player_player   Player? @relation("TournamentBestPlayer", fields: [best_player_player_id], references: [id])
+  surprise_team        Team?   @relation("TournamentSurprise", fields: [surprise_team_id], references: [id])
 }
 
 model Phase {
@@ -78,6 +93,16 @@ model Team {
   match_events     MatchEvent[]
   extra_period_winners MatchExtraPeriod[] @relation("PeriodWinner")
 
+  special_champions     SpecialPrediction[] @relation("SpecialChampion")
+  special_runner_ups    SpecialPrediction[] @relation("SpecialRunnerUp")
+  special_third_places  SpecialPrediction[] @relation("SpecialThirdPlace")
+  special_surprises     SpecialPrediction[] @relation("SpecialSurprise")
+
+  tournament_champions   Tournament[] @relation("TournamentChampion")
+  tournament_runner_ups  Tournament[] @relation("TournamentRunnerUp")
+  tournament_third_places Tournament[] @relation("TournamentThirdPlace")
+  tournament_surprises   Tournament[] @relation("TournamentSurprise")
+
   @@unique([provider, external_id])
 }
 
@@ -91,6 +116,12 @@ model Player {
 
   team         Team          @relation(fields: [team_id], references: [id])
   match_events MatchEvent[]
+
+  special_top_scorers   SpecialPrediction[] @relation("SpecialTopScorer")
+  special_best_players  SpecialPrediction[] @relation("SpecialBestPlayer")
+
+  tournament_top_scorers  Tournament[] @relation("TournamentTopScorer")
+  tournament_best_players Tournament[] @relation("TournamentBestPlayer")
 }
 
 model Group {
@@ -354,4 +385,25 @@ enum Seniority {
   gerente
   pmo
   outro
+}
+
+model SpecialPrediction {
+  id                    String   @id @default(uuid())
+  user_id               String   @unique
+  champion_team_id      String?
+  runner_up_team_id     String?
+  third_place_team_id   String?
+  top_scorer_player_id  String?
+  best_player_player_id String?
+  surprise_team_id      String?
+  submitted_at          DateTime @default(now())
+  updated_at            DateTime @updatedAt
+
+  user                  User     @relation(fields: [user_id], references: [id])
+  champion_team         Team?    @relation("SpecialChampion", fields: [champion_team_id], references: [id])
+  runner_up_team        Team?    @relation("SpecialRunnerUp", fields: [runner_up_team_id], references: [id])
+  third_place_team      Team?    @relation("SpecialThirdPlace", fields: [third_place_team_id], references: [id])
+  top_scorer_player     Player?  @relation("SpecialTopScorer", fields: [top_scorer_player_id], references: [id])
+  best_player_player    Player?  @relation("SpecialBestPlayer", fields: [best_player_player_id], references: [id])
+  surprise_team         Team?    @relation("SpecialSurprise", fields: [surprise_team_id], references: [id])
 }

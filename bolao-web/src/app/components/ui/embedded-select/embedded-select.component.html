@@ -1,0 +1,80 @@
+<div class="relative w-full">
+  <!-- Search Input Wrapper -->
+  <div
+    class="relative flex items-center bg-[#0D0D0F] border border-[#2A2B36] rounded-md px-3.5 py-2.5 focus-within:border-brand-red-light transition-all">
+    <svg lucideSearch class="w-4 h-4 text-[#5C5C72] shrink-0 mr-2.5"></svg>
+    <input type="text" class="bg-transparent text-xs text-white placeholder-[#5C5C72] outline-none w-full font-body"
+      [placeholder]="placeholder()" [value]="searchQuery()" [disabled]="disabled()"
+      (input)="onSearchInput($any($event.target).value)" (focus)="onFocus()" />
+  </div>
+
+  <!-- Dropdown List of Options -->
+  @if (isOpen() && filteredOptions().length > 0) {
+  <div
+    class="absolute left-0 right-0 top-full bg-bg-dark z-[100] mt-1.5 max-h-48 overflow-y-auto bg-bg-elevated border border-brand-red rounded-md shadow-[0_12px_40px_rgba(0,0,0,0.65)] custom-scrollbar">
+    @for (option of filteredOptions(); track option.value) {
+    @if (option.value !== '') {
+    <button type="button"
+      class="w-full px-4 py-3 text-left bg-amber-300 text-xs font-bold transition-colors duration-150 border-b border-[#2A2B36] last:border-b-0 hover:bg-[#22232D] text-text-primary"
+      [class.bg-brand-red]="option.value === value()" (click)="selectOption(option.value)">
+      {{ option.label }}
+    </button>
+    }
+    }
+  </div>
+  }
+
+  <!-- Selection Status Container -->
+  <div
+    class="mt-3.5 border border-dashed border-[#2A2B36] rounded-md px-4 py-3 flex items-center justify-between bg-[#0D0D0F]/15 select-none min-h-[48px]">
+    <div class="flex items-center gap-3 min-w-0">
+      <!-- Icon indicator -->
+      @switch (emptyIcon()) {
+      @case ('trophy') {
+      <svg lucideTrophy
+        [class]="value() ? 'w-4.5 h-4.5 text-[#00D68F] shrink-0' : 'w-4 h-4 text-[#5C5C72] shrink-0'"></svg>
+      }
+      @case ('soccer') {
+      <svg
+        [class]="value() ? 'w-4.5 h-4.5 text-[#00D68F] shrink-0 stroke-[#00D68F] fill-none' : 'w-4 h-4 text-[#5C5C72] shrink-0 stroke-current fill-none'"
+        viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <path
+          d="m12 10-3 2v3l3 2 3-2v-3zm0-8v3m0 14v3M2 12h3m14 0h3m-5.4-6.6-2.1 2.1m-5 5-2.1 2.1m9.2 0 2.1 2.1m-9.2-9.2-2.1-2.1">
+        </path>
+      </svg>
+      }
+      @case ('award') {
+      <svg lucideAward
+        [class]="value() ? 'w-4.5 h-4.5 text-[#00D68F] shrink-0' : 'w-4 h-4 text-[#5C5C72] shrink-0'"></svg>
+      }
+      @case ('zap') {
+      <svg lucideZap
+        [class]="value() ? 'w-4.5 h-4.5 text-[#00D68F] shrink-0' : 'w-4 h-4 text-[#5C5C72] shrink-0'"></svg>
+      }
+      @case ('target') {
+      <svg lucideTarget
+        [class]="value() ? 'w-4.5 h-4.5 text-[#00D68F] shrink-0' : 'w-4 h-4 text-[#5C5C72] shrink-0'"></svg>
+      }
+      @case ('star') {
+      <svg lucideStar
+        [class]="value() ? 'w-4.5 h-4.5 text-[#00D68F] shrink-0' : 'w-4 h-4 text-[#5C5C72] shrink-0'"></svg>
+      }
+      }
+
+      <span class="truncate" [class.text-xs]="!value()" [class.font-bold]="!value()" [class.text-[#5C5C72]]="!value()"
+        [class.text-sm]="value()" [class.font-extrabold]="value()" [class.text-white]="value()">
+        {{ selectedLabel() || emptyText() }}
+      </span>
+    </div>
+
+    <!-- Clear selection button -->
+    @if (value() && !disabled()) {
+    <button type="button"
+      class="text-[#5C5C72] hover:text-white p-0.5 bg-transparent border-none cursor-pointer flex items-center justify-center transition-colors"
+      (click)="clearSelection()" title="Limpar palpite">
+      <svg lucideX class="w-4 h-4"></svg>
+    </button>
+    }
+  </div>
+</div>

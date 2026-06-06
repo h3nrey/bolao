@@ -43,6 +43,14 @@ export class RankingsService {
       userPoints[prediction.user_id].pts_matches += 1;
     }
 
+    // Add special predictions points if this is overall ranking (phaseId is null/undefined)
+    if (!phaseId) {
+      for (const user of allUsers) {
+        const specialPoints = await this.calculateSpecialPoints(user.id, tournamentId);
+        userPoints[user.id].pts_total += specialPoints;
+      }
+    }
+
     // Sort users by total points
     const sortedUsers = Object.entries(userPoints).sort(
       ([, a], [, b]) => b.pts_total - a.pts_total,
@@ -92,6 +100,10 @@ export class RankingsService {
         });
       }
     }
+
+    if (phaseId) {
+      await this.recalculate(tournamentId, null);
+    }
   }
 
   async getFormatted(tournamentId: string, phaseId?: string) {
@@ -128,5 +140,34 @@ export class RankingsService {
     });
 
     return result;
+  }
+
+  private async calculateSpecialPoints(userId: string, tournamentId: string): Promise<number> {
+    const tournament = await this.prisma.tournament.findUnique({ where: { id: tournamentId } });
+    if (!tournament) return 0;
+
+    const pred = await this.prisma.specialPrediction.findUnique({ where: { user_id: userId } });
+    if (!pred) return 0;
+
+    let pts = 0;
+    if (tournament.champion_team_id && pred.champion_team_id === tournament.champion_team_id) {
+      pts += 30;
+    }
+    if (tournament.runner_up_team_id && pred.runner_up_team_id === tournament.runner_up_team_id) {
+      pts += 20;
+    }
+    if (tournament.third_place_team_id && pred.third_place_team_id === tournament.third_place_team_id) {
+      pts += 20;
+    }
+    if (tournament.top_scorer_player_id && pred.top_scorer_player_id === tournament.top_scorer_player_id) {
+      pts += 20;
+    }
+    if (tournament.best_player_player_id && pred.best_player_player_id === tournament.best_player_player_id) {
+      pts += 20;
+    }
+    if (tournament.surprise_team_id && pred.surprise_team_id === tournament.surprise_team_id) {
+      pts += 20;
+    }
+    return pts;
   }
 }

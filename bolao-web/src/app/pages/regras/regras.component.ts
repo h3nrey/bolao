@@ -1,6 +1,5 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LucideTarget, LucideTrophy, LucideShield } from '@lucide/angular';
 
 @Component({
   selector: 'app-rule-card',
@@ -33,7 +32,7 @@ export class RuleCardComponent {
 @Component({
   selector: 'app-regras',
   standalone: true,
-  imports: [CommonModule, LucideTarget, LucideTrophy, LucideShield, RuleCardComponent],
+  imports: [CommonModule, RuleCardComponent],
   templateUrl: './regras.component.html',
 })
 export class RegrasComponent { }

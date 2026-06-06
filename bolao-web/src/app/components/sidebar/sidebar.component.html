@@ -40,6 +40,14 @@
       </app-sidebar-item>
 
       <app-sidebar-item 
+        (click)="navigate('/especiais')" 
+        [active]="isActive('/especiais')" 
+        label="Especiais"
+      >
+        <svg lucideAward class="w-5 h-5"></svg>
+      </app-sidebar-item>
+
+      <app-sidebar-item 
         (click)="navigate('/regras')" 
         [active]="isActive('/regras')" 
         label="Regras"

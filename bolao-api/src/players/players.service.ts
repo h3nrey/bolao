@@ -10,9 +10,12 @@ export class PlayersService {
     if (teamId) {
       return this.prisma.player.findMany({
         where: { team_id: teamId },
+        include: { team: true },
       });
     }
-    return this.prisma.player.findMany();
+    return this.prisma.player.findMany({
+      include: { team: true },
+    });
   }
 
   async findOne(id: string) {
