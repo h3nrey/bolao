@@ -1,44 +1,37 @@
 <div class="flex flex-col gap-6 w-full animate-fadeIn text-left">
 
   <!-- Header -->
-  <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4 border-b border-[#2A2B36] pb-5">
+  <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
     <div class="flex flex-col gap-2">
-      <span class="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#9B9BAD] font-ui">
-        <span class="w-2 h-2 bg-[#E8001D] rounded-[2px] inline-block"></span>
-        Ranking Oficial
-      </span>
       <h1 class="text-3xl font-black text-[#F0F0F5] tracking-tight leading-none font-body">
         Classificação
       </h1>
       <p class="text-xs text-[#9B9BAD] font-medium">Batalhe pelo topo do Bolão Vlab.</p>
     </div>
-
-    <div class="hidden md:flex h-9 items-center gap-2 px-3 bg-[#14151A] border border-[#2A2B36] border-l-2 border-l-[#E8001D] rounded-[6px] text-[10px] font-black uppercase tracking-widest text-[#9B9BAD] font-ui">
-      <svg lucideTrophy class="w-4 h-4 text-[#E8001D]"></svg>
-      {{ tournamentName() }}
-    </div>
   </div>
 
   <!-- Loading state -->
   @if (loadingRankings()) {
-    <div class="flex flex-col items-center justify-center py-20 gap-3 w-full bg-[#14151A] border border-[#2A2B36] rounded-[8px]">
-      <div class="w-10 h-10 border-3 border-[#2A2B36] border-t-[#E8001D] rounded-full animate-spin"></div>
-      <p class="text-xs text-[#9B9BAD]">Carregando classificação...</p>
-    </div>
+  <div
+    class="flex flex-col items-center justify-center py-20 gap-3 w-full bg-[#14151A] border border-[#2A2B36] rounded-[8px]">
+    <div class="w-10 h-10 border-3 border-[#2A2B36] border-t-[#E8001D] rounded-full animate-spin"></div>
+    <p class="text-xs text-[#9B9BAD]">Carregando classificação...</p>
+  </div>
   } @else {
-    @if (rankings().length === 0) {
-      <div class="py-16 px-6 flex flex-col items-center text-center gap-3 text-[#9B9BAD] border border-dashed border-[#2A2B36] bg-[#14151A] rounded-[8px]">
-        <div class="w-10 h-10 bg-[#0D0D0F] border border-[#2A2B36] rounded-[6px] flex items-center justify-center">
-          <svg lucideTrophy class="w-5 h-5 text-[#5C5C72]"></svg>
-        </div>
-        <p class="text-sm font-bold text-[#F0F0F5]">Nenhuma classificação encontrada para este torneio ainda.</p>
-        <p class="text-xs text-[#5C5C72]">Os rankings serão computados assim que as partidas começarem.</p>
-      </div>
-    } @else {
+  @if (rankings().length === 0) {
+  <div
+    class="py-16 px-6 flex flex-col items-center text-center gap-3 text-[#9B9BAD] border border-dashed border-[#2A2B36] bg-[#14151A] rounded-[8px]">
+    <div class="w-10 h-10 bg-[#0D0D0F] border border-[#2A2B36] rounded-[6px] flex items-center justify-center">
+      <svg lucideTrophy class="w-5 h-5 text-[#5C5C72]"></svg>
+    </div>
+    <p class="text-sm font-bold text-[#F0F0F5]">Nenhuma classificação encontrada para este torneio ainda.</p>
+    <p class="text-xs text-[#5C5C72]">Os rankings serão computados assim que as partidas começarem.</p>
+  </div>
+  } @else {
 
-      <!-- Leaderboard Table Component -->
-      <app-leaderboard-table [rankings]="rankings()" [userId]="userId()" />
+  <!-- Leaderboard Table Component -->
+  <app-leaderboard-table [rankings]="rankings()" [userId]="userId()" />
 
-    }
+  }
   }
 </div>
