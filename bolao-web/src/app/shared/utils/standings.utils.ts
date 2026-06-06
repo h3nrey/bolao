@@ -19,11 +19,17 @@ export function calculateGroupStandings(groupMatches: any[], predictions: Record
     let scoreA = 0;
     let scoreB = 0;
 
-    const localPred = predictions[m.id];
-    if (localPred && localPred.scoreA !== null && localPred.scoreB !== null) {
-      scoreA = localPred.scoreA;
-      scoreB = localPred.scoreB;
+    if (m.status === 'finished') {
+      scoreA = m.score?.score_a ?? m.score_a ?? 0;
+      scoreB = m.score?.score_b ?? m.score_b ?? 0;
       played = true;
+    } else {
+      const localPred = predictions[m.id];
+      if (localPred && localPred.scoreA !== null && localPred.scoreB !== null) {
+        scoreA = localPred.scoreA;
+        scoreB = localPred.scoreB;
+        played = true;
+      }
     }
 
     if (played) {

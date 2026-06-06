@@ -57,48 +57,24 @@ export class ScoringService {
 
     // --- Scoring Rules ---
 
-    // Exact score: 10 pts
-    if (predScoreA !== null && predScoreB !== null &&
-        predScoreA === actualScoreA && predScoreB === actualScoreB) {
-      pointsToInsert.push({ type: 'exact_score', pts_earned: 10 });
-    }
-
-    // Goals A correct: 3 pts
-    if (predScoreA !== null && predScoreA === actualScoreA) {
-      pointsToInsert.push({ type: 'goals_a', pts_earned: 3 });
-    }
-
-    // Goals B correct: 3 pts
-    if (predScoreB !== null && predScoreB === actualScoreB) {
-      pointsToInsert.push({ type: 'goals_b', pts_earned: 3 });
-    }
-
-    // Result correct (win/draw/loss): 4 pts
+    // --- Scoring Rules (Mutually Exclusive) ---
     if (predScoreA !== null && predScoreB !== null) {
+      const isExactScore = predScoreA === actualScoreA && predScoreB === actualScoreB;
       const predResult = Math.sign(predScoreA - predScoreB);
       const actualResult = Math.sign(actualScoreA - actualScoreB);
-      if (predResult === actualResult) {
-        pointsToInsert.push({ type: 'result', pts_earned: 4 });
-      }
-    }
+      const isResultCorrect = predResult === actualResult;
 
-    // Total goals correct: 1 pt
-    if (predScoreA !== null && predScoreB !== null &&
-        (predScoreA + predScoreB) === (actualScoreA + actualScoreB)) {
-      pointsToInsert.push({ type: 'total_goals', pts_earned: 1 });
-    }
-
-    // First goal player correct: 8 pts
-    if (predFirstGoalPlayer && firstGoal && firstGoal.player_id === predFirstGoalPlayer) {
-      pointsToInsert.push({ type: 'first_goal_player', pts_earned: 8 });
-    }
-
-    // First goal team correct (no player match): 3 pts
-    if (predFirstGoalTeam && firstGoal && firstGoal.team_id === predFirstGoalTeam) {
-      // Only award if the player wasn't already matched
-      const alreadyMatchedPlayer = pointsToInsert.find((p) => p.type === 'first_goal_player');
-      if (!alreadyMatchedPlayer) {
-        pointsToInsert.push({ type: 'first_goal_team', pts_earned: 3 });
+      if (isExactScore) {
+        pointsToInsert.push({ type: 'exact_score', pts_earned: 10 });
+      } else if (isResultCorrect) {
+        pointsToInsert.push({ type: 'result', pts_earned: 6 });
+      } else {
+        if (predScoreA === actualScoreA) {
+          pointsToInsert.push({ type: 'goals_a', pts_earned: 1 });
+        }
+        if (predScoreB === actualScoreB) {
+          pointsToInsert.push({ type: 'goals_b', pts_earned: 1 });
+        }
       }
     }
 
