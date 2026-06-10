@@ -1,0 +1,39 @@
+<div class="fixed bottom-6 left-[50%] -translate-x-[50%] z-50 w-[calc(100%-2rem)] max-w-2xl bg-[#14151A] border border-[#2A2B36] rounded-none shadow-[0_16px_36px_rgba(0,0,0,0.85)] p-4 flex flex-col sm:flex-row items-center justify-between gap-4 animate-slideInUp select-none">
+  
+  <!-- Selected Info & Items List -->
+  <div class="flex items-center gap-3.5 w-full sm:w-auto overflow-hidden min-w-0">
+    <div class="h-6 px-2.5 bg-[#E8001D] text-white flex items-center justify-center text-[10px] font-black uppercase rounded-none font-ui tracking-wider shrink-0 select-none">
+      {{ count() }} Selecionado(s)
+    </div>
+    
+    <!-- Badges list (horizontal scrollable) -->
+    <div class="flex gap-2 overflow-x-auto no-scrollbar scroll-smooth whitespace-nowrap py-1 pr-2">
+      @for (item of items(); track item.id) {
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#1C1D24] border border-[#2A2B36] text-[10px] font-bold text-slate-300 uppercase tracking-wide rounded-none font-ui shrink-0 max-w-[150px] truncate select-none">
+          @if (item.emoji) {
+            <span class="text-xs shrink-0 select-none">{{ item.emoji }}</span>
+          }
+          <span class="truncate">{{ item.label }}</span>
+        </span>
+      }
+    </div>
+  </div>
+
+  <!-- Action buttons -->
+  <div class="flex items-center gap-3 shrink-0 w-full sm:w-auto justify-end border-t sm:border-t-0 border-[#2A2B36] pt-3 sm:pt-0">
+    <button 
+      (click)="onClear()" 
+      class="h-9 px-4 bg-transparent hover:bg-[#1C1D24] border border-transparent hover:border-[#2A2B36] rounded-[3px] text-xs font-bold text-slate-400 hover:text-white cursor-pointer transition-all duration-80 flex items-center gap-1.5 outline-none font-ui uppercase tracking-wider"
+    >
+      <svg lucideX class="w-3.5 h-3.5"></svg>
+      Limpar
+    </button>
+    <button 
+      (click)="onDelete()" 
+      class="h-9 px-4 bg-[#E8001D] hover:bg-[#B8001A] text-white rounded-[3px] text-xs font-bold shadow-sm hover:shadow-md cursor-pointer transition-all duration-80 flex items-center justify-center gap-2 outline-none font-ui uppercase tracking-wider"
+    >
+      <svg lucideTrash2 class="w-3.5 h-3.5"></svg>
+      Excluir Selecionados
+    </button>
+  </div>
+</div>

@@ -7,8 +7,17 @@
         <svg lucideShield class="w-8 h-8 text-[#E8001D]"></svg>
         Painel Administrativo
       </h1>
-      <p class="text-xs text-slate-400 font-medium font-body">Controle total sobre os membros participantes, edição de perfis e remoção definitiva.</p>
+      <p class="text-xs text-slate-400 font-medium font-body">Controle total sobre os membros participantes, edição de perfis, gerenciamento de times e remoções.</p>
     </div>
+  </div>
+
+  <!-- Tab Selector Component -->
+  <div class="-mt-2 text-left">
+    <app-tab-selector 
+      [options]="tabOptions" 
+      [activeId]="activeTab()" 
+      (tabChange)="onTabChange($event)"
+    ></app-tab-selector>
   </div>
 
   <!-- Sleek Feedback Banner (Strictly Opaque, No Glow) -->
@@ -35,262 +44,451 @@
     </div>
   }
 
-  <!-- Stepped Dashboard Stats (Opaque + Sharp Accents, No Glow Circles) -->
-  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-    <!-- Stat 1: Total Users -->
-    <div class="bg-[#14151A] border border-[#2A2B36] border-l-3 border-[#E8001D] rounded-none p-4 flex flex-col text-left justify-between hover:bg-[#1C1D24] transition-all duration-200 shadow-sm">
-      <span class="text-[10px] font-black uppercase tracking-wider text-slate-500 font-ui">Total de Membros</span>
-      <span class="text-3xl font-black text-white mt-1.5 font-display">{{ stats().total }}</span>
-    </div>
-
-    <!-- Stat 2: Admins -->
-    <div class="bg-[#14151A] border border-[#2A2B36] border-l-3 border-[#0A84FF] rounded-none p-4 flex flex-col text-left justify-between hover:bg-[#1C1D24] transition-all duration-200 shadow-sm">
-      <span class="text-[10px] font-black uppercase tracking-wider text-slate-500 font-ui">Administradores</span>
-      <span class="text-3xl font-black text-blue-400 mt-1.5 font-display">{{ stats().admins }}</span>
-    </div>
-
-    <!-- Stat 3: Completed Profiles -->
-    <div class="bg-[#14151A] border border-[#2A2B36] border-l-3 border-[#00D68F] rounded-none p-4 flex flex-col text-left justify-between hover:bg-[#1C1D24] transition-all duration-200 shadow-sm">
-      <span class="text-[10px] font-black uppercase tracking-wider text-slate-500 font-ui">Perfis Completos</span>
-      <span class="text-3xl font-black text-[#00D68F] mt-1.5 font-display">{{ stats().completed }}</span>
-    </div>
-
-    <!-- Stat 4: Incomplete Profiles -->
-    <div class="bg-[#14151A] border border-[#2A2B36] border-l-3 border-[#FFB800] rounded-none p-4 flex flex-col text-left justify-between hover:bg-[#1C1D24] transition-all duration-200 shadow-sm">
-      <span class="text-[10px] font-black uppercase tracking-wider text-slate-500 font-ui">Cadastro Incompleto</span>
-      <span class="text-3xl font-black text-[#FFB800] mt-1.5 font-display">{{ stats().incomplete }}</span>
-    </div>
-  </div>
-
-  <!-- Dynamic Search & Filters Row (Opaque, Sharp Borders) -->
-  <div class="flex flex-col md:flex-row gap-4 bg-[#14151A] border border-[#2A2B36] rounded-none p-4">
-    <!-- Search Box -->
-    <div class="flex-1 relative">
-      <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
-        <svg lucideSearch class="w-4.5 h-4.5"></svg>
+  @if (activeTab() === 'membros') {
+    <!-- Stepped Dashboard Stats (Opaque + Sharp Accents, No Glow Circles) -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <!-- Stat 1: Total Users -->
+      <div class="bg-[#14151A] border border-[#2A2B36] border-l-3 border-[#E8001D] rounded-none p-4 flex flex-col text-left justify-between hover:bg-[#1C1D24] transition-all duration-200 shadow-sm">
+        <span class="text-[10px] font-black uppercase tracking-wider text-slate-500 font-ui">Total de Membros</span>
+        <span class="text-3xl font-black text-white mt-1.5 font-display">{{ stats().total }}</span>
       </div>
-      <input 
-        type="text" 
-        [value]="searchQuery()"
-        (input)="searchQuery.set($any($event.target).value)"
-        placeholder="Buscar por nome ou e-mail..."
-        class="w-full pl-10 pr-10 py-3 bg-[#0D0D0F] border border-[#2A2B36] rounded-[3px] text-xs text-white placeholder-slate-600 focus:outline-none focus:border-[#E8001D] transition-all font-body"
-      />
-      @if (searchQuery()) {
-        <button 
-          (click)="searchQuery.set('')"
-          class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-500 hover:text-white bg-transparent border-none cursor-pointer"
+
+      <!-- Stat 2: Admins -->
+      <div class="bg-[#14151A] border border-[#2A2B36] border-l-3 border-[#0A84FF] rounded-none p-4 flex flex-col text-left justify-between hover:bg-[#1C1D24] transition-all duration-200 shadow-sm">
+        <span class="text-[10px] font-black uppercase tracking-wider text-slate-500 font-ui">Administradores</span>
+        <span class="text-3xl font-black text-blue-400 mt-1.5 font-display">{{ stats().admins }}</span>
+      </div>
+
+      <!-- Stat 3: Completed Profiles -->
+      <div class="bg-[#14151A] border border-[#2A2B36] border-l-3 border-[#00D68F] rounded-none p-4 flex flex-col text-left justify-between hover:bg-[#1C1D24] transition-all duration-200 shadow-sm">
+        <span class="text-[10px] font-black uppercase tracking-wider text-slate-500 font-ui">Perfis Completos</span>
+        <span class="text-3xl font-black text-[#00D68F] mt-1.5 font-display">{{ stats().completed }}</span>
+      </div>
+
+      <!-- Stat 4: Incomplete Profiles -->
+      <div class="bg-[#14151A] border border-[#2A2B36] border-l-3 border-[#FFB800] rounded-none p-4 flex flex-col text-left justify-between hover:bg-[#1C1D24] transition-all duration-200 shadow-sm">
+        <span class="text-[10px] font-black uppercase tracking-wider text-slate-500 font-ui">Cadastro Incompleto</span>
+        <span class="text-3xl font-black text-[#FFB800] mt-1.5 font-display">{{ stats().incomplete }}</span>
+      </div>
+    </div>
+
+    <!-- Dynamic Search & Filters Row (Opaque, Sharp Borders) -->
+    <div class="flex flex-col md:flex-row gap-4 bg-[#14151A] border border-[#2A2B36] rounded-none p-4">
+      <!-- Search Box -->
+      <div class="flex-1 relative">
+        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+          <svg lucideSearch class="w-4.5 h-4.5"></svg>
+        </div>
+        <input 
+          type="text" 
+          [value]="searchQuery()"
+          (input)="searchQuery.set($any($event.target).value)"
+          placeholder="Buscar por nome ou e-mail..."
+          class="w-full pl-10 pr-10 py-3 bg-[#0D0D0F] border border-[#2A2B36] rounded-[3px] text-xs text-white placeholder-slate-600 focus:outline-none focus:border-[#E8001D] transition-all font-body"
+        />
+        @if (searchQuery()) {
+          <button 
+            (click)="searchQuery.set('')"
+            class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-500 hover:text-white bg-transparent border-none cursor-pointer"
+          >
+            <svg lucideX class="w-4 h-4"></svg>
+          </button>
+        }
+      </div>
+
+      <!-- Filter 1: Project -->
+      <div class="w-full md:w-56 shrink-0 relative">
+        <select 
+          [value]="projectFilter()"
+          (change)="projectFilter.set($any($event.target).value)"
+          class="w-full px-4 py-3 bg-[#0D0D0F] border border-[#2A2B36] rounded-[3px] text-xs text-slate-300 focus:outline-none focus:border-[#E8001D] appearance-none cursor-pointer font-ui uppercase tracking-wider"
         >
-          <svg lucideX class="w-4 h-4"></svg>
-        </button>
-      }
-    </div>
+          @for (opt of filterProjectOptions; track opt.id) {
+            <option [value]="opt.id" class="bg-[#14151A] text-white">{{ opt.label }}</option>
+          }
+        </select>
+        <div class="absolute inset-y-0 right-4 flex items-center pointer-events-none text-slate-500">
+          <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+        </div>
+      </div>
 
-    <!-- Filter 1: Project -->
-    <div class="w-full md:w-56 shrink-0 relative">
-      <select 
-        [value]="projectFilter()"
-        (change)="projectFilter.set($any($event.target).value)"
-        class="w-full px-4 py-3 bg-[#0D0D0F] border border-[#2A2B36] rounded-[3px] text-xs text-slate-300 focus:outline-none focus:border-[#E8001D] appearance-none cursor-pointer font-ui uppercase tracking-wider"
-      >
-        @for (opt of filterProjectOptions; track opt.id) {
-          <option [value]="opt.id" class="bg-[#14151A] text-white">{{ opt.label }}</option>
-        }
-      </select>
-      <div class="absolute inset-y-0 right-4 flex items-center pointer-events-none text-slate-500">
-        <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+      <!-- Filter 2: Role -->
+      <div class="w-full md:w-48 shrink-0 relative">
+        <select 
+          [value]="roleFilter()"
+          (change)="roleFilter.set($any($event.target).value)"
+          class="w-full px-4 py-3 bg-[#0D0D0F] border border-[#2A2B36] rounded-[3px] text-xs text-slate-300 focus:outline-none focus:border-[#E8001D] appearance-none cursor-pointer font-ui uppercase tracking-wider"
+        >
+          @for (opt of filterRoleOptions; track opt.id) {
+            <option [value]="opt.id" class="bg-[#14151A] text-white">{{ opt.label }}</option>
+          }
+        </select>
+        <div class="absolute inset-y-0 right-4 flex items-center pointer-events-none text-slate-500">
+          <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+        </div>
       </div>
     </div>
 
-    <!-- Filter 2: Role -->
-    <div class="w-full md:w-48 shrink-0 relative">
-      <select 
-        [value]="roleFilter()"
-        (change)="roleFilter.set($any($event.target).value)"
-        class="w-full px-4 py-3 bg-[#0D0D0F] border border-[#2A2B36] rounded-[3px] text-xs text-slate-300 focus:outline-none focus:border-[#E8001D] appearance-none cursor-pointer font-ui uppercase tracking-wider"
-      >
-        @for (opt of filterRoleOptions; track opt.id) {
-          <option [value]="opt.id" class="bg-[#14151A] text-white">{{ opt.label }}</option>
-        }
-      </select>
-      <div class="absolute inset-y-0 right-4 flex items-center pointer-events-none text-slate-500">
-        <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
-      </div>
-    </div>
-  </div>
-
-  <!-- Loading State -->
-  @if (loading()) {
-    <div class="flex justify-center items-center py-24 bg-[#14151A] border border-[#2A2B36] rounded-none">
-      <div class="w-10 h-10 border-4 border-white/10 border-t-[#E8001D] rounded-full animate-spin"></div>
-    </div>
-  } @else {
-    <!-- Empty Filter Results -->
-    @if (filteredUsers().length === 0) {
-      <div class="flex flex-col items-center text-center py-20 bg-[#14151A] border border-[#2A2B36] rounded-none p-8">
-        <span class="text-4xl mb-4">🔍</span>
-        <h3 class="text-lg font-bold text-white mb-1.5 font-ui uppercase tracking-wider">Nenhum membro encontrado</h3>
-        <p class="text-xs text-slate-400 max-w-sm font-body">Tente redefinir sua busca ou remover os filtros aplicados para encontrar o participante.</p>
+    <!-- Loading State -->
+    @if (loading()) {
+      <div class="flex justify-center items-center py-24 bg-[#14151A] border border-[#2A2B36] rounded-none">
+        <div class="w-10 h-10 border-4 border-white/10 border-t-[#E8001D] rounded-full animate-spin"></div>
       </div>
     } @else {
-      
-      <!-- Responsive Layout: Desktop Table (Hidden on Mobile) -->
-      <div class="hidden md:block w-full overflow-hidden bg-[#14151A] border border-[#2A2B36] rounded-none shadow-md">
-        <table class="w-full border-collapse text-left text-xs">
-          <thead>
-            <tr class="bg-[#1C1D24] border-b border-[#2A2B36] text-slate-400 font-bold uppercase tracking-wider font-ui">
-              <th class="px-6 py-4">Membro</th>
-              <th class="px-6 py-4">Projeto</th>
-              <th class="px-6 py-4">Senioridade</th>
-              <th class="px-6 py-4">Papel</th>
-              <th class="px-6 py-4 text-right">Ações</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-[#2A2B36] font-body">
-            @for (usr of filteredUsers(); track usr.id) {
-              <tr class="hover:bg-[#22232D] transition-colors duration-80">
-                
-                <!-- Member details -->
-                <td class="px-6 py-4 flex items-center gap-3">
-                  <div class="relative shrink-0">
-                    @if (usr.avatar_url) {
-                      <img [src]="usr.avatar_url" alt="Avatar" class="w-9 h-9 rounded-full object-cover border border-[#2A2B36] shadow-sm" />
+      <!-- Empty Filter Results -->
+      @if (filteredUsers().length === 0) {
+        <div class="flex flex-col items-center text-center py-20 bg-[#14151A] border border-[#2A2B36] rounded-none p-8">
+          <span class="text-4xl mb-4">🔍</span>
+          <h3 class="text-lg font-bold text-white mb-1.5 font-ui uppercase tracking-wider">Nenhum membro encontrado</h3>
+          <p class="text-xs text-slate-400 max-w-sm font-body">Tente redefinir sua busca ou remover os filtros aplicados para encontrar o participante.</p>
+        </div>
+      } @else {
+        
+        <!-- Responsive Layout: Desktop Table (Hidden on Mobile) -->
+        <div class="hidden md:block w-full overflow-hidden bg-[#14151A] border border-[#2A2B36] rounded-none shadow-md">
+          <table class="w-full border-collapse text-left text-xs">
+            <thead>
+              <tr class="bg-[#1C1D24] border-b border-[#2A2B36] text-slate-400 font-bold uppercase tracking-wider font-ui">
+                <th class="px-6 py-4">Membro</th>
+                <th class="px-6 py-4">Projeto</th>
+                <th class="px-6 py-4">Senioridade</th>
+                <th class="px-6 py-4">Papel</th>
+                <th class="px-6 py-4 text-right">Ações</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-[#2A2B36] font-body">
+              @for (usr of filteredUsers(); track usr.id) {
+                <tr class="hover:bg-[#22232D] transition-colors duration-80">
+                  
+                  <!-- Member details -->
+                  <td class="px-6 py-4 flex items-center gap-3">
+                    <div class="relative shrink-0">
+                      @if (usr.avatar_url) {
+                        <img [src]="usr.avatar_url" alt="Avatar" class="w-9 h-9 rounded-full object-cover border border-[#2A2B36] shadow-sm" />
+                      } @else {
+                        <div class="w-9 h-9 rounded-full bg-[#E8001D] text-white flex items-center justify-center text-xs font-black border border-[#2A2B36] shadow-sm font-ui">
+                          {{ usr.name.charAt(0).toUpperCase() }}
+                        </div>
+                      }
+                    </div>
+                    <div class="flex flex-col min-w-0">
+                      <span class="font-bold text-white truncate text-xs leading-snug">{{ usr.name }}</span>
+                      <span class="text-[10px] text-slate-400 truncate mt-0.5 leading-none">{{ usr.email }}</span>
+                    </div>
+                  </td>
+
+                  <!-- Project Badge -->
+                  <td class="px-6 py-4">
+                    <span 
+                      class="px-2.5 py-1 text-[9px] font-black uppercase rounded-none border tracking-wide whitespace-nowrap font-ui"
+                      [class.bg-[#2A0008]]="usr.project"
+                      [class.border-[#E8001D]]="usr.project"
+                      [class.text-red-400]="usr.project"
+                      [class.bg-[#1C1D24]]="!usr.project"
+                      [class.border-[#2A2B36]]="!usr.project"
+                      [class.text-[#5C5C72]]="!usr.project"
+                    >
+                      {{ getProjectLabel(usr.project) }}
+                    </span>
+                  </td>
+
+                  <!-- Seniority label -->
+                  <td class="px-6 py-4 font-semibold text-slate-300">
+                    {{ getSeniorityLabel(usr.seniority) }}
+                  </td>
+
+                  <!-- Role -->
+                  <td class="px-6 py-4">
+                    @if (usr.is_admin) {
+                      <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-[#14151A] border border-[#0A84FF] text-[9px] font-black uppercase tracking-wider text-blue-400 rounded-none font-ui">
+                        <svg lucideShield class="w-2.5 h-2.5"></svg>
+                        Admin
+                      </span>
                     } @else {
-                      <div class="w-9 h-9 rounded-full bg-[#E8001D] text-white flex items-center justify-center text-xs font-black border border-[#2A2B36] shadow-sm font-ui">
-                        {{ usr.name.charAt(0).toUpperCase() }}
-                      </div>
+                      <span class="px-2.5 py-0.5 bg-[#1C1D24] border border-[#2A2B36] text-[9px] font-black uppercase tracking-wider text-slate-400 rounded-none font-ui">
+                        Membro
+                      </span>
                     }
-                  </div>
-                  <div class="flex flex-col min-w-0">
-                    <span class="font-bold text-white truncate text-xs leading-snug">{{ usr.name }}</span>
-                    <span class="text-[10px] text-slate-400 truncate mt-0.5 leading-none">{{ usr.email }}</span>
-                  </div>
-                </td>
+                  </td>
 
-                <!-- Project Badge -->
-                <td class="px-6 py-4">
-                  <span 
-                    class="px-2.5 py-1 text-[9px] font-black uppercase rounded-none border tracking-wide whitespace-nowrap font-ui"
-                    [class.bg-[#2A0008]]="usr.project"
-                    [class.border-[#E8001D]]="usr.project"
-                    [class.text-red-400]="usr.project"
-                    [class.bg-[#1C1D24]]="!usr.project"
-                    [class.border-[#2A2B36]]="!usr.project"
-                    [class.text-[#5C5C72]]="!usr.project"
-                  >
-                    {{ getProjectLabel(usr.project) }}
-                  </span>
-                </td>
+                  <!-- Actions -->
+                  <td class="px-6 py-4 text-right">
+                    <div class="flex items-center justify-end gap-2">
+                      <button 
+                        (click)="openEditModal(usr)"
+                        class="p-2 bg-[#1C1D24] hover:bg-[#22232D] text-slate-400 hover:text-blue-400 border border-[#2A2B36] hover:border-[#0A84FF] rounded-[3px] cursor-pointer transition-colors duration-80" 
+                        title="Editar Usuário"
+                      >
+                        <svg lucideEdit2 class="w-3.5 h-3.5"></svg>
+                      </button>
+                      <button 
+                        (click)="openDeleteModal(usr)"
+                        class="p-2 bg-[#1C1D24] hover:bg-[#22232D] text-slate-400 hover:text-[#E8001D] border border-[#2A2B36] hover:border-[#E8001D] rounded-[3px] cursor-pointer transition-colors duration-80" 
+                        title="Remover Usuário"
+                      >
+                        <svg lucideTrash2 class="w-3.5 h-3.5"></svg>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
 
-                <!-- Seniority label -->
-                <td class="px-6 py-4 font-semibold text-slate-300">
-                  {{ getSeniorityLabel(usr.seniority) }}
-                </td>
+        <!-- Responsive Layout: Mobile User Cards (Hidden on Desktop) -->
+        <div class="md:hidden grid grid-cols-1 gap-4">
+          @for (usr of filteredUsers(); track usr.id) {
+            <div class="bg-[#14151A] border border-[#2A2B36] rounded-none p-4 flex flex-col gap-4 text-left shadow-sm">
+              <div class="flex items-center gap-3">
+                <div class="relative shrink-0">
+                  @if (usr.avatar_url) {
+                    <img [src]="usr.avatar_url" alt="Avatar" class="w-10 h-10 rounded-full object-cover border border-[#2A2B36] shadow-sm" />
+                  } @else {
+                    <div class="w-10 h-10 rounded-full bg-[#E8001D] text-white flex items-center justify-center text-sm font-black border border-[#2A2B36] shadow-sm font-ui">
+                      {{ usr.name.charAt(0).toUpperCase() }}
+                    </div>
+                  }
+                </div>
+                <div class="flex flex-col min-w-0 font-body">
+                  <span class="font-bold text-white truncate text-xs leading-tight">{{ usr.name }}</span>
+                  <span class="text-[10px] text-slate-400 truncate mt-0.5 leading-none">{{ usr.email }}</span>
+                </div>
+              </div>
 
-                <!-- Role -->
-                <td class="px-6 py-4">
+              <!-- Labels metadata row -->
+              <div class="grid grid-cols-2 gap-2 border-t border-b border-[#2A2B36] py-3 text-[10px] font-body">
+                <div class="flex flex-col gap-0.5">
+                  <span class="text-slate-500 uppercase tracking-wider text-[8px] font-black font-ui">Projeto</span>
+                  <span class="font-bold text-slate-200 truncate">{{ getProjectLabel(usr.project) }}</span>
+                </div>
+                <div class="flex flex-col gap-0.5">
+                  <span class="text-slate-500 uppercase tracking-wider text-[8px] font-black font-ui">Senioridade</span>
+                  <span class="font-bold text-slate-200 truncate">{{ getSeniorityLabel(usr.seniority) }}</span>
+                </div>
+              </div>
+
+              <!-- Role & Actions Bottom Row -->
+              <div class="flex items-center justify-between">
+                <div>
                   @if (usr.is_admin) {
-                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-[#14151A] border border-[#0A84FF] text-[9px] font-black uppercase tracking-wider text-blue-400 rounded-none font-ui">
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 bg-[#14151A] border border-[#0A84FF] text-[8px] font-black uppercase tracking-wider text-blue-400 rounded-none font-ui">
                       <svg lucideShield class="w-2.5 h-2.5"></svg>
                       Admin
                     </span>
                   } @else {
-                    <span class="px-2.5 py-0.5 bg-[#1C1D24] border border-[#2A2B36] text-[9px] font-black uppercase tracking-wider text-slate-400 rounded-none font-ui">
+                    <span class="px-2.5 py-0.5 bg-[#1C1D24] border border-[#2A2B36] text-[8px] font-black uppercase tracking-wider text-slate-400 rounded-none font-ui">
                       Membro
                     </span>
                   }
-                </td>
-
-                <!-- Actions -->
-                <td class="px-6 py-4 text-right">
-                  <div class="flex items-center justify-end gap-2">
-                    <button 
-                      (click)="openEditModal(usr)"
-                      class="p-2 bg-[#1C1D24] hover:bg-[#22232D] text-slate-400 hover:text-blue-400 border border-[#2A2B36] hover:border-[#0A84FF] rounded-[3px] cursor-pointer transition-colors duration-80" 
-                      title="Editar Usuário"
-                    >
-                      <svg lucideEdit2 class="w-3.5 h-3.5"></svg>
-                    </button>
-                    <button 
-                      (click)="openDeleteModal(usr)"
-                      class="p-2 bg-[#1C1D24] hover:bg-[#22232D] text-slate-400 hover:text-[#E8001D] border border-[#2A2B36] hover:border-[#E8001D] rounded-[3px] cursor-pointer transition-colors duration-80" 
-                      title="Remover Usuário"
-                    >
-                      <svg lucideTrash2 class="w-3.5 h-3.5"></svg>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Responsive Layout: Mobile User Cards (Hidden on Desktop) -->
-      <div class="md:hidden grid grid-cols-1 gap-4">
-        @for (usr of filteredUsers(); track usr.id) {
-          <div class="bg-[#14151A] border border-[#2A2B36] rounded-none p-4 flex flex-col gap-4 text-left shadow-sm">
-            <div class="flex items-center gap-3">
-              <div class="relative shrink-0">
-                @if (usr.avatar_url) {
-                  <img [src]="usr.avatar_url" alt="Avatar" class="w-10 h-10 rounded-full object-cover border border-[#2A2B36] shadow-sm" />
-                } @else {
-                  <div class="w-10 h-10 rounded-full bg-[#E8001D] text-white flex items-center justify-center text-sm font-black border border-[#2A2B36] shadow-sm font-ui">
-                    {{ usr.name.charAt(0).toUpperCase() }}
-                  </div>
-                }
-              </div>
-              <div class="flex flex-col min-w-0 font-body">
-                <span class="font-bold text-white truncate text-xs leading-tight">{{ usr.name }}</span>
-                <span class="text-[10px] text-slate-400 truncate mt-0.5 leading-none">{{ usr.email }}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button 
+                    (click)="openEditModal(usr)"
+                    class="p-2.5 bg-[#1C1D24] hover:bg-[#22232D] text-slate-400 hover:text-blue-400 border border-[#2A2B36] hover:border-[#0A84FF] rounded-[3px] cursor-pointer transition-colors duration-80"
+                  >
+                    <svg lucideEdit2 class="w-3.5 h-3.5"></svg>
+                  </button>
+                  <button 
+                    (click)="openDeleteModal(usr)"
+                    class="p-2.5 bg-[#1C1D24] hover:bg-[#22232D] text-slate-400 hover:text-[#E8001D] border border-[#2A2B36] hover:border-[#E8001D] rounded-[3px] cursor-pointer transition-colors duration-80"
+                  >
+                    <svg lucideTrash2 class="w-3.5 h-3.5"></svg>
+                  </button>
+                </div>
               </div>
             </div>
+          }
+        </div>
 
-            <!-- Labels metadata row -->
-            <div class="grid grid-cols-2 gap-2 border-t border-b border-[#2A2B36] py-3 text-[10px] font-body">
-              <div class="flex flex-col gap-0.5">
-                <span class="text-slate-500 uppercase tracking-wider text-[8px] font-black font-ui">Projeto</span>
-                <span class="font-bold text-slate-200 truncate">{{ getProjectLabel(usr.project) }}</span>
-              </div>
-              <div class="flex flex-col gap-0.5">
-                <span class="text-slate-500 uppercase tracking-wider text-[8px] font-black font-ui">Senioridade</span>
-                <span class="font-bold text-slate-200 truncate">{{ getSeniorityLabel(usr.seniority) }}</span>
-              </div>
-            </div>
-
-            <!-- Role & Actions Bottom Row -->
-            <div class="flex items-center justify-between">
-              <div>
-                @if (usr.is_admin) {
-                  <span class="inline-flex items-center gap-1 px-2.5 py-0.5 bg-[#14151A] border border-[#0A84FF] text-[8px] font-black uppercase tracking-wider text-blue-400 rounded-none font-ui">
-                    <svg lucideShield class="w-2.5 h-2.5"></svg>
-                    Admin
-                  </span>
-                } @else {
-                  <span class="px-2.5 py-0.5 bg-[#1C1D24] border border-[#2A2B36] text-[8px] font-black uppercase tracking-wider text-slate-400 rounded-none font-ui">
-                    Membro
-                  </span>
-                }
-              </div>
-              <div class="flex items-center gap-2">
-                <button 
-                  (click)="openEditModal(usr)"
-                  class="p-2.5 bg-[#1C1D24] hover:bg-[#22232D] text-slate-400 hover:text-blue-400 border border-[#2A2B36] hover:border-[#0A84FF] rounded-[3px] cursor-pointer transition-colors duration-80"
-                >
-                  <svg lucideEdit2 class="w-3.5 h-3.5"></svg>
-                </button>
-                <button 
-                  (click)="openDeleteModal(usr)"
-                  class="p-2.5 bg-[#1C1D24] hover:bg-[#22232D] text-slate-400 hover:text-[#E8001D] border border-[#2A2B36] hover:border-[#E8001D] rounded-[3px] cursor-pointer transition-colors duration-80"
-                >
-                  <svg lucideTrash2 class="w-3.5 h-3.5"></svg>
-                </button>
-              </div>
-            </div>
-          </div>
+      }
+    }
+  } @else if (activeTab() === 'times') {
+    <!-- Teams Search & Actions Row -->
+    <div class="flex flex-col sm:flex-row gap-4 bg-[#14151A] border border-[#2A2B36] rounded-none p-4 items-center">
+      <!-- Search Box -->
+      <div class="flex-1 w-full relative">
+        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+          <svg lucideSearch class="w-4.5 h-4.5"></svg>
+        </div>
+        <input 
+          type="text" 
+          [value]="searchQuery()"
+          (input)="searchQuery.set($any($event.target).value)"
+          placeholder="Buscar por nome da seleção..."
+          class="w-full pl-10 pr-10 py-3 bg-[#0D0D0F] border border-[#2A2B36] rounded-[3px] text-xs text-white placeholder-slate-600 focus:outline-none focus:border-[#E8001D] transition-all font-body"
+        />
+        @if (searchQuery()) {
+          <button 
+            (click)="searchQuery.set('')"
+            class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-500 hover:text-white bg-transparent border-none cursor-pointer"
+          >
+            <svg lucideX class="w-4 h-4"></svg>
+          </button>
         }
       </div>
 
+      <!-- Action Buttons -->
+      <div class="flex gap-3 w-full sm:w-auto shrink-0 justify-end">
+        <button 
+          (click)="openCreateTeamModal()"
+          class="h-10 px-4 bg-[#E8001D] hover:bg-[#B8001A] text-white rounded-[3px] text-xs font-black uppercase tracking-wider font-ui cursor-pointer transition-all flex items-center gap-2"
+        >
+          <svg lucideCheck class="w-3.5 h-3.5"></svg>
+          Criar Time
+        </button>
+      </div>
+    </div>
+
+    <!-- Selected Teams Panel -->
+    @if (selectedTeamIds().size > 0) {
+      <app-selected-selector
+        [items]="selectedTeamsInfo()"
+        (remove)="removeTeamFromSelection($event)"
+        (clear)="clearTeamSelection()"
+        (delete)="openBulkDeleteModal()"
+      ></app-selected-selector>
+    }
+
+    <!-- Loading State -->
+    @if (loading()) {
+      <div class="flex justify-center items-center py-24 bg-[#14151A] border border-[#2A2B36] rounded-none">
+        <div class="w-10 h-10 border-4 border-white/10 border-t-[#E8001D] rounded-full animate-spin"></div>
+      </div>
+    } @else {
+      <!-- Empty Filter Results -->
+      @if (filteredTeams().length === 0) {
+        <div class="flex flex-col items-center text-center py-20 bg-[#14151A] border border-[#2A2B36] rounded-none p-8">
+          <span class="text-4xl mb-4">🏳️</span>
+          <h3 class="text-lg font-bold text-white mb-1.5 font-ui uppercase tracking-wider">Nenhum time encontrado</h3>
+          <p class="text-xs text-slate-400 max-w-sm font-body">Tente redefinir sua busca para encontrar a seleção desejada.</p>
+        </div>
+      } @else {
+        
+        <!-- Desktop Teams Table -->
+        <div class="hidden md:block w-full overflow-hidden bg-[#14151A] border border-[#2A2B36] rounded-none shadow-md">
+          <table class="w-full border-collapse text-left text-xs">
+            <thead>
+              <tr class="bg-[#1C1D24] border-b border-[#2A2B36] text-slate-400 font-bold uppercase tracking-wider font-ui">
+                <th class="px-6 py-4 w-12 text-center">
+                  <input 
+                    type="checkbox" 
+                    [checked]="isAllTeamsSelected()"
+                    (change)="toggleAllTeams()"
+                    class="cursor-pointer accent-[#E8001D]"
+                  />
+                </th>
+                <th class="px-6 py-4">Bandeira</th>
+                <th class="px-6 py-4">Emoji</th>
+                <th class="px-6 py-4">Nome da Seleção</th>
+                <th class="px-6 py-4">ID Externo</th>
+                <th class="px-6 py-4 text-right">Ações</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-[#2A2B36] font-body">
+              @for (team of filteredTeams(); track team.id) {
+                <tr class="hover:bg-[#22232D] transition-colors duration-80">
+                  <td class="px-6 py-4 text-center">
+                    <input 
+                      type="checkbox" 
+                      [checked]="isTeamSelected(team.id)"
+                      (click)="onTeamCheckboxClick($event, team, $index)"
+                      class="cursor-pointer accent-[#E8001D]"
+                    />
+                  </td>
+                  <td class="px-6 py-4">
+                    @if (team.flag_url) {
+                      <img [src]="team.flag_url" alt="Bandeira de {{ team.name }}" class="w-8 h-5 object-cover border border-[#2A2B36] shadow-sm rounded-none" />
+                    } @else {
+                      <span class="text-slate-500 font-medium text-[10px]">Sem link</span>
+                    }
+                  </td>
+                  <td class="px-6 py-4 text-sm font-bold text-white">
+                    {{ team.flag_emoji || '🏳️' }}
+                  </td>
+                  <td class="px-6 py-4 font-black text-white text-xs uppercase tracking-wide">
+                    {{ team.name }}
+                  </td>
+                  <td class="px-6 py-4 text-xs text-slate-400 font-mono">
+                    {{ team.external_id || 'Não definido' }}
+                  </td>
+                  <td class="px-6 py-4 text-right">
+                    <div class="flex items-center justify-end gap-2">
+                      <button 
+                        (click)="openEditTeamModal(team)"
+                        class="p-2 bg-[#1C1D24] hover:bg-[#22232D] text-slate-400 hover:text-blue-400 border border-[#2A2B36] hover:border-[#0A84FF] rounded-[3px] cursor-pointer transition-colors duration-80" 
+                        title="Editar Time"
+                      >
+                        <svg lucideEdit2 class="w-3.5 h-3.5"></svg>
+                      </button>
+                      <button 
+                        (click)="openDeleteTeamModal(team)"
+                        class="p-2 bg-[#1C1D24] hover:bg-[#22232D] text-slate-400 hover:text-[#E8001D] border border-[#2A2B36] hover:border-[#E8001D] rounded-[3px] cursor-pointer transition-colors duration-80" 
+                        title="Remover Time"
+                      >
+                        <svg lucideTrash2 class="w-3.5 h-3.5"></svg>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Mobile Teams Cards -->
+        <div class="md:hidden grid grid-cols-1 gap-4">
+          @for (team of filteredTeams(); track team.id) {
+            <div class="bg-[#14151A] border border-[#2A2B36] rounded-none p-4 flex flex-col gap-4 text-left shadow-sm">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <input 
+                    type="checkbox" 
+                    [checked]="isTeamSelected(team.id)"
+                    (click)="onTeamCheckboxClick($event, team, $index)"
+                    class="cursor-pointer accent-[#E8001D]"
+                  />
+                  <div class="text-lg font-bold text-white shrink-0 leading-none">
+                    {{ team.flag_emoji || '🏳️' }}
+                  </div>
+                  <div class="flex flex-col min-w-0 font-body">
+                    <span class="font-bold text-white truncate text-xs uppercase tracking-wide">{{ team.name }}</span>
+                  </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                  <button 
+                    (click)="openEditTeamModal(team)"
+                    class="p-2 bg-[#1C1D24] hover:bg-[#22232D] text-slate-400 hover:text-blue-400 border border-[#2A2B36] hover:border-[#0A84FF] rounded-[3px] cursor-pointer transition-colors duration-80"
+                  >
+                    <svg lucideEdit2 class="w-3.5 h-3.5"></svg>
+                  </button>
+                  <button 
+                    (click)="openDeleteTeamModal(team)"
+                    class="p-2 bg-[#1C1D24] hover:bg-[#22232D] text-slate-400 hover:text-[#E8001D] border border-[#2A2B36] hover:border-[#E8001D] rounded-[3px] cursor-pointer transition-colors duration-80"
+                  >
+                    <svg lucideTrash2 class="w-3.5 h-3.5"></svg>
+                  </button>
+                </div>
+              </div>
+
+              @if (team.flag_url) {
+                <div class="border-t border-[#2A2B36] pt-3 flex flex-col gap-2">
+                  <div class="flex items-center gap-3">
+                    <span class="text-[9px] text-slate-500 font-bold uppercase tracking-wider font-ui">Preview Bandeira:</span>
+                    <img [src]="team.flag_url" alt="Bandeira de {{ team.name }}" class="w-8 h-5 object-cover border border-[#2A2B36] shadow-sm rounded-none" />
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <span class="text-[9px] text-slate-500 font-bold uppercase tracking-wider font-ui">ID Externo:</span>
+                    <span class="text-[10px] text-slate-300 font-mono">{{ team.external_id || 'Não definido' }}</span>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+      }
     }
   }
 </div>
@@ -413,3 +611,264 @@
   (cancel)="closeDeleteModal()"
   (confirm)="submitDelete()"
 ></app-confirm-delete-modal>
+
+<!-- ========================================== -->
+<!-- CREATE TEAM MODAL (Opaque & Sharp Design) -->
+<!-- ========================================== -->
+<app-modal [open]="isCreateTeamModalOpen()" size="md">
+  <div class="flex flex-col text-left select-none overflow-visible rounded-none bg-[#14151A]">
+    <!-- Header -->
+    <div class="flex items-center justify-between px-6 py-4 border-b border-[#2A2B36] bg-[#1C1D24] rounded-none">
+      <h3 class="text-xs font-black text-white uppercase tracking-wider flex items-center gap-2 font-ui">
+        <svg lucideCheck class="w-4 h-4 text-emerald-400"></svg>
+        Criar Seleção / Time
+      </h3>
+      <button (click)="closeCreateTeamModal()" class="text-slate-500 hover:text-white bg-transparent border-none cursor-pointer p-1">
+        <svg lucideX class="w-5 h-5"></svg>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="p-6 flex flex-col gap-5 overflow-visible">
+      
+      <!-- Error Message -->
+      @if (modalError()) {
+        <div class="p-3 bg-[#1A0005] border border-[#E8001D] rounded-none text-red-300 text-[10px] font-bold flex items-center gap-2 font-body">
+          <svg lucideInfo class="w-4 h-4 shrink-0 text-red-400"></svg>
+          {{ modalError() }}
+        </div>
+      }
+
+      <!-- Form Field: Name -->
+      <div class="flex flex-col gap-1.5 font-body">
+        <label class="text-[10px] font-black uppercase tracking-wider text-slate-500 font-ui">Nome da Seleção</label>
+        <input 
+          type="text"
+          [value]="createTeamName()"
+          (input)="createTeamName.set($any($event.target).value)"
+          class="w-full px-4 py-3 bg-[#0D0D0F] border border-[#2A2B36] rounded-[3px] text-xs text-white placeholder-slate-600 focus:outline-none focus:border-[#E8001D] transition-all"
+          placeholder="Ex: Argentina"
+        />
+      </div>
+
+      <!-- Form Field: Emoji -->
+      <div class="flex flex-col gap-1.5 font-body">
+        <label class="text-[10px] font-black uppercase tracking-wider text-slate-500 font-ui">Emoji da Bandeira (Opcional)</label>
+        <input 
+          type="text"
+          [value]="createTeamEmoji()"
+          (input)="createTeamEmoji.set($any($event.target).value)"
+          class="w-full px-4 py-3 bg-[#0D0D0F] border border-[#2A2B36] rounded-[3px] text-xs text-white placeholder-slate-600 focus:outline-none focus:border-[#E8001D] transition-all"
+          placeholder="Ex: 🇦🇷"
+        />
+      </div>
+
+      <!-- Form Field: URL -->
+      <div class="flex flex-col gap-1.5 font-body">
+        <label class="text-[10px] font-black uppercase tracking-wider text-slate-500 font-ui">URL da Bandeira (Opcional)</label>
+        <input 
+          type="text"
+          [value]="createTeamUrl()"
+          (input)="createTeamUrl.set($any($event.target).value)"
+          class="w-full px-4 py-3 bg-[#0D0D0F] border border-[#2A2B36] rounded-[3px] text-xs text-white placeholder-slate-600 focus:outline-none focus:border-[#E8001D] transition-all"
+          placeholder="Ex: https://flagcdn.com/w320/ar.png"
+        />
+      </div>
+
+      <!-- Form Field: External ID -->
+      <div class="flex flex-col gap-1.5 font-body">
+        <label class="text-[10px] font-black uppercase tracking-wider text-slate-500 font-ui">ID Externo (Opcional)</label>
+        <input 
+          type="text"
+          [value]="createTeamExternalId()"
+          (input)="createTeamExternalId.set($any($event.target).value)"
+          class="w-full px-4 py-3 bg-[#0D0D0F] border border-[#2A2B36] rounded-[3px] text-xs text-white placeholder-slate-600 focus:outline-none focus:border-[#E8001D] transition-all"
+          placeholder="Ex: arg"
+        />
+      </div>
+    </div>
+
+    <!-- Footer Actions -->
+    <div class="px-6 py-4 bg-[#1C1D24] border-t border-[#2A2B36] flex justify-end gap-3 rounded-none">
+      <button 
+        (click)="closeCreateTeamModal()" 
+        class="h-9 px-4 bg-[#1C1D24] hover:bg-[#22232D] border border-[#2A2B36] rounded-[3px] text-xs font-bold text-slate-300 cursor-pointer transition-colors duration-80 outline-none font-ui uppercase tracking-wider"
+      >
+        Cancelar
+      </button>
+      <button 
+        (click)="submitCreateTeam()" 
+        [disabled]="modalLoading()"
+        class="h-9 px-4 bg-[#E8001D] hover:bg-[#B8001A] text-white rounded-[3px] text-xs font-bold shadow-sm hover:shadow-md cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-80 flex items-center justify-center gap-2 outline-none font-ui uppercase tracking-wider"
+      >
+        @if (modalLoading()) {
+          <div class="w-3.5 h-3.5 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+          <span>Salvando...</span>
+        } @else {
+          <span>Criar Seleção</span>
+        }
+      </button>
+    </div>
+  </div>
+</app-modal>
+
+<!-- ========================================== -->
+<!-- EDIT TEAM MODAL (Opaque & Sharp Design) -->
+<!-- ========================================== -->
+<app-modal [open]="isEditTeamModalOpen()" size="md">
+  <div class="flex flex-col text-left select-none overflow-visible rounded-none bg-[#14151A]">
+    <!-- Header -->
+    <div class="flex items-center justify-between px-6 py-4 border-b border-[#2A2B36] bg-[#1C1D24] rounded-none">
+      <h3 class="text-xs font-black text-white uppercase tracking-wider flex items-center gap-2 font-ui">
+        <svg lucideEdit2 class="w-4 h-4 text-blue-400"></svg>
+        Editar Seleção / Time
+      </h3>
+      <button (click)="closeEditTeamModal()" class="text-slate-500 hover:text-white bg-transparent border-none cursor-pointer p-1">
+        <svg lucideX class="w-5 h-5"></svg>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="p-6 flex flex-col gap-5 overflow-visible">
+      
+      <!-- Error Message -->
+      @if (modalError()) {
+        <div class="p-3 bg-[#1A0005] border border-[#E8001D] rounded-none text-red-300 text-[10px] font-bold flex items-center gap-2 font-body">
+          <svg lucideInfo class="w-4 h-4 shrink-0 text-red-400"></svg>
+          {{ modalError() }}
+        </div>
+      }
+
+      <!-- Form Field: Name -->
+      <div class="flex flex-col gap-1.5 font-body">
+        <label class="text-[10px] font-black uppercase tracking-wider text-slate-500 font-ui">Nome da Seleção</label>
+        <input 
+          type="text"
+          [value]="editTeamName()"
+          (input)="editTeamName.set($any($event.target).value)"
+          class="w-full px-4 py-3 bg-[#0D0D0F] border border-[#2A2B36] rounded-[3px] text-xs text-white placeholder-slate-600 focus:outline-none focus:border-[#E8001D] transition-all"
+          placeholder="Nome da seleção"
+        />
+      </div>
+
+      <!-- Form Field: Emoji -->
+      <div class="flex flex-col gap-1.5 font-body">
+        <label class="text-[10px] font-black uppercase tracking-wider text-slate-500 font-ui">Emoji da Bandeira (Opcional)</label>
+        <input 
+          type="text"
+          [value]="editTeamEmoji()"
+          (input)="editTeamEmoji.set($any($event.target).value)"
+          class="w-full px-4 py-3 bg-[#0D0D0F] border border-[#2A2B36] rounded-[3px] text-xs text-white placeholder-slate-600 focus:outline-none focus:border-[#E8001D] transition-all"
+          placeholder="Emoji"
+        />
+      </div>
+
+      <!-- Form Field: URL -->
+      <div class="flex flex-col gap-1.5 font-body">
+        <label class="text-[10px] font-black uppercase tracking-wider text-slate-500 font-ui">URL da Bandeira (Opcional)</label>
+        <input 
+          type="text"
+          [value]="editTeamUrl()"
+          (input)="editTeamUrl.set($any($event.target).value)"
+          class="w-full px-4 py-3 bg-[#0D0D0F] border border-[#2A2B36] rounded-[3px] text-xs text-white placeholder-slate-600 focus:outline-none focus:border-[#E8001D] transition-all"
+          placeholder="Ex: https://flagcdn.com/w320/ar.png"
+        />
+      </div>
+
+      <!-- Form Field: External ID -->
+      <div class="flex flex-col gap-1.5 font-body">
+        <label class="text-[10px] font-black uppercase tracking-wider text-slate-500 font-ui">ID Externo (Opcional)</label>
+        <input 
+          type="text"
+          [value]="editTeamExternalId()"
+          (input)="editTeamExternalId.set($any($event.target).value)"
+          class="w-full px-4 py-3 bg-[#0D0D0F] border border-[#2A2B36] rounded-[3px] text-xs text-white placeholder-slate-600 focus:outline-none focus:border-[#E8001D] transition-all"
+          placeholder="ID externo da seleção"
+        />
+      </div>
+    </div>
+
+    <!-- Footer Actions -->
+    <div class="px-6 py-4 bg-[#1C1D24] border-t border-[#2A2B36] flex justify-end gap-3 rounded-none">
+      <button 
+        (click)="closeEditTeamModal()" 
+        class="h-9 px-4 bg-[#1C1D24] hover:bg-[#22232D] border border-[#2A2B36] rounded-[3px] text-xs font-bold text-slate-300 cursor-pointer transition-colors duration-80 outline-none font-ui uppercase tracking-wider"
+      >
+        Cancelar
+      </button>
+      <button 
+        (click)="submitEditTeam()" 
+        [disabled]="modalLoading()"
+        class="h-9 px-4 bg-[#E8001D] hover:bg-[#B8001A] text-white rounded-[3px] text-xs font-bold shadow-sm hover:shadow-md cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-80 flex items-center justify-center gap-2 outline-none font-ui uppercase tracking-wider"
+      >
+        @if (modalLoading()) {
+          <div class="w-3.5 h-3.5 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+          <span>Salvando...</span>
+        } @else {
+          <span>Salvar Alterações</span>
+        }
+      </button>
+    </div>
+  </div>
+</app-modal>
+
+<!-- ========================================== -->
+<!-- CONFIRM DELETE TEAM(S) MODAL -->
+<!-- ========================================== -->
+<app-modal [open]="isDeleteTeamModalOpen()" size="sm">
+  <div class="flex flex-col text-left select-none bg-[#14151A] rounded-none">
+    <!-- Header -->
+    <div class="flex items-center justify-between px-5 py-4 border-b border-[#2A2B36] bg-[#1C1D24] rounded-none">
+      <h3 class="text-xs font-black text-red-500 uppercase tracking-wider flex items-center gap-2 font-ui">
+        <svg lucideShield class="w-4 h-4 text-[#E8001D]"></svg>
+        Confirmar Exclusão
+      </h3>
+      <button (click)="closeDeleteTeamModal()" class="text-slate-500 hover:text-white bg-transparent border-none cursor-pointer p-1">
+        <svg lucideX class="w-5 h-5"></svg>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="p-5 flex flex-col gap-4 font-body">
+      @if (modalError()) {
+        <div class="p-3 bg-[#1A0005] border border-[#E8001D] rounded-none text-red-300 text-[10px] font-bold flex items-center gap-2">
+          <svg lucideInfo class="w-4 h-4 shrink-0 text-red-400"></svg>
+          {{ modalError() }}
+        </div>
+      }
+
+      <div class="flex flex-col gap-2 text-slate-300 text-xs">
+        @if (isBulkDelete()) {
+          <p class="font-bold text-white">Você tem certeza que deseja excluir permanentemente as <span class="text-[#E8001D]">{{ selectedTeamIds().size }} seleções selecionadas</span>?</p>
+        } @else {
+          <p class="font-bold text-white">Você tem certeza que deseja excluir permanentemente a seleção <span class="text-[#E8001D]">{{ selectedTeam()?.name }}</span>?</p>
+        }
+        <p class="text-slate-400 leading-relaxed font-semibold">Esta operação é <span class="text-red-400 underline uppercase">definitiva</span> e realizará uma <span class="text-white">limpeza em cascata</span> no banco de dados, o que removerá todos os jogadores, partidas e palpites associados.</p>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="px-5 py-3.5 bg-[#1C1D24] border-t border-[#2A2B36] flex justify-end gap-3 rounded-none">
+      <button 
+        (click)="closeDeleteTeamModal()" 
+        class="h-9 px-4 bg-[#1C1D24] hover:bg-[#22232D] border border-[#2A2B36] rounded-[3px] text-xs font-bold text-slate-300 cursor-pointer transition-colors duration-80 outline-none font-ui uppercase tracking-wider"
+      >
+        Cancelar
+      </button>
+      <button 
+        (click)="submitDeleteTeams()" 
+        [disabled]="modalLoading()"
+        class="h-9 px-4 bg-[#E8001D] hover:bg-[#B8001A] text-white rounded-[3px] text-xs font-bold shadow-sm cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-80 outline-none font-ui uppercase tracking-wider"
+      >
+        @if (modalLoading()) {
+          <div class="w-3.5 h-3.5 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+          <span>Excluindo...</span>
+        } @else {
+          <span>Confirmar Exclusão</span>
+        }
+      </button>
+    </div>
+  </div>
+</app-modal>
+
+

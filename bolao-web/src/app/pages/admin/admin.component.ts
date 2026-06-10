@@ -7,6 +7,8 @@ import { API_BASE_URL } from '../../config/api.constants';
 import { FormSelectComponent, SelectOption } from '../../components/ui/form-select/form-select.component';
 import { ModalComponent } from '../../components/ui/modal/modal.component';
 import { ConfirmDeleteModalComponent } from '../../components/ui/confirm-delete-modal/confirm-delete-modal.component';
+import { TabSelectorComponent, TabOption } from '../../components/ui/tab-selector/tab-selector.component';
+import { SelectedSelectorComponent, SelectorItem } from '../../components/ui/selected-selector/selected-selector.component';
 import {
   PROJECT_LABELS,
   PROJECT_VALUES,
@@ -37,6 +39,14 @@ interface UserProfile {
   updated_at?: string;
 }
 
+interface Team {
+  id: string;
+  name: string;
+  flag_emoji?: string | null;
+  flag_url?: string | null;
+  external_id?: string | null;
+}
+
 @Component({
   selector: 'app-admin',
   standalone: true,
@@ -45,6 +55,8 @@ interface UserProfile {
     FormSelectComponent,
     ModalComponent,
     ConfirmDeleteModalComponent,
+    TabSelectorComponent,
+    SelectedSelectorComponent,
     LucideSearch,
     LucideEdit2,
     LucideTrash2,
@@ -61,11 +73,22 @@ export class AdminComponent implements OnInit {
   private readonly session = inject(SessionService);
   private readonly apiBaseUrl = API_BASE_URL;
 
+  // Tab State
+  protected readonly activeTab = signal<'membros' | 'times'>('membros');
+  protected readonly tabOptions: TabOption[] = [
+    { id: 'membros', label: 'Membros' },
+    { id: 'times', label: 'Times' },
+  ];
+
   // State Signals
   protected readonly users = signal<UserProfile[]>([]);
   protected readonly loading = signal(false);
   protected readonly apiError = signal<string | null>(null);
   protected readonly feedbackMessage = signal<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  // Teams State Signals
+  protected readonly teamsList = signal<Team[]>([]);
+  protected readonly selectedTeamIds = signal<Set<string>>(new Set());
 
   // Search & Filter Signals
   protected readonly searchQuery = signal('');
@@ -77,6 +100,24 @@ export class AdminComponent implements OnInit {
   protected readonly isDeleteModalOpen = signal(false);
   protected readonly modalLoading = signal(false);
   protected readonly modalError = signal<string | null>(null);
+
+  // Modal Signals for Teams
+  protected readonly isCreateTeamModalOpen = signal(false);
+  protected readonly isEditTeamModalOpen = signal(false);
+  protected readonly isDeleteTeamModalOpen = signal(false);
+  protected readonly isBulkDelete = signal(false);
+
+  // Form Signals for Teams
+  protected readonly createTeamName = signal('');
+  protected readonly createTeamEmoji = signal('');
+  protected readonly createTeamUrl = signal('');
+  protected readonly createTeamExternalId = signal('');
+
+  protected readonly editTeamName = signal('');
+  protected readonly editTeamEmoji = signal('');
+  protected readonly editTeamUrl = signal('');
+  protected readonly editTeamExternalId = signal('');
+  protected readonly selectedTeam = signal<Team | null>(null);
 
   // Selected User for actions
   protected readonly selectedUser = signal<UserProfile | null>(null);
@@ -159,6 +200,31 @@ export class AdminComponent implements OnInit {
     return list;
   });
 
+  // Dynamically Filtered Teams List
+  protected readonly filteredTeams = computed(() => {
+    const query = this.searchQuery().trim().toLowerCase();
+    let list = this.teamsList();
+
+    if (query) {
+      list = list.filter((t) => t.name.toLowerCase().includes(query));
+    }
+
+    return list;
+  });
+
+  // Selected teams info mapped for the SelectedSelectorComponent
+  protected readonly selectedTeamsInfo = computed<SelectorItem[]>(() => {
+    const ids = this.selectedTeamIds();
+    const list = this.teamsList();
+    return list
+      .filter((t) => ids.has(t.id))
+      .map((t) => ({
+        id: t.id,
+        label: t.name,
+        emoji: t.flag_emoji,
+      }));
+  });
+
   ngOnInit(): void {
     // Front-end Guard: Check admin authorization status
     const me = this.session.user();
@@ -168,6 +234,7 @@ export class AdminComponent implements OnInit {
     }
 
     this.fetchUsers();
+    this.fetchTeams();
   }
 
   protected fetchUsers(): void {
@@ -318,4 +385,256 @@ export class AdminComponent implements OnInit {
     if (!slug) return 'Sem Senioridade';
     return SENIORITY_LABELS[slug as SeniorityValue] || slug;
   }
+
+  // Tab selection callback
+  protected onTabChange(tabId: string): void {
+    this.activeTab.set(tabId as 'membros' | 'times');
+    this.searchQuery.set('');
+    this.selectedTeamIds.set(new Set());
+  }
+
+  protected fetchTeams(): void {
+    this.loading.set(true);
+    this.apiError.set(null);
+
+    this.http.get<Team[]>(`${this.apiBaseUrl}/teams`).subscribe({
+      next: (data) => {
+        this.teamsList.set(data);
+        this.loading.set(false);
+      },
+      error: (err) => {
+        console.error('Falha ao carregar seleções', err);
+        this.apiError.set('Falha ao carregar seleções.');
+        this.loading.set(false);
+      },
+    });
+  }
+
+  // Checkbox Selection Logic
+  protected lastClickedIndex: number | null = null;
+
+  protected onTeamCheckboxClick(event: MouseEvent, team: Team, index: number): void {
+    const list = this.filteredTeams();
+    const isChecked = !this.isTeamSelected(team.id);
+
+    if (event.shiftKey && this.lastClickedIndex !== null) {
+      const start = Math.min(this.lastClickedIndex, index);
+      const end = Math.max(this.lastClickedIndex, index);
+      
+      this.selectedTeamIds.update((set) => {
+        const next = new Set(set);
+        for (let i = start; i <= end; i++) {
+          const tId = list[i].id;
+          if (isChecked) {
+            next.add(tId);
+          } else {
+            next.delete(tId);
+          }
+        }
+        return next;
+      });
+    } else {
+      this.toggleTeamSelection(team.id);
+    }
+    this.lastClickedIndex = index;
+  }
+
+  protected toggleTeamSelection(id: string): void {
+    this.selectedTeamIds.update((set) => {
+      const next = new Set(set);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  }
+
+  protected isTeamSelected(id: string): boolean {
+    return this.selectedTeamIds().has(id);
+  }
+
+  protected isAllTeamsSelected(): boolean {
+    const list = this.filteredTeams();
+    if (list.length === 0) return false;
+    return list.every((t) => this.selectedTeamIds().has(t.id));
+  }
+
+  protected toggleAllTeams(): void {
+    const list = this.filteredTeams();
+    const allSelected = this.isAllTeamsSelected();
+    
+    this.selectedTeamIds.update((set) => {
+      const next = new Set(set);
+      if (allSelected) {
+        list.forEach((t) => next.delete(t.id));
+      } else {
+        list.forEach((t) => next.add(t.id));
+      }
+      return next;
+    });
+  }
+
+  // Create Team Methods
+  protected openCreateTeamModal(): void {
+    this.createTeamName.set('');
+    this.createTeamEmoji.set('');
+    this.createTeamUrl.set('');
+    this.createTeamExternalId.set('');
+    this.modalError.set(null);
+    this.isCreateTeamModalOpen.set(true);
+  }
+
+  protected closeCreateTeamModal(): void {
+    this.isCreateTeamModalOpen.set(false);
+  }
+
+  protected submitCreateTeam(): void {
+    const name = this.createTeamName().trim();
+    if (!name) {
+      this.modalError.set('O nome do time é obrigatório.');
+      return;
+    }
+
+    this.modalLoading.set(true);
+    this.modalError.set(null);
+
+    const body = {
+      name,
+      flag_emoji: this.createTeamEmoji().trim() || null,
+      flag_url: this.createTeamUrl().trim() || null,
+      external_id: this.createTeamExternalId().trim() || null,
+    };
+
+    this.http.post<Team>(`${this.apiBaseUrl}/teams`, body).subscribe({
+      next: (created) => {
+        this.teamsList.update((list) => [...list, created]);
+        this.showFeedback('success', `Time "${created.name}" criado com sucesso!`);
+        this.modalLoading.set(false);
+        this.closeCreateTeamModal();
+      },
+      error: (err) => {
+        console.error('Falha ao criar time', err);
+        this.modalError.set(err.error?.message || 'Ocorreu um erro ao criar o time.');
+        this.modalLoading.set(false);
+      },
+    });
+  }
+
+  // Edit Team Methods
+  protected openEditTeamModal(team: Team): void {
+    this.selectedTeam.set(team);
+    this.editTeamName.set(team.name);
+    this.editTeamEmoji.set(team.flag_emoji || '');
+    this.editTeamUrl.set(team.flag_url || '');
+    this.editTeamExternalId.set(team.external_id || '');
+    this.modalError.set(null);
+    this.isEditTeamModalOpen.set(true);
+  }
+
+  protected closeEditTeamModal(): void {
+    this.isEditTeamModalOpen.set(false);
+    this.selectedTeam.set(null);
+  }
+
+  protected submitEditTeam(): void {
+    const team = this.selectedTeam();
+    if (!team) return;
+
+    const name = this.editTeamName().trim();
+    if (!name) {
+      this.modalError.set('O nome do time é obrigatório.');
+      return;
+    }
+
+    this.modalLoading.set(true);
+    this.modalError.set(null);
+
+    const body = {
+      name,
+      flag_emoji: this.editTeamEmoji().trim() || null,
+      flag_url: this.editTeamUrl().trim() || null,
+      external_id: this.editTeamExternalId().trim() || null,
+    };
+
+    this.http.patch<Team>(`${this.apiBaseUrl}/teams/${team.id}`, body).subscribe({
+      next: (updated) => {
+        this.teamsList.update((list) => list.map((t) => (t.id === team.id ? updated : t)));
+        this.showFeedback('success', `Time "${updated.name}" atualizado com sucesso!`);
+        this.modalLoading.set(false);
+        this.closeEditTeamModal();
+      },
+      error: (err) => {
+        console.error('Falha ao atualizar time', err);
+        this.modalError.set(err.error?.message || 'Ocorreu um erro ao atualizar o time.');
+        this.modalLoading.set(false);
+      },
+    });
+  }
+
+  // Delete Team Methods
+  protected openDeleteTeamModal(team: Team): void {
+    this.selectedTeam.set(team);
+    this.isBulkDelete.set(false);
+    this.modalError.set(null);
+    this.isDeleteTeamModalOpen.set(true);
+  }
+
+  protected openBulkDeleteModal(): void {
+    this.isBulkDelete.set(true);
+    this.modalError.set(null);
+    this.isDeleteTeamModalOpen.set(true);
+  }
+
+  protected closeDeleteTeamModal(): void {
+    this.isDeleteTeamModalOpen.set(false);
+    this.selectedTeam.set(null);
+  }
+
+  protected submitDeleteTeams(): void {
+    this.modalLoading.set(true);
+    this.modalError.set(null);
+
+    const idsToDelete = this.isBulkDelete()
+      ? Array.from(this.selectedTeamIds())
+      : [this.selectedTeam()!.id];
+
+    this.http.delete(`${this.apiBaseUrl}/teams`, { body: { ids: idsToDelete } }).subscribe({
+      next: () => {
+        this.teamsList.update((list) => list.filter((t) => !idsToDelete.includes(t.id)));
+        this.selectedTeamIds.update((set) => {
+          const next = new Set(set);
+          idsToDelete.forEach((id) => next.delete(id));
+          return next;
+        });
+        
+        const message = idsToDelete.length === 1
+          ? 'Time removido com sucesso (limpeza em cascata concluída).'
+          : `${idsToDelete.length} times removidos com sucesso (limpeza em cascata concluída).`;
+          
+        this.showFeedback('success', message);
+        this.modalLoading.set(false);
+        this.closeDeleteTeamModal();
+      },
+      error: (err) => {
+        console.error('Falha ao remover times', err);
+        this.modalError.set(err.error?.message || 'Ocorreu um erro ao remover os times do banco de dados.');
+        this.modalLoading.set(false);
+      },
+    });
+  }
+
+  protected clearTeamSelection(): void {
+    this.selectedTeamIds.set(new Set());
+  }
+
+  protected removeTeamFromSelection(id: string): void {
+    this.selectedTeamIds.update((set) => {
+      const next = new Set(set);
+      next.delete(id);
+      return next;
+    });
+  }
 }
+
