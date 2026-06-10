@@ -12,5 +12,6 @@ export const updatePhaseStatusSchema = z.object({
 });
 
 export class CreatePhaseDto extends createZodDto(createPhaseSchema) {}
-export class UpdatePhaseStatusDto extends createZodDto(updatePhaseStatusSchema) {}
-
+export class UpdatePhaseStatusDto extends createZodDto(
+  updatePhaseStatusSchema,
+) {}

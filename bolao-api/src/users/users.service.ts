@@ -81,7 +81,8 @@ export class UsersService {
       data: {
         name: data.name,
         project: data.project !== undefined ? (data.project as any) : undefined,
-        seniority: data.seniority !== undefined ? (data.seniority as any) : undefined,
+        seniority:
+          data.seniority !== undefined ? (data.seniority as any) : undefined,
         is_admin: data.is_admin,
       },
     });

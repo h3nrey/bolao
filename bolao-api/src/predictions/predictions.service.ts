@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreatePredictionDto } from './dto/prediction.dto';
 import {
@@ -51,13 +55,17 @@ export class PredictionsService {
 
   async getAllForMatch(matchId: string) {
     // Only visible after match has started
-    const match = await this.prisma.match.findUnique({ where: { id: matchId } });
+    const match = await this.prisma.match.findUnique({
+      where: { id: matchId },
+    });
     if (!match) {
       throw new NotFoundException('Match not found');
     }
 
     if (!match.started_at) {
-      throw new ForbiddenException('Predictions are only visible after the match starts');
+      throw new ForbiddenException(
+        'Predictions are only visible after the match starts',
+      );
     }
 
     const predictions = await this.prisma.prediction.findMany({
@@ -75,8 +83,14 @@ export class PredictionsService {
     }));
   }
 
-  async createOrUpdate(matchId: string, userId: string, dto: CreatePredictionDto) {
-    const match = await this.prisma.match.findUnique({ where: { id: matchId } });
+  async createOrUpdate(
+    matchId: string,
+    userId: string,
+    dto: CreatePredictionDto,
+  ) {
+    const match = await this.prisma.match.findUnique({
+      where: { id: matchId },
+    });
     if (!match) {
       throw new NotFoundException('Match not found');
     }
@@ -135,7 +149,9 @@ export class PredictionsService {
         items: {
           create: dto.items.map((item) => ({
             type: item.type as any,
-            encrypted_value: encryptPredictionItem(item as PredictionItemPayload),
+            encrypted_value: encryptPredictionItem(
+              item as PredictionItemPayload,
+            ),
             value_int: null,
             value_team_id: null,
             value_player_id: null,

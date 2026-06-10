@@ -1,6 +1,13 @@
-import { Injectable, ForbiddenException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { SubmitSpecialPredictionDto, SubmitOfficialSpecialResultsDto } from './dto/special-prediction.dto';
+import {
+  SubmitSpecialPredictionDto,
+  SubmitOfficialSpecialResultsDto,
+} from './dto/special-prediction.dto';
 
 @Injectable()
 export class SpecialPredictionsService {
@@ -33,14 +40,20 @@ export class SpecialPredictionsService {
     return prediction;
   }
 
-  async submitSpecialPredictions(userId: string, dto: SubmitSpecialPredictionDto) {
+  async submitSpecialPredictions(
+    userId: string,
+    dto: SubmitSpecialPredictionDto,
+  ) {
     // Check if tournament has started (using first match date)
     const firstMatch = await this.prisma.match.findFirst({
       orderBy: { scheduled_at: 'asc' },
     });
-    const tournamentStart = firstMatch?.scheduled_at ?? new Date('2026-06-11T17:00:00Z');
+    const tournamentStart =
+      firstMatch?.scheduled_at ?? new Date('2026-06-11T17:00:00Z');
     if (new Date() > tournamentStart) {
-      throw new ForbiddenException('Tournament has already started, special predictions are locked.');
+      throw new ForbiddenException(
+        'Tournament has already started, special predictions are locked.',
+      );
     }
 
     return this.prisma.specialPrediction.upsert({

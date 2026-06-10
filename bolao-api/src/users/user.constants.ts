@@ -14,6 +14,12 @@ export const PROJECT_VALUES = [
 
 export type ProjectValue = (typeof PROJECT_VALUES)[number];
 
-export const SENIORITY_VALUES = ['bolsista', 'clt', 'gerente', 'pmo', 'outro'] as const;
+export const SENIORITY_VALUES = [
+  'bolsista',
+  'clt',
+  'gerente',
+  'pmo',
+  'outro',
+] as const;
 
 export type SeniorityValue = (typeof SENIORITY_VALUES)[number];

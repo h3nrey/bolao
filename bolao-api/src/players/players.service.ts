@@ -31,7 +31,9 @@ export class PlayersService {
 
   async create(dto: CreatePlayerDto) {
     // Check team exists
-    const team = await this.prisma.team.findUnique({ where: { id: dto.team_id } });
+    const team = await this.prisma.team.findUnique({
+      where: { id: dto.team_id },
+    });
     if (!team) {
       throw new NotFoundException('Team not found');
     }

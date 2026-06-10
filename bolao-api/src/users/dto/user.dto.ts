@@ -1,6 +1,11 @@
 import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
-import { PROJECT_VALUES, SENIORITY_VALUES, ProjectValue, SeniorityValue } from '../user.constants';
+import {
+  PROJECT_VALUES,
+  SENIORITY_VALUES,
+  ProjectValue,
+  SeniorityValue,
+} from '../user.constants';
 
 export const updateUserSchema = z.object({
   name: z.string().min(1, 'Name is required').max(100),

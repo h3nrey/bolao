@@ -1,6 +1,14 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateGroupDto, AddTeamDto, SetFinalPositionDto } from './dto/group.dto';
+import {
+  CreateGroupDto,
+  AddTeamDto,
+  SetFinalPositionDto,
+} from './dto/group.dto';
 
 @Injectable()
 export class GroupsService {
@@ -32,7 +40,9 @@ export class GroupsService {
   }
 
   async create(phaseId: string, dto: CreateGroupDto) {
-    const phase = await this.prisma.phase.findUnique({ where: { id: phaseId } });
+    const phase = await this.prisma.phase.findUnique({
+      where: { id: phaseId },
+    });
     if (!phase) {
       throw new NotFoundException('Phase not found');
     }
@@ -46,12 +56,16 @@ export class GroupsService {
   }
 
   async addTeam(groupId: string, dto: AddTeamDto) {
-    const group = await this.prisma.group.findUnique({ where: { id: groupId } });
+    const group = await this.prisma.group.findUnique({
+      where: { id: groupId },
+    });
     if (!group) {
       throw new NotFoundException('Group not found');
     }
 
-    const team = await this.prisma.team.findUnique({ where: { id: dto.team_id } });
+    const team = await this.prisma.team.findUnique({
+      where: { id: dto.team_id },
+    });
     if (!team) {
       throw new NotFoundException('Team not found');
     }
@@ -78,7 +92,11 @@ export class GroupsService {
     });
   }
 
-  async setFinalPosition(groupId: string, teamId: string, dto: SetFinalPositionDto) {
+  async setFinalPosition(
+    groupId: string,
+    teamId: string,
+    dto: SetFinalPositionDto,
+  ) {
     const groupTeam = await this.prisma.groupTeam.findUnique({
       where: {
         group_id_team_id: {
@@ -111,11 +129,11 @@ export class GroupsService {
     const standings = groupTeams.map((gt) => ({
       team: gt.team,
       final_position: gt.final_position,
-      P: 0,  // Points
-      J: 0,  // Played
-      V: 0,  // Wins
-      E: 0,  // Draws
-      D: 0,  // Losses
+      P: 0, // Points
+      J: 0, // Played
+      V: 0, // Wins
+      E: 0, // Draws
+      D: 0, // Losses
       GP: 0, // Goals For
       GC: 0, // Goals Against
       SG: 0, // Goal Difference

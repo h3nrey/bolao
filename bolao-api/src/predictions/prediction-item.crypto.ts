@@ -1,4 +1,9 @@
-import { createCipheriv, createDecipheriv, createHash, randomBytes } from 'crypto';
+import {
+  createCipheriv,
+  createDecipheriv,
+  createHash,
+  randomBytes,
+} from 'crypto';
 
 import { PredictionType } from '@prisma/client';
 
@@ -10,20 +15,28 @@ export type PredictionItemPayload = {
 };
 
 function getEncryptionKey(): Buffer {
-  const secret = process.env.PREDICTION_ENCRYPTION_KEY || process.env.JWT_SECRET || 'dev-only-key';
+  const secret =
+    process.env.PREDICTION_ENCRYPTION_KEY ||
+    process.env.JWT_SECRET ||
+    'dev-only-key';
   return createHash('sha256').update(secret).digest();
 }
 
 export function encryptPredictionItem(payload: PredictionItemPayload): string {
   const iv = randomBytes(12);
   const cipher = createCipheriv('aes-256-gcm', getEncryptionKey(), iv);
-  const encrypted = Buffer.concat([cipher.update(JSON.stringify(payload), 'utf8'), cipher.final()]);
+  const encrypted = Buffer.concat([
+    cipher.update(JSON.stringify(payload), 'utf8'),
+    cipher.final(),
+  ]);
   const tag = cipher.getAuthTag();
 
   return `${iv.toString('base64')}.${tag.toString('base64')}.${encrypted.toString('base64')}`;
 }
 
-export function decryptPredictionItem(encryptedValue: string): PredictionItemPayload {
+export function decryptPredictionItem(
+  encryptedValue: string,
+): PredictionItemPayload {
   const [ivBase64, tagBase64, dataBase64] = encryptedValue.split('.');
 
   if (!ivBase64 || !tagBase64 || !dataBase64) {

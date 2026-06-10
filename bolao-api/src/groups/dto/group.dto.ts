@@ -16,4 +16,3 @@ export const addTeamSchema = z.object({
 export class CreateGroupDto extends createZodDto(createGroupSchema) {}
 export class SetFinalPositionDto extends createZodDto(setFinalPositionSchema) {}
 export class AddTeamDto extends createZodDto(addTeamSchema) {}
-

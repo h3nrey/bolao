@@ -7,9 +7,7 @@ import { ScoringService } from './scoring.service';
 import { MatchesModule } from '../matches/matches.module';
 
 @Module({
-  imports: [
-    forwardRef(() => MatchesModule),
-  ],
+  imports: [forwardRef(() => MatchesModule)],
   controllers: [PredictionsController, SpecialPredictionsController],
   providers: [PredictionsService, SpecialPredictionsService, ScoringService],
   exports: [PredictionsService, SpecialPredictionsService, ScoringService],

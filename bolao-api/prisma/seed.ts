@@ -55,6 +55,43 @@ const teamDetails: { [key: string]: { flag_emoji: string, code: string } } = {
   'Panama': { flag_emoji: '🇵🇦', code: 'pa' },
 };
 
+const teamNameMapping: Record<string, string> = {
+  'Bosnia & Herzegovina': 'Bosnia-Herzegovina',
+  'Cape Verde': 'Cape Verde Islands',
+  'DR Congo': 'Congo DR',
+  'Czech Republic': 'Czechia',
+  'USA': 'United States',
+};
+
+function mapPosition(str: string): PlayerPosition {
+  const s = (str || '').toLowerCase();
+  if (s.includes('goal') || s.includes('keeper')) return PlayerPosition.goalkeeper;
+  if (s.includes('defen') || s.includes('back') || s.includes('guard')) return PlayerPosition.defender;
+  if (s.includes('mid') || s.includes('cent') || s.includes('half')) return PlayerPosition.midfielder;
+  return PlayerPosition.forward;
+}
+
+function getProgrammaticNumber(position: PlayerPosition, positionCounts: Record<PlayerPosition, number>): number {
+  const count = positionCounts[position];
+  positionCounts[position] = count + 1;
+
+  const goalkeeperNumbers = [1, 12, 22];
+  const defenderNumbers = [2, 3, 4, 5, 6, 13, 14, 15, 23, 24, 25];
+  const midfielderNumbers = [8, 10, 16, 17, 18, 26, 27, 28];
+  const forwardNumbers = [7, 9, 11, 19, 20, 21, 29, 30];
+
+  switch (position) {
+    case PlayerPosition.goalkeeper:
+      return goalkeeperNumbers[count] ?? (22 + count);
+    case PlayerPosition.defender:
+      return defenderNumbers[count] ?? (25 + count);
+    case PlayerPosition.midfielder:
+      return midfielderNumbers[count] ?? (28 + count);
+    case PlayerPosition.forward:
+      return forwardNumbers[count] ?? (30 + count);
+  }
+}
+
 function parseDateTime(dateStr: string, timeStr: string): Date {
   const matches = timeStr.match(/^(\d{2}:\d{2})\s+UTC([+-]\d+)?$/);
   if (matches) {
@@ -73,6 +110,9 @@ function parseDateTime(dateStr: string, timeStr: string): Date {
 }
 
 async function main() {
+  const playersFilePath = path.join(__dirname, 'players.json');
+  const playersData = JSON.parse(fs.readFileSync(playersFilePath, 'utf-8'));
+
   console.log('🧹 Limpando o banco de dados...');
   
   await prisma.predictionPoint.deleteMany();
@@ -137,16 +177,48 @@ async function main() {
     const flag_emoji = details.flag_emoji;
     const flag_url = `https://flagcdn.com/w320/${details.code}.png`;
 
+    const mappedName = teamNameMapping[name] || name;
+    const jsonTeam = playersData.teams.find((t: any) => t.name === mappedName);
+
+    let playersToCreate: { name: string; position: PlayerPosition; number?: number }[] = [];
+
+    if (jsonTeam && Array.isArray(jsonTeam.squad)) {
+      const positionCounts: Record<PlayerPosition, number> = {
+        [PlayerPosition.goalkeeper]: 0,
+        [PlayerPosition.defender]: 0,
+        [PlayerPosition.midfielder]: 0,
+        [PlayerPosition.forward]: 0,
+      };
+
+      playersToCreate = jsonTeam.squad
+        .filter((p: any) => p.position !== 'Coach')
+        .map((p: any) => {
+          const position = mapPosition(p.position);
+          return {
+            name: p.name,
+            position,
+            number: getProgrammaticNumber(position, positionCounts),
+          };
+        });
+    } else {
+      playersToCreate = [
+        { name: `Goleiro de ${name}`, position: PlayerPosition.goalkeeper, number: 1 },
+        { name: `Craque de ${name}`, position: PlayerPosition.forward, number: 10 },
+      ];
+    }
+
     const team = await prisma.team.create({
       data: {
         name,
         flag_emoji,
         flag_url,
         players: {
-          create: [
-            { name: `Goleiro de ${name}`, number: 1, position: PlayerPosition.goalkeeper },
-            { name: `Craque de ${name}`, number: 10, position: PlayerPosition.forward },
-          ]
+          create: playersToCreate.map(p => ({
+            name: p.name,
+            position: p.position,
+            number: p.number ?? null,
+            is_active: true,
+          }))
         }
       },
       include: { players: true }

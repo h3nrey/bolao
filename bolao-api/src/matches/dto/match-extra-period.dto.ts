@@ -12,6 +12,9 @@ export const updateExtraPeriodSchema = z.object({
   ended_at: z.coerce.date().optional(),
 });
 
-export class CreateExtraPeriodDto extends createZodDto(createExtraPeriodSchema) {}
-export class UpdateExtraPeriodDto extends createZodDto(updateExtraPeriodSchema) {}
-
+export class CreateExtraPeriodDto extends createZodDto(
+  createExtraPeriodSchema,
+) {}
+export class UpdateExtraPeriodDto extends createZodDto(
+  updateExtraPeriodSchema,
+) {}

@@ -1,8 +1,20 @@
-import { Controller, Get, Post, Delete, Body, Param, UseGuards, UsePipes } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Delete,
+  Body,
+  Param,
+  UseGuards,
+  UsePipes,
+} from '@nestjs/common';
 import { MatchEventsService } from './match-events.service';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
-import { createMatchEventSchema, CreateMatchEventDto } from './dto/match-event.dto';
+import {
+  createMatchEventSchema,
+  CreateMatchEventDto,
+} from './dto/match-event.dto';
 
 @Controller()
 @UseGuards(JwtAuthGuard)

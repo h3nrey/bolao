@@ -556,8 +556,20 @@
   .min-h-\[48px\] {
     min-height: 48px;
   }
+  .min-h-\[56px\] {
+    min-height: 56px;
+  }
+  .min-h-\[64px\] {
+    min-height: 64px;
+  }
+  .min-h-\[72px\] {
+    min-height: 72px;
+  }
   .min-h-\[260px\] {
     min-height: 260px;
+  }
+  .min-h-\[390px\] {
+    min-height: 390px;
   }
   .min-h-screen {
     min-height: 100vh;
@@ -1059,17 +1071,8 @@
   .border-l-\[\#00D68F\] {
     border-left-color: #00D68F;
   }
-  .border-l-\[\#3D3E4D\] {
-    border-left-color: #3D3E4D;
-  }
-  .border-l-\[\#9B9BAD\] {
-    border-left-color: #9B9BAD;
-  }
   .border-l-\[\#E8001D\] {
     border-left-color: #E8001D;
-  }
-  .border-l-\[\#FFB800\] {
-    border-left-color: #FFB800;
   }
   .border-l-transparent {
     border-left-color: transparent;
@@ -1171,6 +1174,12 @@
     background-color: color-mix(in srgb, oklch(25.8% 0.092 26.042) 40%, transparent);
     @supports (color: color-mix(in lab, red, red)) {
       background-color: color-mix(in oklab, var(--color-red-950) 40%, transparent);
+    }
+  }
+  .bg-slate-800\/20 {
+    background-color: color-mix(in srgb, oklch(27.9% 0.041 260.031) 20%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-slate-800) 20%, transparent);
     }
   }
   .bg-transparent {
@@ -1339,6 +1348,9 @@
   .py-5 {
     padding-block: calc(var(--spacing) * 5);
   }
+  .py-6 {
+    padding-block: calc(var(--spacing) * 6);
+  }
   .py-8 {
     padding-block: calc(var(--spacing) * 8);
   }
@@ -1434,6 +1446,10 @@
   .text-4xl {
     font-size: var(--text-4xl);
     line-height: var(--tw-leading, var(--text-4xl--line-height));
+  }
+  .text-base {
+    font-size: var(--text-base);
+    line-height: var(--tw-leading, var(--text-base--line-height));
   }
   .text-lg {
     font-size: var(--text-lg);
@@ -2336,6 +2352,16 @@
   .sm\:text-\[10px\] {
     @media (width >= 40rem) {
       font-size: 10px;
+    }
+  }
+  .md\:col-span-2 {
+    @media (width >= 48rem) {
+      grid-column: span 2 / span 2;
+    }
+  }
+  .md\:row-span-2 {
+    @media (width >= 48rem) {
+      grid-row: span 2 / span 2;
     }
   }
   .md\:block {

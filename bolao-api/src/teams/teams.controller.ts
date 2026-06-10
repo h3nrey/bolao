@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Param, UseGuards, UsePipes } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  UseGuards,
+  UsePipes,
+} from '@nestjs/common';
 import { TeamsService } from './teams.service';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';

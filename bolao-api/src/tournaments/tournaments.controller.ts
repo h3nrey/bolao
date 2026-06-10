@@ -1,8 +1,22 @@
-import { Controller, Get, Post, Patch, Body, Param, UseGuards, UsePipes } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Body,
+  Param,
+  UseGuards,
+  UsePipes,
+} from '@nestjs/common';
 import { TournamentsService } from './tournaments.service';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
-import { createTournamentSchema, updateTournamentSchema, CreateTournamentDto, UpdateTournamentDto } from './dto/tournament.dto';
+import {
+  createTournamentSchema,
+  updateTournamentSchema,
+  CreateTournamentDto,
+  UpdateTournamentDto,
+} from './dto/tournament.dto';
 
 @Controller('tournaments')
 @UseGuards(JwtAuthGuard)

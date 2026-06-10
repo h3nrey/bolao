@@ -26,12 +26,10 @@ export interface SelectOption {
   ],
   templateUrl: './special-prediction-card.component.html',
   host: {
-    'class': 'relative p-6 bg-[#14151A] border border-[#2A2B36] rounded-lg flex flex-col justify-between gap-4 min-h-[260px] shadow-md transition-all duration-150 block',
+    'class': 'relative p-6 bg-[#14151A] border border-[#2A2B36] rounded-lg flex flex-col justify-between gap-4 shadow-md transition-all duration-150 block',
+    '[class.min-h-[260px]]': "size() === 'normal'",
+    '[class.min-h-[390px]]': "size() === 'large' || size() === 'tall'",
     '[class.border-l-4]': 'true',
-    '[class.border-l-[#FFB800]]': "accentColor() === 'gold'",
-    '[class.border-l-[#9B9BAD]]': "accentColor() === 'silver'",
-    '[class.border-l-[#3D3E4D]]': "accentColor() === 'bronze'",
-    '[class.border-l-[#E8001D]]': "accentColor() === 'red'",
     '[class.z-40]': 'isOpen()',
     '[class.z-10]': '!isOpen()'
   }
@@ -42,13 +40,17 @@ export class SpecialPredictionCardComponent {
   category = input.required<string>();
   points = input.required<number>();
   title = input.required<string>();
-  accentColor = input<string>('gold'); // gold, silver, bronze, red
+  accentColor = input<string>('red'); // gold, silver, bronze, red
+  size = input<'normal' | 'large' | 'tall'>('normal');
   options = input.required<SelectOption[]>();
   value = input<string>('');
   placeholder = input<string>('Buscar...');
   emptyText = input<string>('Nenhum selecionado');
   emptyIcon = input<string>('trophy'); // trophy, soccer, award, zap, target, star
   disabled = input<boolean>(false);
+  badgeText = input<string>('');
+  description = input<string>('');
+  helpText = input<string>('');
 
   valueChange = output<string>();
 

@@ -28,7 +28,9 @@ export class TournamentsService {
   }
 
   async update(id: string, dto: UpdateTournamentDto) {
-    const tournament = await this.prisma.tournament.findUnique({ where: { id } });
+    const tournament = await this.prisma.tournament.findUnique({
+      where: { id },
+    });
     if (!tournament) {
       throw new NotFoundException('Tournament not found');
     }

@@ -1,7 +1,15 @@
-import { Injectable, NotFoundException, Inject, forwardRef } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  Inject,
+  forwardRef,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateMatchDto } from './dto/match.dto';
-import { CreateExtraPeriodDto, UpdateExtraPeriodDto } from './dto/match-extra-period.dto';
+import {
+  CreateExtraPeriodDto,
+  UpdateExtraPeriodDto,
+} from './dto/match-extra-period.dto';
 import { ScoringService } from '../predictions/scoring.service';
 import { RankingsService } from '../rankings/rankings.service';
 import { calculateCommunityTrends } from './matches.helper';
@@ -15,7 +23,12 @@ export class MatchesService {
     private rankingsService: RankingsService,
   ) {}
 
-  async findAll(phaseId?: string, status?: string, groupId?: string, sort?: 'status' | 'chronological') {
+  async findAll(
+    phaseId?: string,
+    status?: string,
+    groupId?: string,
+    sort?: 'status' | 'chronological',
+  ) {
     const where: any = {};
     if (phaseId) where.phase_id = phaseId;
     if (status) where.status = status;
@@ -49,10 +62,17 @@ export class MatchesService {
 
     if (sort === 'status') {
       return mapped.sort((a, b) => {
-        const order: Record<string, number> = { live: 0, upcoming: 1, finished: 2, cancelled: 3 };
-        const oa = order[a.status] ?? 4, ob = order[b.status] ?? 4;
+        const order: Record<string, number> = {
+          live: 0,
+          upcoming: 1,
+          finished: 2,
+          cancelled: 3,
+        };
+        const oa = order[a.status] ?? 4,
+          ob = order[b.status] ?? 4;
         if (oa !== ob) return oa - ob;
-        const da = new Date(a.scheduled_at).getTime(), db = new Date(b.scheduled_at).getTime();
+        const da = new Date(a.scheduled_at).getTime(),
+          db = new Date(b.scheduled_at).getTime();
         return a.status === 'finished' ? db - da : da - db;
       });
     }
@@ -102,7 +122,9 @@ export class MatchesService {
   }
 
   async create(phaseId: string, dto: CreateMatchDto) {
-    const phase = await this.prisma.phase.findUnique({ where: { id: phaseId } });
+    const phase = await this.prisma.phase.findUnique({
+      where: { id: phaseId },
+    });
     if (!phase) {
       throw new NotFoundException('Phase not found');
     }
@@ -148,7 +170,10 @@ export class MatchesService {
     });
 
     await this.scoringService.recalculateMatch(id);
-    await this.rankingsService.recalculate(match.phase.tournament_id, match.phase_id);
+    await this.rankingsService.recalculate(
+      match.phase.tournament_id,
+      match.phase_id,
+    );
 
     return updatedMatch;
   }
@@ -175,7 +200,9 @@ export class MatchesService {
     if (match.status !== 'live' || !match.started_at) {
       return null;
     }
-    return Math.floor((Date.now() - new Date(match.started_at).getTime()) / 60000);
+    return Math.floor(
+      (Date.now() - new Date(match.started_at).getTime()) / 60000,
+    );
   }
 
   async createExtraPeriod(matchId: string, dto: CreateExtraPeriodDto) {
@@ -196,7 +223,10 @@ export class MatchesService {
     });
 
     await this.scoringService.recalculateMatch(matchId);
-    await this.rankingsService.recalculate(match.phase.tournament_id, match.phase_id);
+    await this.rankingsService.recalculate(
+      match.phase.tournament_id,
+      match.phase_id,
+    );
 
     return extraPeriod;
   }

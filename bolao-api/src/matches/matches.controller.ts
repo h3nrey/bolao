@@ -1,11 +1,23 @@
-import { Controller, Get, Post, Patch, Body, Param, Query, UseGuards, UsePipes } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+  UsePipes,
+} from '@nestjs/common';
 import { MatchesService } from './matches.service';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
 import { createMatchSchema, CreateMatchDto } from './dto/match.dto';
 import {
-  createExtraPeriodSchema, updateExtraPeriodSchema,
-  CreateExtraPeriodDto, UpdateExtraPeriodDto,
+  createExtraPeriodSchema,
+  updateExtraPeriodSchema,
+  CreateExtraPeriodDto,
+  UpdateExtraPeriodDto,
 } from './dto/match-extra-period.dto';
 
 @Controller()
@@ -30,10 +42,7 @@ export class MatchesController {
 
   @Post('phases/:phaseId/matches')
   @UsePipes(new ZodValidationPipe(createMatchSchema))
-  async create(
-    @Param('phaseId') phaseId: string,
-    @Body() dto: CreateMatchDto,
-  ) {
+  async create(@Param('phaseId') phaseId: string, @Body() dto: CreateMatchDto) {
     return this.matchesService.create(phaseId, dto);
   }
 

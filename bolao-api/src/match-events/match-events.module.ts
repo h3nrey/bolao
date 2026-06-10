@@ -5,10 +5,7 @@ import { PredictionsModule } from '../predictions/predictions.module';
 import { RankingsModule } from '../rankings/rankings.module';
 
 @Module({
-  imports: [
-    forwardRef(() => PredictionsModule),
-    RankingsModule,
-  ],
+  imports: [forwardRef(() => PredictionsModule), RankingsModule],
   controllers: [MatchEventsController],
   providers: [MatchEventsService],
   exports: [MatchEventsService],

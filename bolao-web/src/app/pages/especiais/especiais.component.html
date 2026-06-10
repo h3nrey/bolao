@@ -1,5 +1,5 @@
 <div class="flex flex-col gap-6 w-full animate-fadeIn text-left select-none pb-16">
-  
+
   <!-- Page Header -->
   <div class="flex flex-col text-left">
     <h1 class="text-3xl font-black text-white tracking-tight leading-none mb-2 font-ui uppercase">
@@ -12,165 +12,113 @@
 
   <!-- Loading state -->
   @if (loading()) {
-    <div class="flex flex-col items-center justify-center py-20 gap-3 w-full bg-[#14151A] border border-[#2A2B36] rounded-[8px]">
-      <div class="w-10 h-10 border-3 border-[#2A2B36] border-t-[#E8001D] rounded-full animate-spin"></div>
-      <p class="text-xs text-slate-400">Carregando palpites especiais...</p>
-    </div>
+  <div
+    class="flex flex-col items-center justify-center py-20 gap-3 w-full bg-[#14151A] border border-[#2A2B36] rounded-[8px]">
+    <div class="w-10 h-10 border-3 border-[#2A2B36] border-t-[#E8001D] rounded-full animate-spin"></div>
+    <p class="text-xs text-slate-400">Carregando palpites especiais...</p>
+  </div>
   } @else {
-    
-    <!-- Progress Tracking Card -->
-    <div class="bg-[#14151A] border border-[#2A2B36] rounded-xl p-5 md:p-6 shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4">
-      <div class="flex flex-col text-left gap-1">
-        <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest font-ui">Progresso dos Palpites</span>
-        <span class="text-lg font-bold text-white font-body">
-          {{ completedCount() }} de 6 palpites salvos
-        </span>
-      </div>
-      
-      <div class="flex-1 max-w-md w-full flex flex-col gap-2">
-        <div class="h-2.5 w-full bg-[#2A2B36] rounded-full overflow-hidden">
-          <div 
-            class="h-full bg-brand-red rounded-full transition-all duration-300"
-            [style.width.%]="completionPercentage()"
-          ></div>
-        </div>
-        <div class="flex justify-between text-[10px] text-slate-500 font-bold uppercase tracking-wider font-ui">
-          <span>Incompleto</span>
-          <span>{{ completionPercentage() | number:'1.0-0' }}% Concluído</span>
-        </div>
-      </div>
+
+  <!-- Progress Tracking Card -->
+  <div
+    class="bg-[#14151A] border border-[#2A2B36] rounded-xl p-5 md:p-6 shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div class="flex flex-col text-left gap-1">
+      <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest font-ui">Progresso dos
+        Palpites</span>
+      <span class="text-lg font-bold text-white font-body">
+        {{ completedCount() }} de 6 palpites salvos
+      </span>
     </div>
 
-    <!-- Main Form Content -->
-    <div class="flex flex-col gap-6">
-      
-      <!-- Feedback Alerts -->
-      @if (error()) {
-        <div class="p-4 bg-red-950/40 border border-red-500/30 text-red-400 text-xs rounded-lg flex items-center gap-2 font-body">
-          <svg lucideShieldAlert class="w-4 h-4 shrink-0"></svg>
-          {{ error() }}
-        </div>
-      }
-      @if (successMessage()) {
-        <div class="p-4 bg-emerald-950/40 border border-emerald-500/30 text-emerald-400 text-xs rounded-lg flex items-center gap-2 font-body">
-          <svg lucideCheck class="w-4 h-4 shrink-0 text-emerald-400"></svg>
-          {{ successMessage() }}
-        </div>
-      }
-
-      <!-- 3-Column Grid for Mockup-Style Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        
-        <!-- CARD 1: Campeão (VENCEDOR FINAL) -->
-        <app-special-prediction-card
-          category="Vencedor Final"
-          [points]="30"
-          title="Campeão"
-          accentColor="gold"
-          [options]="teamOptions()"
-          [value]="championId()"
-          placeholder="Buscar seleção..."
-          emptyText="Nenhuma seleção escolhida"
-          emptyIcon="trophy"
-          [disabled]="isLocked()"
-          (valueChange)="championId.set($event)"
-        ></app-special-prediction-card>
-
-        <!-- CARD 2: Vice-Campeão (SEGUNDO LUGAR) -->
-        <app-special-prediction-card
-          category="Segundo Lugar"
-          [points]="20"
-          title="Vice-Campeão"
-          accentColor="silver"
-          [options]="teamOptions()"
-          [value]="runnerUpId()"
-          placeholder="Buscar seleção..."
-          emptyText="Nenhuma seleção escolhida"
-          emptyIcon="soccer"
-          [disabled]="isLocked()"
-          (valueChange)="runnerUpId.set($event)"
-        ></app-special-prediction-card>
-
-        <!-- CARD 3: 3º Lugar (TERCEIRO LUGAR) -->
-        <app-special-prediction-card
-          category="Terceiro Lugar"
-          [points]="20"
-          title="3º Lugar"
-          accentColor="bronze"
-          [options]="teamOptions()"
-          [value]="thirdPlaceId()"
-          placeholder="Buscar seleção..."
-          emptyText="Nenhuma seleção escolhida"
-          emptyIcon="award"
-          [disabled]="isLocked()"
-          (valueChange)="thirdPlaceId.set($event)"
-        ></app-special-prediction-card>
-
-        <!-- CARD 4: Zebra / Surpresa (MAIOR SURPRESA) -->
-        <app-special-prediction-card
-          category="Maior Surpresa"
-          [points]="20"
-          title="Zebra / Surpresa"
-          accentColor="red"
-          [options]="teamOptions()"
-          [value]="surpriseTeamId()"
-          placeholder="Buscar zebra..."
-          emptyText="Nenhuma zebra escolhida"
-          emptyIcon="zap"
-          [disabled]="isLocked()"
-          (valueChange)="surpriseTeamId.set($event)"
-        ></app-special-prediction-card>
-
-        <!-- CARD 5: Artilheiro (GOLDEN BOOT) -->
-        <app-special-prediction-card
-          category="Artilheiro"
-          [points]="20"
-          title="Golden Boot"
-          accentColor="gold"
-          [options]="playerOptions()"
-          [value]="topScorerId()"
-          placeholder="Buscar jogador..."
-          emptyText="Nenhum jogador escolhido"
-          emptyIcon="target"
-          [disabled]="isLocked()"
-          (valueChange)="topScorerId.set($event)"
-        ></app-special-prediction-card>
-
-        <!-- CARD 6: Melhor Jogador (MVP DO TORNEIO) -->
-        <app-special-prediction-card
-          category="Melhor Jogador"
-          [points]="20"
-          title="MVP do Torneio"
-          accentColor="gold"
-          [options]="playerOptions()"
-          [value]="bestPlayerId()"
-          placeholder="Buscar MVP..."
-          emptyText="Nenhum jogador escolhido"
-          emptyIcon="star"
-          [disabled]="isLocked()"
-          (valueChange)="bestPlayerId.set($event)"
-        ></app-special-prediction-card>
-
+    <div class="flex-1 max-w-md w-full flex flex-col gap-2">
+      <div class="h-2.5 w-full bg-[#2A2B36] rounded-full overflow-hidden">
+        <div class="h-full bg-brand-red rounded-full transition-all duration-300"
+          [style.width.%]="completionPercentage()"></div>
       </div>
-
-      <!-- Action Button -->
-      <div class="flex justify-end mt-4">
-        <button
-          type="button"
-          (click)="savePredictions()"
-          [disabled]="isLocked() || saving()"
-          class="flex items-center justify-center gap-2 px-6 py-3 bg-brand-red hover:bg-[#FF1A35] text-white text-xs font-black uppercase tracking-wider rounded-md cursor-pointer transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed select-none outline-none border-none focus:shadow-[0_0_0_3px_rgba(232,0,29,0.22)]"
-        >
-          @if (saving()) {
-            <span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-            Salvando...
-          } @else {
-            {{ isLocked() ? 'Bloqueado para Envios' : 'Salvar Palpites Especiais' }}
-          }
-        </button>
+      <div class="flex justify-between text-[10px] text-slate-500 font-bold uppercase tracking-wider font-ui">
+        <span>Incompleto</span>
+        <span>{{ completionPercentage() | number:'1.0-0' }}% Concluído</span>
       </div>
+    </div>
+  </div>
+
+  <!-- Main Form Content -->
+  <div class="flex flex-col gap-6">
+
+    <!-- Feedback Alerts -->
+    @if (error()) {
+    <div
+      class="p-4 bg-red-950/40 border border-red-500/30 text-red-400 text-xs rounded-lg flex items-center gap-2 font-body">
+      <svg lucideShieldAlert class="w-4 h-4 shrink-0"></svg>
+      {{ error() }}
+    </div>
+    }
+    @if (successMessage()) {
+    <div
+      class="p-4 bg-emerald-950/40 border border-emerald-500/30 text-emerald-400 text-xs rounded-lg flex items-center gap-2 font-body">
+      <svg lucideCheck class="w-4 h-4 shrink-0 text-emerald-400"></svg>
+      {{ successMessage() }}
+    </div>
+    }
+
+    <!-- 3-Column Grid for Mockup-Style Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+      <!-- CARD 1: Campeão (VENCEDOR FINAL) -->
+      <app-special-prediction-card class="md:col-span-2 md:row-span-2" size="large" category="Vencedor Final"
+        [points]="30" title="Campeão" accentColor="red" badgeText="PRÊMIO MÁXIMO"
+        description="O palpite mais valioso do torneio. Acertar o campeão garante o maior multiplicador disponível e pode disparar sua posição no ranking global de uma vez só."
+        [options]="teamOptions()" [value]="championId()" placeholder="Buscar seleção..."
+        emptyText="Nenhuma seleção escolhida" emptyIcon="trophy" [disabled]="isLocked()"
+        (valueChange)="championId.set($event)"></app-special-prediction-card>
+
+      <!-- CARD 2: Vice-Campeão (SEGUNDO LUGAR) -->
+      <app-special-prediction-card class="md:row-span-2" size="tall" category="Segundo Lugar" [points]="20"
+        title="Vice-Campeão" accentColor="red" description="Quem chega à final mas não levanta a taça?"
+        [options]="teamOptions()" [value]="runnerUpId()" placeholder="Buscar seleção..."
+        emptyText="Nenhuma seleção escolhida" emptyIcon="soccer" [disabled]="isLocked()"
+        (valueChange)="runnerUpId.set($event)"></app-special-prediction-card>
+
+      <!-- CARD 3: 3º Lugar (TERCEIRO LUGAR) -->
+      <app-special-prediction-card category="Terceiro Lugar" [points]="20" title="3º Lugar" accentColor="red"
+        [options]="teamOptions()" [value]="thirdPlaceId()" placeholder="Buscar seleção..."
+        emptyText="Nenhuma seleção escolhida" emptyIcon="award" [disabled]="isLocked()"
+        (valueChange)="thirdPlaceId.set($event)"></app-special-prediction-card>
+
+      <!-- CARD 4: Zebra / Surpresa (MAIOR SURPRESA) -->
+      <app-special-prediction-card category="Maior Surpresa" [points]="20" title="Zebra" accentColor="red"
+        [options]="teamOptions()" [value]="surpriseTeamId()" placeholder="Buscar zebra..."
+        emptyText="Nenhuma zebra escolhida" emptyIcon="zap" [disabled]="isLocked()"
+        (valueChange)="surpriseTeamId.set($event)"></app-special-prediction-card>
+
+      <!-- CARD 5: Artilheiro (GOLDEN BOOT) -->
+      <app-special-prediction-card category="Artilheiro" [points]="20" title="Golden Boot" accentColor="red"
+        [options]="playerOptions()" [value]="topScorerId()" placeholder="Buscar jogador..."
+        emptyText="Nenhum jogador escolhido" emptyIcon="target" [disabled]="isLocked()"
+        (valueChange)="topScorerId.set($event)"></app-special-prediction-card>
+
+      <!-- CARD 6: Melhor Jogador (MVP DO TORNEIO) -->
+      <app-special-prediction-card category="Melhor Jogador" [points]="20" title="MVP do Torneio" accentColor="red"
+        [options]="playerOptions()" [value]="bestPlayerId()" placeholder="Buscar MVP..."
+        emptyText="Nenhum jogador escolhido" emptyIcon="star" [disabled]="isLocked()"
+        (valueChange)="bestPlayerId.set($event)"></app-special-prediction-card>
 
     </div>
+
+    <!-- Action Button -->
+    <div class="flex justify-end mt-4">
+      <button type="button" (click)="savePredictions()" [disabled]="isLocked() || saving()"
+        class="flex items-center justify-center gap-2 px-6 py-3 bg-brand-red hover:bg-[#FF1A35] text-white text-xs font-black uppercase tracking-wider rounded-md cursor-pointer transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed select-none outline-none border-none focus:shadow-[0_0_0_3px_rgba(232,0,29,0.22)]">
+        @if (saving()) {
+        <span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+        Salvando...
+        } @else {
+        {{ isLocked() ? 'Bloqueado para Envios' : 'Salvar Palpites Especiais' }}
+        }
+      </button>
+    </div>
+
+  </div>
 
   }
 </div>

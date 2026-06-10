@@ -11,7 +11,9 @@ export class BracketService {
   ) {}
 
   async getBracket(phaseId: string) {
-    const phase = await this.prisma.phase.findUnique({ where: { id: phaseId } });
+    const phase = await this.prisma.phase.findUnique({
+      where: { id: phaseId },
+    });
     if (!phase) {
       throw new NotFoundException('Phase not found');
     }
@@ -26,10 +28,7 @@ export class BracketService {
           },
         },
       },
-      orderBy: [
-        { stage: 'asc' },
-        { slot_number: 'asc' },
-      ],
+      orderBy: [{ stage: 'asc' }, { slot_number: 'asc' }],
     });
 
     // Attach score to each slot's match
@@ -53,7 +52,9 @@ export class BracketService {
   }
 
   async createSlot(phaseId: string, dto: CreateBracketSlotDto) {
-    const phase = await this.prisma.phase.findUnique({ where: { id: phaseId } });
+    const phase = await this.prisma.phase.findUnique({
+      where: { id: phaseId },
+    });
     if (!phase) {
       throw new NotFoundException('Phase not found');
     }
@@ -73,7 +74,9 @@ export class BracketService {
   }
 
   async resolve(phaseId: string) {
-    const phase = await this.prisma.phase.findUnique({ where: { id: phaseId } });
+    const phase = await this.prisma.phase.findUnique({
+      where: { id: phaseId },
+    });
     if (!phase) {
       throw new NotFoundException('Phase not found');
     }
@@ -134,10 +137,7 @@ export class BracketService {
     return { success: true, message: 'Bracket resolved from group positions' };
   }
 
-  private resolveGroupPosition(
-    ref: string,
-    groupTeams: any[],
-  ): string | null {
+  private resolveGroupPosition(ref: string, groupTeams: any[]): string | null {
     // ref format: "A1" = group A, position 1
     const groupName = ref.charAt(0);
     const position = parseInt(ref.substring(1), 10);

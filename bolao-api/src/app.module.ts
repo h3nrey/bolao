@@ -13,7 +13,6 @@ import { MatchEventsModule } from './match-events/match-events.module';
 import { PredictionsModule } from './predictions/predictions.module';
 import { RankingsModule } from './rankings/rankings.module';
 import { BracketModule } from './bracket/bracket.module';
-import { SportsModule } from './sports/sports.module';
 
 @Module({
   imports: [
@@ -31,14 +30,18 @@ import { SportsModule } from './sports/sports.module';
         const missingEnvVars = requiredEnvVars.filter((key) => !config[key]);
 
         if (missingEnvVars.length > 0) {
-          throw new Error(`Missing required environment variables: ${missingEnvVars.join(', ')}`);
+          throw new Error(
+            `Missing required environment variables: ${missingEnvVars.join(', ')}`,
+          );
         }
 
         return config;
       },
-      load: [() => ({
-        frontendUrl: process.env.FRONTEND_URL || 'http://localhost:4200',
-      })],
+      load: [
+        () => ({
+          frontendUrl: process.env.FRONTEND_URL || 'http://localhost:4200',
+        }),
+      ],
     }),
     PrismaModule,
     AuthModule,
@@ -53,7 +56,6 @@ import { SportsModule } from './sports/sports.module';
     PredictionsModule,
     RankingsModule,
     BracketModule,
-    SportsModule,
   ],
 })
 export class AppModule {}

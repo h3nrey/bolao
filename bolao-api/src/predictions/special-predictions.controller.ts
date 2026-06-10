@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, UseGuards, UsePipes, ForbiddenException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  UseGuards,
+  UsePipes,
+  ForbiddenException,
+} from '@nestjs/common';
 import { SpecialPredictionsService } from './special-predictions.service';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
@@ -26,7 +34,10 @@ export class SpecialPredictionsController {
     @CurrentUser() user: any,
     @Body() dto: SubmitSpecialPredictionDto,
   ) {
-    return this.specialPredictionsService.submitSpecialPredictions(user.id, dto);
+    return this.specialPredictionsService.submitSpecialPredictions(
+      user.id,
+      dto,
+    );
   }
 
   @Get('official')

@@ -1,9 +1,20 @@
-import { Controller, Get, Post, Body, Param, UseGuards, UsePipes } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  UseGuards,
+  UsePipes,
+} from '@nestjs/common';
 import { PredictionsService } from './predictions.service';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
-import { createPredictionSchema, CreatePredictionDto } from './dto/prediction.dto';
+import {
+  createPredictionSchema,
+  CreatePredictionDto,
+} from './dto/prediction.dto';
 
 @Controller()
 @UseGuards(JwtAuthGuard)

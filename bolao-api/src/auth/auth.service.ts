@@ -17,7 +17,7 @@ export class AuthService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
-  ) { }
+  ) {}
 
   async findOrCreateUser(data: FindOrCreateUserData) {
     const {

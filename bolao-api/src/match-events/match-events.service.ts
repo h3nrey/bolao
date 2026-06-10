@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, Inject, forwardRef } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  Inject,
+  forwardRef,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateMatchEventDto } from './dto/match-event.dto';
 import { ScoringService } from '../predictions/scoring.service';
@@ -14,7 +19,9 @@ export class MatchEventsService {
   ) {}
 
   async findAllForMatch(matchId: string) {
-    const match = await this.prisma.match.findUnique({ where: { id: matchId } });
+    const match = await this.prisma.match.findUnique({
+      where: { id: matchId },
+    });
     if (!match) {
       throw new NotFoundException('Match not found');
     }
@@ -49,8 +56,8 @@ export class MatchEventsService {
     if (dto.type === 'goal' || dto.type === 'own_goal') {
       const isTeamA = dto.team_id === match.team_a_id;
       const isTeamB = dto.team_id === match.team_b_id;
-      
-      let updateData: any = {};
+
+      const updateData: any = {};
       if (dto.period === 'regular') {
         if (dto.type === 'goal') {
           if (isTeamA) updateData.score_a = { increment: 1 };
@@ -78,7 +85,10 @@ export class MatchEventsService {
     }
 
     await this.scoringService.recalculateMatch(matchId);
-    await this.rankingsService.recalculate(match.phase.tournament_id, match.phase_id);
+    await this.rankingsService.recalculate(
+      match.phase.tournament_id,
+      match.phase_id,
+    );
 
     return event;
   }
@@ -104,8 +114,8 @@ export class MatchEventsService {
     if (event.type === 'goal' || event.type === 'own_goal') {
       const isTeamA = event.team_id === event.match.team_a_id;
       const isTeamB = event.team_id === event.match.team_b_id;
-      
-      let updateData: any = {};
+
+      const updateData: any = {};
       if (event.period === 'regular') {
         if (event.type === 'goal') {
           if (isTeamA) updateData.score_a = { decrement: 1 };
@@ -133,7 +143,10 @@ export class MatchEventsService {
     }
 
     await this.scoringService.recalculateMatch(event.match_id);
-    await this.rankingsService.recalculate(event.match.phase.tournament_id, event.match.phase.id);
+    await this.rankingsService.recalculate(
+      event.match.phase.tournament_id,
+      event.match.phase.id,
+    );
 
     return { success: true };
   }

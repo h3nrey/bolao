@@ -1,8 +1,23 @@
-import { Controller, Get, Post, Patch, Body, Param, Query, UseGuards, UsePipes } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+  UsePipes,
+} from '@nestjs/common';
 import { PlayersService } from './players.service';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
-import { createPlayerSchema, updatePlayerSchema, CreatePlayerDto, UpdatePlayerDto } from './dto/player.dto';
+import {
+  createPlayerSchema,
+  updatePlayerSchema,
+  CreatePlayerDto,
+  UpdatePlayerDto,
+} from './dto/player.dto';
 
 @Controller('players')
 @UseGuards(JwtAuthGuard)

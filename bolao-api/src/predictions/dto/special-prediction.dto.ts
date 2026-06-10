@@ -10,7 +10,11 @@ export const submitSpecialPredictionSchema = z.object({
   surprise_team_id: z.string().uuid().nullable().optional(),
 });
 
-export class SubmitSpecialPredictionDto extends createZodDto(submitSpecialPredictionSchema) {}
+export class SubmitSpecialPredictionDto extends createZodDto(
+  submitSpecialPredictionSchema,
+) {}
 
 export const submitOfficialSpecialResultsSchema = submitSpecialPredictionSchema;
-export class SubmitOfficialSpecialResultsDto extends createZodDto(submitOfficialSpecialResultsSchema) {}
+export class SubmitOfficialSpecialResultsDto extends createZodDto(
+  submitOfficialSpecialResultsSchema,
+) {}

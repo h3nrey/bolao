@@ -8,4 +8,3 @@ export const createTeamSchema = z.object({
 });
 
 export class CreateTeamDto extends createZodDto(createTeamSchema) {}
-

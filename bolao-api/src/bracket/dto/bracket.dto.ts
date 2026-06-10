@@ -2,7 +2,15 @@ import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
 
 export const createBracketSlotSchema = z.object({
-  stage: z.enum(['groups','round_of_32','round_of_16','quarterfinal','semifinal','third_place','final']),
+  stage: z.enum([
+    'groups',
+    'round_of_32',
+    'round_of_16',
+    'quarterfinal',
+    'semifinal',
+    'third_place',
+    'final',
+  ]),
   slot_number: z.number().int().positive(),
   source_a_type: z.enum(['group_position', 'bracket_slot']),
   source_a_ref: z.string().min(1),
@@ -11,4 +19,6 @@ export const createBracketSlotSchema = z.object({
   match_id: z.string().uuid().optional(),
 });
 
-export class CreateBracketSlotDto extends createZodDto(createBracketSlotSchema) {}
+export class CreateBracketSlotDto extends createZodDto(
+  createBracketSlotSchema,
+) {}

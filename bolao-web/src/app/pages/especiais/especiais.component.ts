@@ -1,8 +1,6 @@
 import { Component, OnInit, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { SessionService } from '../../services/session.service';
-import { API_BASE_URL } from '../../config/api.constants';
+import { SpecialPredictionService } from '../../services/special-prediction.service';
 import { SpecialPredictionCardComponent, SelectOption } from '../../components/ui/special-prediction-card/special-prediction-card.component';
 import { hasTournamentStarted } from '../../shared/utils/date.utils';
 import { LucideCheck, LucideShieldAlert } from '@lucide/angular';
@@ -19,9 +17,7 @@ import { LucideCheck, LucideShieldAlert } from '@lucide/angular';
   templateUrl: './especiais.component.html',
 })
 export class EspeciaisComponent implements OnInit {
-  private readonly http = inject(HttpClient);
-  private readonly session = inject(SessionService);
-  private readonly apiBaseUrl = API_BASE_URL;
+  private readonly specialsService = inject(SpecialPredictionService);
 
   protected readonly loading = signal(true);
   protected readonly saving = signal(false);
@@ -64,10 +60,9 @@ export class EspeciaisComponent implements OnInit {
   private loadData() {
     this.loading.set(true);
     this.error.set(null);
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.session.token()}`);
 
-    // Fetch teams, players, and my predictions in parallel
-    this.http.get<any[]>(`${this.apiBaseUrl}/teams`, { headers }).subscribe({
+    // Fetch teams, players, and my predictions in parallel using the service
+    this.specialsService.getTeams().subscribe({
       next: (teams) => {
         const sortedTeams = [...teams].sort((a, b) => a.name.localeCompare(b.name));
         this.teamOptions.set([
@@ -78,7 +73,7 @@ export class EspeciaisComponent implements OnInit {
           }))
         ]);
 
-        this.http.get<any[]>(`${this.apiBaseUrl}/players`, { headers }).subscribe({
+        this.specialsService.getPlayers().subscribe({
           next: (players) => {
             // Sort by team name, then player name
             const sortedPlayers = [...players].sort((a, b) => {
@@ -95,7 +90,7 @@ export class EspeciaisComponent implements OnInit {
               }))
             ]);
 
-            this.http.get<any>(`${this.apiBaseUrl}/predictions/special/me`, { headers }).subscribe({
+            this.specialsService.getMySpecialPredictions().subscribe({
               next: (pred) => {
                 if (pred) {
                   this.championId.set(pred.champion_team_id || '');
@@ -136,7 +131,6 @@ export class EspeciaisComponent implements OnInit {
     this.successMessage.set(null);
     this.error.set(null);
 
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.session.token()}`);
     const body = {
       champion_team_id: this.championId() || null,
       runner_up_team_id: this.runnerUpId() || null,
@@ -146,7 +140,7 @@ export class EspeciaisComponent implements OnInit {
       surprise_team_id: this.surpriseTeamId() || null,
     };
 
-    this.http.post(`${this.apiBaseUrl}/predictions/special/me`, body, { headers }).subscribe({
+    this.specialsService.saveSpecialPredictions(body).subscribe({
       next: () => {
         this.saving.set(false);
         this.successMessage.set('Palpites especiais salvos com sucesso!');

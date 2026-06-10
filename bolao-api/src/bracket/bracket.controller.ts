@@ -1,8 +1,19 @@
-import { Controller, Get, Post, Body, Param, UseGuards, UsePipes } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  UseGuards,
+  UsePipes,
+} from '@nestjs/common';
 import { BracketService } from './bracket.service';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
-import { createBracketSlotSchema, CreateBracketSlotDto } from './dto/bracket.dto';
+import {
+  createBracketSlotSchema,
+  CreateBracketSlotDto,
+} from './dto/bracket.dto';
 
 @Controller('bracket')
 @UseGuards(JwtAuthGuard)

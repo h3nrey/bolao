@@ -11,4 +11,3 @@ export const updateTournamentSchema = z.object({
 
 export class CreateTournamentDto extends createZodDto(createTournamentSchema) {}
 export class UpdateTournamentDto extends createZodDto(updateTournamentSchema) {}
-

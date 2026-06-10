@@ -35,7 +35,7 @@ export class ScoringService {
     });
 
     // Extract prediction values
-    const items = hydratePredictionItems(prediction.items as any);
+    const items = hydratePredictionItems(prediction.items);
     const getItemInt = (type: string) =>
       items.find((i) => i.type === type)?.value_int ?? null;
     const getItemTeamId = (type: string) =>
@@ -59,7 +59,8 @@ export class ScoringService {
 
     // --- Scoring Rules (Mutually Exclusive) ---
     if (predScoreA !== null && predScoreB !== null) {
-      const isExactScore = predScoreA === actualScoreA && predScoreB === actualScoreB;
+      const isExactScore =
+        predScoreA === actualScoreA && predScoreB === actualScoreB;
       const predResult = Math.sign(predScoreA - predScoreB);
       const actualResult = Math.sign(actualScoreA - actualScoreB);
       const isResultCorrect = predResult === actualResult;
@@ -79,8 +80,12 @@ export class ScoringService {
     }
 
     // Bonus 0x0: 3 pts
-    if (predScoreA === 0 && predScoreB === 0 &&
-        actualScoreA === 0 && actualScoreB === 0) {
+    if (
+      predScoreA === 0 &&
+      predScoreB === 0 &&
+      actualScoreA === 0 &&
+      actualScoreB === 0
+    ) {
       pointsToInsert.push({ type: 'bonus_zero_zero', pts_earned: 3 });
     }
 
