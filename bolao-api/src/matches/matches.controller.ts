@@ -3,6 +3,7 @@ import {
   Get,
   Post,
   Patch,
+  Delete,
   Body,
   Param,
   Query,
@@ -11,8 +12,9 @@ import {
 } from '@nestjs/common';
 import { MatchesService } from './matches.service';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { AdminGuard } from '../common/guards/admin.guard';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
-import { createMatchSchema, CreateMatchDto } from './dto/match.dto';
+import { createMatchSchema, CreateMatchDto, updateMatchSchema, UpdateMatchDto } from './dto/match.dto';
 import {
   createExtraPeriodSchema,
   updateExtraPeriodSchema,
@@ -41,22 +43,39 @@ export class MatchesController {
   }
 
   @Post('phases/:phaseId/matches')
+  @UseGuards(AdminGuard)
   @UsePipes(new ZodValidationPipe(createMatchSchema))
   async create(@Param('phaseId') phaseId: string, @Body() dto: CreateMatchDto) {
     return this.matchesService.create(phaseId, dto);
   }
 
+  @Patch('matches/:id')
+  @UseGuards(AdminGuard)
+  @UsePipes(new ZodValidationPipe(updateMatchSchema))
+  async update(@Param('id') id: string, @Body() dto: UpdateMatchDto) {
+    return this.matchesService.update(id, dto);
+  }
+
+  @Delete('matches/:id')
+  @UseGuards(AdminGuard)
+  async remove(@Param('id') id: string) {
+    return this.matchesService.remove(id);
+  }
+
   @Patch('matches/:id/start')
+  @UseGuards(AdminGuard)
   async start(@Param('id') id: string) {
     return this.matchesService.start(id);
   }
 
   @Patch('matches/:id/end')
+  @UseGuards(AdminGuard)
   async end(@Param('id') id: string) {
     return this.matchesService.end(id);
   }
 
   @Post('matches/:matchId/extra-periods')
+  @UseGuards(AdminGuard)
   @UsePipes(new ZodValidationPipe(createExtraPeriodSchema))
   async createExtraPeriod(
     @Param('matchId') matchId: string,
@@ -66,6 +85,7 @@ export class MatchesController {
   }
 
   @Patch('extra-periods/:id')
+  @UseGuards(AdminGuard)
   @UsePipes(new ZodValidationPipe(updateExtraPeriodSchema))
   async updateExtraPeriod(
     @Param('id') id: string,

@@ -6,6 +6,13 @@ import { CreatePhaseDto, UpdatePhaseStatusDto } from './dto/phase.dto';
 export class PhasesService {
   constructor(private prisma: PrismaService) {}
 
+  async findAll() {
+    return this.prisma.phase.findMany({
+      include: { groups: true },
+      orderBy: { name: 'asc' },
+    });
+  }
+
   async findOne(id: string) {
     const phase = await this.prisma.phase.findUnique({
       where: { id },

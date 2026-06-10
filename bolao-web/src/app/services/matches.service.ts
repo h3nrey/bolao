@@ -40,4 +40,20 @@ export class MatchesService {
     };
     return this.http.post<any>(`${this.apiUrl}/matches/${matchId}/predictions`, payload);
   }
+
+  createMatch(phaseId: string, payload: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/phases/${phaseId}/matches`, payload);
+  }
+
+  updateMatch(id: string, payload: any): Observable<any> {
+    return this.http.patch<any>(`${this.apiUrl}/matches/${id}`, payload);
+  }
+
+  deleteMatch(id: string): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/matches/${id}`);
+  }
+
+  getPhases(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/phases`);
+  }
 }

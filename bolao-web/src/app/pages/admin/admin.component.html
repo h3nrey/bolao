@@ -490,6 +490,235 @@
 
       }
     }
+  } @else if (activeTab() === 'partidas') {
+    <!-- Matches Search & Actions Row -->
+    <div class="flex flex-col sm:flex-row gap-4 bg-[#14151A] border border-[#2A2B36] rounded-none p-4 items-center">
+      <!-- Search Box -->
+      <div class="flex-1 w-full relative">
+        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+          <svg lucideSearch class="w-4.5 h-4.5"></svg>
+        </div>
+        <input 
+          type="text" 
+          [value]="searchQuery()"
+          (input)="searchQuery.set($any($event.target).value)"
+          placeholder="Buscar por seleção, estágio, rodada..."
+          class="w-full pl-10 pr-10 py-3 bg-[#0D0D0F] border border-[#2A2B36] rounded-[3px] text-xs text-white placeholder-slate-600 focus:outline-none focus:border-[#E8001D] transition-all font-body"
+        />
+        @if (searchQuery()) {
+          <button 
+            (click)="searchQuery.set('')"
+            class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-500 hover:text-white bg-transparent border-none cursor-pointer"
+          >
+            <svg lucideX class="w-4 h-4"></svg>
+          </button>
+        }
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex gap-3 w-full sm:w-auto shrink-0 justify-end">
+        <button 
+          (click)="openCreateMatchModal()"
+          class="h-10 px-4 bg-[#E8001D] hover:bg-[#B8001A] text-white rounded-[3px] text-xs font-black uppercase tracking-wider font-ui cursor-pointer transition-all flex items-center gap-2"
+        >
+          <svg lucideCalendar class="w-3.5 h-3.5"></svg>
+          Criar Partida
+        </button>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    @if (loading()) {
+      <div class="flex justify-center items-center py-24 bg-[#14151A] border border-[#2A2B36] rounded-none">
+        <div class="w-10 h-10 border-4 border-white/10 border-t-[#E8001D] rounded-full animate-spin"></div>
+      </div>
+    } @else {
+      <!-- Empty Filter Results -->
+      @if (filteredMatches().length === 0) {
+        <div class="flex flex-col items-center text-center py-20 bg-[#14151A] border border-[#2A2B36] rounded-none p-8">
+          <span class="text-4xl mb-4">📅</span>
+          <h3 class="text-lg font-bold text-white mb-1.5 font-ui uppercase tracking-wider">Nenhuma partida encontrada</h3>
+          <p class="text-xs text-slate-400 max-w-sm font-body">Tente redefinir sua busca para encontrar as partidas.</p>
+        </div>
+      } @else {
+        
+        <!-- Desktop Matches Table -->
+        <div class="hidden md:block w-full overflow-hidden bg-[#14151A] border border-[#2A2B36] rounded-none shadow-md">
+          <table class="w-full border-collapse text-left text-xs">
+            <thead>
+              <tr class="bg-[#1C1D24] border-b border-[#2A2B36] text-slate-400 font-bold uppercase tracking-wider font-ui">
+                <th class="px-6 py-4">Data e Hora</th>
+                <th class="px-6 py-4">Fase / Estágio</th>
+                <th class="px-6 py-4">Partida</th>
+                <th class="px-6 py-4 text-center">Placar</th>
+                <th class="px-6 py-4 text-center">Status</th>
+                <th class="px-6 py-4 text-right">Ações</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-[#2A2B36] font-body">
+              @for (match of filteredMatches(); track match.id) {
+                <tr class="hover:bg-[#22232D] transition-colors duration-80">
+                  <td class="px-6 py-4 text-slate-300 font-semibold whitespace-nowrap">
+                    {{ match.scheduled_at | date: 'dd/MM/yyyy HH:mm' }}
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="flex flex-col gap-0.5">
+                      <span class="text-white font-bold text-xs">{{ match.phase?.name }}</span>
+                      <span class="text-[10px] text-slate-400 font-mono uppercase">
+                        {{ match.stage === 'groups' ? 'Grupo ' + (match.group?.name || '') : match.stage }}
+                        @if (match.round) { - {{ match.round }} }
+                      </span>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-2">
+                      <span class="text-xs font-bold text-white">{{ match.team_a?.flag_emoji || '🏳️' }} {{ match.team_a?.name }}</span>
+                      <span class="text-[10px] text-slate-500 font-black">X</span>
+                      <span class="text-xs font-bold text-white">{{ match.team_b?.flag_emoji || '🏳️' }} {{ match.team_b?.name }}</span>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 text-center">
+                    <div class="flex flex-col items-center">
+                      <span class="text-xs font-black text-white px-2 py-0.5 bg-[#0D0D0F] border border-[#2A2B36]">
+                        {{ match.score_a }} x {{ match.score_b }}
+                      </span>
+                      @if (match.score_a_extra > 0 || match.score_b_extra > 0) {
+                        <span class="text-[9px] text-amber-500 font-bold mt-1">
+                          Prol: {{ match.score_a + match.score_a_extra }} - {{ match.score_b + match.score_b_extra }}
+                        </span>
+                      }
+                      @if (match.penalty_score_a !== null && match.penalty_score_b !== null) {
+                        <span class="text-[9px] text-[#00D68F] font-bold mt-0.5">
+                          Pen: {{ match.penalty_score_a }} - {{ match.penalty_score_b }}
+                        </span>
+                      }
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 text-center">
+                    <span 
+                      class="px-2.5 py-1 text-[9px] font-black uppercase rounded-none border tracking-wide whitespace-nowrap font-ui"
+                      [class.bg-[#00D68F]/10]="match.status === 'live'"
+                      [class.border-[#00D68F]]="match.status === 'live'"
+                      [class.text-[#00D68F]]="match.status === 'live'"
+                      [class.bg-[#E8001D]/10]="match.status === 'finished'"
+                      [class.border-[#E8001D]]="match.status === 'finished'"
+                      [class.text-[#E8001D]]="match.status === 'finished'"
+                      [class.bg-slate-800]="match.status === 'upcoming'"
+                      [class.border-[#2A2B36]]="match.status === 'upcoming'"
+                      [class.text-slate-400]="match.status === 'upcoming'"
+                      [class.bg-slate-900]="match.status === 'cancelled'"
+                      [class.border-[#2A2B36]]="match.status === 'cancelled'"
+                      [class.text-slate-600]="match.status === 'cancelled'"
+                    >
+                      {{ match.status }}
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 text-right">
+                    <div class="flex items-center justify-end gap-2">
+                      <button 
+                        (click)="openEditMatchModal(match)"
+                        class="p-2 bg-[#1C1D24] hover:bg-[#22232D] text-slate-400 hover:text-blue-400 border border-[#2A2B36] hover:border-[#0A84FF] rounded-[3px] cursor-pointer transition-colors duration-80" 
+                        title="Definir Placar / Editar"
+                      >
+                        <svg lucideEdit2 class="w-3.5 h-3.5"></svg>
+                      </button>
+                      <button 
+                        (click)="openDeleteMatchModal(match)"
+                        class="p-2 bg-[#1C1D24] hover:bg-[#22232D] text-slate-400 hover:text-[#E8001D] border border-[#2A2B36] hover:border-[#E8001D] rounded-[3px] cursor-pointer transition-colors duration-80" 
+                        title="Remover Partida"
+                      >
+                        <svg lucideTrash2 class="w-3.5 h-3.5"></svg>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Mobile Matches Cards -->
+        <div class="md:hidden grid grid-cols-1 gap-4">
+          @for (match of filteredMatches(); track match.id) {
+            <div class="bg-[#14151A] border border-[#2A2B36] rounded-none p-4 flex flex-col gap-4 text-left shadow-sm">
+              <div class="flex items-center justify-between border-b border-[#2A2B36] pb-3">
+                <div class="flex items-center gap-2 text-[10px] text-slate-400 font-mono">
+                  <svg lucideCalendar class="w-3 h-3 text-[#E8001D]"></svg>
+                  <span>{{ match.scheduled_at | date: 'dd/MM/yyyy HH:mm' }}</span>
+                </div>
+                <span 
+                  class="px-2 py-0.5 text-[8px] font-black uppercase rounded-none border tracking-wide font-ui"
+                  [class.bg-[#00D68F]/10]="match.status === 'live'"
+                  [class.border-[#00D68F]]="match.status === 'live'"
+                  [class.text-[#00D68F]]="match.status === 'live'"
+                  [class.bg-[#E8001D]/10]="match.status === 'finished'"
+                  [class.border-[#E8001D]]="match.status === 'finished'"
+                  [class.text-[#E8001D]]="match.status === 'finished'"
+                  [class.bg-slate-800]="match.status === 'upcoming'"
+                  [class.border-[#2A2B36]]="match.status === 'upcoming'"
+                  [class.text-slate-400]="match.status === 'upcoming'"
+                  [class.bg-slate-900]="match.status === 'cancelled'"
+                  [class.border-[#2A2B36]]="match.status === 'cancelled'"
+                  [class.text-slate-600]="match.status === 'cancelled'"
+                >
+                  {{ match.status }}
+                </span>
+              </div>
+
+              <div class="flex flex-col gap-2 py-1">
+                <div class="flex justify-between items-center text-xs font-bold text-white">
+                  <span class="flex items-center gap-1.5">{{ match.team_a?.flag_emoji || '🏳️' }} {{ match.team_a?.name }}</span>
+                  <span class="px-2 py-0.5 bg-[#0D0D0F] border border-[#2A2B36] font-black">{{ match.score_a }}</span>
+                </div>
+                <div class="flex justify-between items-center text-xs font-bold text-white">
+                  <span class="flex items-center gap-1.5">{{ match.team_b?.flag_emoji || '🏳️' }} {{ match.team_b?.name }}</span>
+                  <span class="px-2 py-0.5 bg-[#0D0D0F] border border-[#2A2B36] font-black">{{ match.score_b }}</span>
+                </div>
+
+                @if (match.score_a_extra > 0 || match.score_b_extra > 0 || (match.penalty_score_a !== null && match.penalty_score_b !== null)) {
+                  <div class="border-t border-[#2A2B36]/60 pt-2 mt-1 flex flex-col gap-1 text-[9px]">
+                    @if (match.score_a_extra > 0 || match.score_b_extra > 0) {
+                      <span class="text-amber-500 font-bold">
+                        Prorrogação: {{ match.score_a + match.score_a_extra }} - {{ match.score_b + match.score_b_extra }}
+                      </span>
+                    }
+                    @if (match.penalty_score_a !== null && match.penalty_score_b !== null) {
+                      <span class="text-[#00D68F] font-bold">
+                        Pênaltis: {{ match.penalty_score_a }} - {{ match.penalty_score_b }}
+                      </span>
+                    }
+                  </div>
+                }
+              </div>
+
+              <div class="border-t border-[#2A2B36] pt-3 flex justify-between items-center">
+                <div class="flex flex-col font-ui">
+                  <span class="text-[9px] text-slate-500 font-black uppercase tracking-wider">{{ match.phase?.name }}</span>
+                  <span class="text-[10px] text-slate-300 font-medium">
+                    {{ match.stage === 'groups' ? 'Grupo ' + (match.group?.name || '') : match.stage }}
+                  </span>
+                </div>
+
+                <div class="flex gap-2">
+                  <button 
+                    (click)="openEditMatchModal(match)"
+                    class="p-2 bg-[#1C1D24] hover:bg-[#22232D] text-slate-400 hover:text-blue-400 border border-[#2A2B36] hover:border-[#0A84FF] rounded-[3px] cursor-pointer transition-colors"
+                  >
+                    <svg lucideEdit2 class="w-3.5 h-3.5"></svg>
+                  </button>
+                  <button 
+                    (click)="openDeleteMatchModal(match)"
+                    class="p-2 bg-[#1C1D24] hover:bg-[#22232D] text-slate-400 hover:text-[#E8001D] border border-[#2A2B36] hover:border-[#E8001D] rounded-[3px] cursor-pointer transition-colors"
+                  >
+                    <svg lucideTrash2 class="w-3.5 h-3.5"></svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    }
   }
 </div>
 
@@ -865,6 +1094,431 @@
           <span>Excluindo...</span>
         } @else {
           <span>Confirmar Exclusão</span>
+        }
+      </button>
+    </div>
+  </div>
+</app-modal>
+
+<!-- ========================================== -->
+<!-- CREATE MATCH MODAL -->
+<!-- ========================================== -->
+<app-modal [open]="isCreateMatchModalOpen()" size="md">
+  <div class="flex flex-col text-left select-none overflow-visible rounded-none bg-[#14151A]">
+    <!-- Header -->
+    <div class="flex items-center justify-between px-6 py-4 border-b border-[#2A2B36] bg-[#1C1D24] rounded-none">
+      <h3 class="text-xs font-black text-white uppercase tracking-wider flex items-center gap-2 font-ui">
+        <svg lucideCheck class="w-4 h-4 text-[#00D68F]"></svg>
+        Criar Nova Partida
+      </h3>
+      <button (click)="closeCreateMatchModal()" class="text-slate-500 hover:text-white bg-transparent border-none cursor-pointer p-1">
+        <svg lucideX class="w-5 h-5"></svg>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="p-6 flex flex-col gap-5 overflow-visible">
+      <!-- Error Message -->
+      @if (modalError()) {
+        <div class="p-3 bg-[#1A0005] border border-[#E8001D] rounded-none text-red-300 text-[10px] font-bold flex items-center gap-2 font-body">
+          <svg lucideInfo class="w-4 h-4 shrink-0 text-red-400"></svg>
+          {{ modalError() }}
+        </div>
+      }
+
+      <!-- Form Field: Phase -->
+      <div class="flex flex-col gap-1.5 overflow-visible font-body">
+        <app-form-select
+          id="create-match-phase"
+          label="Fase do Torneio"
+          [options]="phaseSelectOptions()"
+          [value]="createMatchPhaseId()"
+          (valueChange)="createMatchPhaseId.set($event)"
+          placeholder="Selecione a fase"
+        ></app-form-select>
+      </div>
+
+      <!-- Form Field: Stage -->
+      <div class="flex flex-col gap-1.5 overflow-visible font-body">
+        <app-form-select
+          id="create-match-stage"
+          label="Estágio (Stage)"
+          [options]="stageOptions"
+          [value]="createMatchStage()"
+          (valueChange)="createMatchStage.set($event)"
+          placeholder="Selecione o estágio"
+        ></app-form-select>
+      </div>
+
+      <!-- Form Field: Group -->
+      @if (createMatchStage() === 'groups' && createMatchGroups().length > 0) {
+        <div class="flex flex-col gap-1.5 overflow-visible font-body">
+          <app-form-select
+            id="create-match-group"
+            label="Grupo da Fase"
+            [options]="createMatchGroups()"
+            [value]="createMatchGroupId()"
+            (valueChange)="createMatchGroupId.set($event)"
+            placeholder="Selecione o grupo"
+          ></app-form-select>
+        </div>
+      }
+
+      <!-- Form Field: Round -->
+      <div class="flex flex-col gap-1.5 font-body">
+        <label class="text-[10px] font-black uppercase tracking-wider text-slate-500 font-ui">Rodada / Detalhe (Opcional)</label>
+        <input 
+          type="text"
+          [value]="createMatchRound()"
+          (input)="createMatchRound.set($any($event.target).value)"
+          class="w-full px-4 py-3 bg-[#0D0D0F] border border-[#2A2B36] rounded-[3px] text-xs text-white placeholder-slate-600 focus:outline-none focus:border-[#E8001D] transition-all"
+          placeholder="Ex: Rodada 1"
+        />
+      </div>
+
+      <!-- Form Field: Team A -->
+      <div class="flex flex-col gap-1.5 overflow-visible font-body">
+        <app-form-select
+          id="create-match-team-a"
+          label="Time A (Mandante)"
+          [options]="teamSelectOptions()"
+          [value]="createMatchTeamAId()"
+          (valueChange)="createMatchTeamAId.set($event)"
+          placeholder="Selecione o Time A"
+        ></app-form-select>
+      </div>
+
+      <!-- Form Field: Team B -->
+      <div class="flex flex-col gap-1.5 overflow-visible font-body">
+        <app-form-select
+          id="create-match-team-b"
+          label="Time B (Visitante)"
+          [options]="teamSelectOptions()"
+          [value]="createMatchTeamBId()"
+          (valueChange)="createMatchTeamBId.set($event)"
+          placeholder="Selecione o Time B"
+        ></app-form-select>
+      </div>
+
+      <!-- Form Field: Scheduled At -->
+      <div class="flex flex-col gap-1.5 font-body">
+        <label class="text-[10px] font-black uppercase tracking-wider text-slate-500 font-ui">Data e Hora Programada</label>
+        <input 
+          type="datetime-local"
+          [value]="createMatchScheduledAt()"
+          (input)="createMatchScheduledAt.set($any($event.target).value)"
+          class="w-full px-4 py-3 bg-[#0D0D0F] border border-[#2A2B36] rounded-[3px] text-xs text-white placeholder-slate-600 focus:outline-none focus:border-[#E8001D] transition-all"
+        />
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="px-6 py-4 bg-[#1C1D24] border-t border-[#2A2B36] flex justify-end gap-3 rounded-none">
+      <button 
+        (click)="closeCreateMatchModal()" 
+        class="h-9 px-4 bg-[#1C1D24] hover:bg-[#22232D] border border-[#2A2B36] rounded-[3px] text-xs font-bold text-slate-300 cursor-pointer transition-colors duration-80 outline-none font-ui uppercase tracking-wider"
+      >
+        Cancelar
+      </button>
+      <button 
+        (click)="submitCreateMatch()" 
+        [disabled]="modalLoading()"
+        class="h-9 px-4 bg-[#E8001D] hover:bg-[#B8001A] text-white rounded-[3px] text-xs font-bold shadow-sm cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-80 outline-none font-ui uppercase tracking-wider"
+      >
+        @if (modalLoading()) {
+          <div class="w-3.5 h-3.5 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+        } @else {
+          Criar Partida
+        }
+      </button>
+    </div>
+  </div>
+</app-modal>
+
+<!-- ========================================== -->
+<!-- EDIT MATCH / SCORE MODAL -->
+<!-- ========================================== -->
+<app-modal [open]="isEditMatchModalOpen()" size="md">
+  <div class="flex flex-col text-left select-none overflow-visible rounded-none bg-[#14151A]">
+    <!-- Header -->
+    <div class="flex items-center justify-between px-6 py-4 border-b border-[#2A2B36] bg-[#1C1D24] rounded-none">
+      <h3 class="text-xs font-black text-white uppercase tracking-wider flex items-center gap-2 font-ui">
+        <svg lucideEdit2 class="w-4 h-4 text-blue-400"></svg>
+        Editar Partida & Definir Placar
+      </h3>
+      <button (click)="closeEditMatchModal()" class="text-slate-500 hover:text-white bg-transparent border-none cursor-pointer p-1">
+        <svg lucideX class="w-5 h-5"></svg>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="p-6 flex flex-col gap-4 overflow-y-auto max-h-[60vh] custom-scrollbar">
+      <!-- Error Message -->
+      @if (modalError()) {
+        <div class="p-3 bg-[#1A0005] border border-[#E8001D] rounded-none text-red-300 text-[10px] font-bold flex items-center gap-2 font-body">
+          <svg lucideInfo class="w-4 h-4 shrink-0 text-red-400"></svg>
+          {{ modalError() }}
+        </div>
+      }
+
+      <div class="grid grid-cols-2 gap-4">
+        <!-- Form Field: Phase -->
+        <div class="flex flex-col gap-1.5 overflow-visible font-body">
+          <app-form-select
+            id="edit-match-phase"
+            label="Fase do Torneio"
+            [options]="phaseSelectOptions()"
+            [value]="editMatchPhaseId()"
+            (valueChange)="editMatchPhaseId.set($event)"
+            placeholder="Selecione a fase"
+          ></app-form-select>
+        </div>
+
+        <!-- Form Field: Stage -->
+        <div class="flex flex-col gap-1.5 overflow-visible font-body">
+          <app-form-select
+            id="edit-match-stage"
+            label="Estágio (Stage)"
+            [options]="stageOptions"
+            [value]="editMatchStage()"
+            (valueChange)="editMatchStage.set($event)"
+            placeholder="Selecione o estágio"
+          ></app-form-select>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <!-- Form Field: Group -->
+        @if (editMatchStage() === 'groups' && editMatchGroups().length > 0) {
+          <div class="flex flex-col gap-1.5 overflow-visible font-body">
+            <app-form-select
+              id="edit-match-group"
+              label="Grupo da Fase"
+              [options]="editMatchGroups()"
+              [value]="editMatchGroupId()"
+              (valueChange)="editMatchGroupId.set($event)"
+              placeholder="Selecione o grupo"
+            ></app-form-select>
+          </div>
+        }
+
+        <!-- Form Field: Round -->
+        <div class="flex flex-col gap-1.5 font-body">
+          <label class="text-[10px] font-black uppercase tracking-wider text-slate-500 font-ui">Rodada / Detalhe (Opcional)</label>
+          <input 
+            type="text"
+            [value]="editMatchRound()"
+            (input)="editMatchRound.set($any($event.target).value)"
+            class="w-full px-4 py-3 bg-[#0D0D0F] border border-[#2A2B36] rounded-[3px] text-xs text-white placeholder-slate-600 focus:outline-none focus:border-[#E8001D] transition-all"
+            placeholder="Ex: Rodada 1"
+          />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <!-- Form Field: Team A -->
+        <div class="flex flex-col gap-1.5 overflow-visible font-body">
+          <app-form-select
+            id="edit-match-team-a"
+            label="Time A"
+            [options]="teamSelectOptions()"
+            [value]="editMatchTeamAId()"
+            (valueChange)="editMatchTeamAId.set($event)"
+            placeholder="Selecione o Time A"
+          ></app-form-select>
+        </div>
+
+        <!-- Form Field: Team B -->
+        <div class="flex flex-col gap-1.5 overflow-visible font-body">
+          <app-form-select
+            id="edit-match-team-b"
+            label="Time B"
+            [options]="teamSelectOptions()"
+            [value]="editMatchTeamBId()"
+            (valueChange)="editMatchTeamBId.set($event)"
+            placeholder="Selecione o Time B"
+          ></app-form-select>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <!-- Form Field: Scheduled At -->
+        <div class="flex flex-col gap-1.5 font-body">
+          <label class="text-[10px] font-black uppercase tracking-wider text-slate-500 font-ui">Data e Hora Programada</label>
+          <input 
+            type="datetime-local"
+            [value]="editMatchScheduledAt()"
+            (input)="editMatchScheduledAt.set($any($event.target).value)"
+            class="w-full px-4 py-3 bg-[#0D0D0F] border border-[#2A2B36] rounded-[3px] text-xs text-white placeholder-slate-600 focus:outline-none focus:border-[#E8001D] transition-all"
+          />
+        </div>
+
+        <!-- Form Field: Status -->
+        <div class="flex flex-col gap-1.5 overflow-visible font-body">
+          <app-form-select
+            id="edit-match-status"
+            label="Status da Partida"
+            [options]="statusOptions"
+            [value]="editMatchStatus()"
+            (valueChange)="editMatchStatus.set($event)"
+            placeholder="Selecione o status"
+          ></app-form-select>
+        </div>
+      </div>
+
+      <!-- Placar / Scores Section -->
+      <div class="border-t border-[#2A2B36] pt-4 mt-2">
+        <span class="text-[10px] font-black uppercase tracking-wider text-slate-400 font-ui mb-3 block">Placar e Gols</span>
+        
+        <!-- Regular Time Goals -->
+        <div class="grid grid-cols-2 gap-4 bg-[#1C1D24] p-3.5 border border-[#2A2B36] rounded-none">
+          <div class="flex flex-col gap-1.5 font-body">
+            <label class="text-[9px] font-black uppercase tracking-wider text-slate-500 font-ui">Gols Regular Time A</label>
+            <input 
+              type="number"
+              [value]="editMatchScoreA()"
+              (input)="editMatchScoreA.set($any($event.target).value)"
+              class="w-full px-3 py-2 bg-[#0D0D0F] border border-[#2A2B36] rounded-[3px] text-xs text-white placeholder-slate-600 focus:outline-none focus:border-[#E8001D]"
+              min="0"
+            />
+          </div>
+          <div class="flex flex-col gap-1.5 font-body">
+            <label class="text-[9px] font-black uppercase tracking-wider text-slate-500 font-ui">Gols Regular Time B</label>
+            <input 
+              type="number"
+              [value]="editMatchScoreB()"
+              (input)="editMatchScoreB.set($any($event.target).value)"
+              class="w-full px-3 py-2 bg-[#0D0D0F] border border-[#2A2B36] rounded-[3px] text-xs text-white placeholder-slate-600 focus:outline-none focus:border-[#E8001D]"
+              min="0"
+            />
+          </div>
+        </div>
+
+        <!-- Extra Time Goals -->
+        @if (editMatchStage() !== 'groups') {
+          <div class="grid grid-cols-2 gap-4 bg-[#1C1D24] p-3.5 border border-t-0 border-[#2A2B36] rounded-none">
+            <div class="flex flex-col gap-1.5 font-body">
+              <label class="text-[9px] font-black uppercase tracking-wider text-slate-500 font-ui">Gols Prorrogação Time A</label>
+              <input 
+                type="number"
+                [value]="editMatchScoreAExtra()"
+                (input)="editMatchScoreAExtra.set($any($event.target).value)"
+                class="w-full px-3 py-2 bg-[#0D0D0F] border border-[#2A2B36] rounded-[3px] text-xs text-white placeholder-slate-600 focus:outline-none"
+                min="0"
+              />
+            </div>
+            <div class="flex flex-col gap-1.5 font-body">
+              <label class="text-[9px] font-black uppercase tracking-wider text-slate-500 font-ui">Gols Prorrogação Time B</label>
+              <input 
+                type="number"
+                [value]="editMatchScoreBExtra()"
+                (input)="editMatchScoreBExtra.set($any($event.target).value)"
+                class="w-full px-3 py-2 bg-[#0D0D0F] border border-[#2A2B36] rounded-[3px] text-xs text-white placeholder-slate-600 focus:outline-none"
+                min="0"
+              />
+            </div>
+          </div>
+
+          <!-- Penalty Shootout Goals -->
+          <div class="grid grid-cols-2 gap-4 bg-[#1C1D24] p-3.5 border border-t-0 border-[#2A2B36] rounded-none font-body">
+            <div class="flex flex-col gap-1.5">
+              <label class="text-[9px] font-black uppercase tracking-wider text-slate-500 font-ui">Pênaltis Time A (Vazio se não houve)</label>
+              <input 
+                type="number"
+                [value]="editMatchPenaltyScoreA()"
+                (input)="editMatchPenaltyScoreA.set($any($event.target).value)"
+                class="w-full px-3 py-2 bg-[#0D0D0F] border border-[#2A2B36] rounded-[3px] text-xs text-white placeholder-slate-600 focus:outline-none"
+                placeholder="Ex: 5"
+                min="0"
+              />
+            </div>
+            <div class="flex flex-col gap-1.5">
+              <label class="text-[9px] font-black uppercase tracking-wider text-slate-500 font-ui">Pênaltis Time B (Vazio se não houve)</label>
+              <input 
+                type="number"
+                [value]="editMatchPenaltyScoreB()"
+                (input)="editMatchPenaltyScoreB.set($any($event.target).value)"
+                class="w-full px-3 py-2 bg-[#0D0D0F] border border-[#2A2B36] rounded-[3px] text-xs text-white placeholder-slate-600 focus:outline-none"
+                placeholder="Ex: 4"
+                min="0"
+              />
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="px-6 py-4 bg-[#1C1D24] border-t border-[#2A2B36] flex justify-end gap-3 rounded-none">
+      <button 
+        (click)="closeEditMatchModal()" 
+        class="h-9 px-4 bg-[#1C1D24] hover:bg-[#22232D] border border-[#2A2B36] rounded-[3px] text-xs font-bold text-slate-300 cursor-pointer transition-colors duration-80 outline-none font-ui uppercase tracking-wider"
+      >
+        Cancelar
+      </button>
+      <button 
+        (click)="submitEditMatch()" 
+        [disabled]="modalLoading()"
+        class="h-9 px-4 bg-[#E8001D] hover:bg-[#B8001A] text-white rounded-[3px] text-xs font-bold shadow-sm cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-80 outline-none font-ui uppercase tracking-wider"
+      >
+        @if (modalLoading()) {
+          <div class="w-3.5 h-3.5 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+        } @else {
+          Salvar Alterações
+        }
+      </button>
+    </div>
+  </div>
+</app-modal>
+
+<!-- ========================================== -->
+<!-- CONFIRM DELETE MATCH MODAL -->
+<!-- ========================================== -->
+<app-modal [open]="isDeleteMatchModalOpen()" size="sm">
+  <div class="flex flex-col text-left select-none bg-[#14151A] rounded-none">
+    <!-- Header -->
+    <div class="flex items-center justify-between px-5 py-4 border-b border-[#2A2B36] bg-[#1C1D24] rounded-none">
+      <h3 class="text-xs font-black text-red-500 uppercase tracking-wider flex items-center gap-2 font-ui">
+        <svg lucideShield class="w-4 h-4 text-[#E8001D]"></svg>
+        Confirmar Exclusão de Partida
+      </h3>
+      <button (click)="closeDeleteMatchModal()" class="text-slate-500 hover:text-white bg-transparent border-none cursor-pointer p-1">
+        <svg lucideX class="w-5 h-5"></svg>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="p-5 flex flex-col gap-4 font-body">
+      @if (modalError()) {
+        <div class="p-3 bg-[#1A0005] border border-[#E8001D] rounded-none text-red-300 text-[10px] font-bold flex items-center gap-2">
+          <svg lucideInfo class="w-4 h-4 shrink-0 text-red-400"></svg>
+          {{ modalError() }}
+        </div>
+      }
+
+      <div class="flex flex-col gap-2 text-slate-300 text-xs">
+        <p class="font-bold text-white">Você tem certeza que deseja excluir permanentemente a partida?</p>
+        <p class="text-slate-400 leading-relaxed font-semibold">Esta operação é <span class="text-red-400 underline uppercase">definitiva</span> e realizará uma <span class="text-white">limpeza em cascata</span> no banco de dados, o que removerá todos os palpites, pontos de palpite e eventos (como gols) associados a esta partida.</p>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="px-5 py-3.5 bg-[#1C1D24] border-t border-[#2A2B36] flex justify-end gap-3 rounded-none">
+      <button 
+        (click)="closeDeleteMatchModal()" 
+        class="h-9 px-4 bg-[#1C1D24] hover:bg-[#22232D] border border-[#2A2B36] rounded-[3px] text-xs font-bold text-slate-300 cursor-pointer transition-colors duration-80 outline-none font-ui uppercase tracking-wider"
+      >
+        Cancelar
+      </button>
+      <button 
+        (click)="submitDeleteMatch()" 
+        [disabled]="modalLoading()"
+        class="h-9 px-4 bg-[#E8001D] hover:bg-[#B8001A] text-white rounded-[3px] text-xs font-bold shadow-sm cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-80 outline-none font-ui uppercase tracking-wider"
+      >
+        @if (modalLoading()) {
+          <div class="w-3.5 h-3.5 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+        } @else {
+          Excluir Partida
         }
       </button>
     </div>

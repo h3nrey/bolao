@@ -23,6 +23,11 @@ import {
 export class PhasesController {
   constructor(private phasesService: PhasesService) {}
 
+  @Get('phases')
+  async findAll() {
+    return this.phasesService.findAll();
+  }
+
   @Get('phases/:id')
   async findOne(@Param('id') id: string) {
     return this.phasesService.findOne(id);

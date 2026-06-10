@@ -252,9 +252,92 @@ export class MatchesService {
     await this.scoringService.recalculateMatch(extraPeriod.match_id);
     await this.rankingsService.recalculate(
       extraPeriod.match.phase.tournament_id,
-      extraPeriod.match.phase_id,
+      extraPeriod.match.phase.id,
     );
 
     return updated;
+  }
+
+  async update(id: string, dto: any) {
+    const match = await this.prisma.match.findUnique({
+      where: { id },
+      include: { phase: true },
+    });
+    if (!match) {
+      throw new NotFoundException('Match not found');
+    }
+
+    const updated = await this.prisma.match.update({
+      where: { id },
+      data: dto,
+      include: { phase: true },
+    });
+
+    if (updated.status === 'finished') {
+      await this.scoringService.recalculateMatch(id);
+      await this.rankingsService.recalculate(
+        updated.phase.tournament_id,
+        updated.phase_id,
+      );
+    }
+
+    return updated;
+  }
+
+  async remove(id: string) {
+    const match = await this.prisma.match.findUnique({
+      where: { id },
+      include: { phase: true },
+    });
+    if (!match) {
+      throw new NotFoundException('Match not found');
+    }
+
+    return this.prisma.$transaction(async (tx) => {
+      // 1. Delete BracketSlot referencing the match
+      await tx.bracketSlot.deleteMany({
+        where: { match_id: id },
+      });
+
+      // 2. Delete Predictions and their points/items
+      const predictions = await tx.prediction.findMany({
+        where: { match_id: id },
+        select: { id: true },
+      });
+      const predictionIds = predictions.map((p) => p.id);
+
+      if (predictionIds.length > 0) {
+        await tx.predictionPoint.deleteMany({
+          where: { prediction_id: { in: predictionIds } },
+        });
+        await tx.predictionItem.deleteMany({
+          where: { prediction_id: { in: predictionIds } },
+        });
+        await tx.prediction.deleteMany({
+          where: { id: { in: predictionIds } },
+        });
+      }
+
+      // 3. Delete MatchExtraPeriods and MatchEvents
+      await tx.matchExtraPeriod.deleteMany({
+        where: { match_id: id },
+      });
+      await tx.matchEvent.deleteMany({
+        where: { match_id: id },
+      });
+
+      // 4. Delete the match itself
+      await tx.match.delete({
+        where: { id },
+      });
+
+      // 5. Recalculate rankings
+      await this.rankingsService.recalculate(
+        match.phase.tournament_id,
+        match.phase_id,
+      );
+
+      return { success: true };
+    });
   }
 }
