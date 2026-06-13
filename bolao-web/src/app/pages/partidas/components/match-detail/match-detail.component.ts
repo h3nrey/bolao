@@ -63,7 +63,9 @@ export class MatchDetailComponent implements OnInit {
         this.match.set(m);
         this.loadingMatch.set(false);
         this.fetchMyPrediction();
-        if (m.started_at) this.fetchOtherPredictions();
+        if (m.started_at || m.status === 'live' || m.status === 'finished') {
+          this.fetchOtherPredictions();
+        }
       },
       error: () => this.loadingMatch.set(false),
     });

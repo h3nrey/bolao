@@ -62,7 +62,7 @@ export class PredictionsService {
       throw new NotFoundException('Match not found');
     }
 
-    if (!match.started_at) {
+    if (match.status === 'upcoming' && !match.started_at) {
       throw new ForbiddenException(
         'Predictions are only visible after the match starts',
       );

@@ -267,9 +267,21 @@ export class MatchesService {
       throw new NotFoundException('Match not found');
     }
 
+    const updatedDto = { ...dto };
+    if (
+      ((dto.score_a !== undefined && dto.score_a !== match.score_a) ||
+       (dto.score_b !== undefined && dto.score_b !== match.score_b) ||
+       (dto.score_a_extra !== undefined && dto.score_a_extra !== match.score_a_extra) ||
+       (dto.score_b_extra !== undefined && dto.score_b_extra !== match.score_b_extra)) &&
+      match.status !== 'finished' &&
+      dto.status !== 'cancelled'
+    ) {
+      updatedDto.status = 'finished';
+    }
+
     const updated = await this.prisma.match.update({
       where: { id },
-      data: dto,
+      data: updatedDto,
       include: { phase: true },
     });
 
