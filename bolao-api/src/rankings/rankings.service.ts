@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { PointType } from '@prisma/client';
 
 @Injectable()
 export class RankingsService {
@@ -26,24 +27,59 @@ export class RankingsService {
       include: { points: true },
     });
 
-    const userPoints: Record<
+    const userStats: Record<
       string,
-      { pts_total: number; pts_matches: number }
+      {
+        userName: string;
+        pts_total: number;
+        pts_matches: number;
+        exact_scores_count: number;
+        sum_submitted_at: number;
+      }
     > = {};
 
-    // Initialize with 0 points for ALL users
+    // Initialize stats for ALL users
     const allUsers = await this.prisma.user.findMany();
+    const farFutureTime = new Date('2099-01-01').getTime();
+
     for (const user of allUsers) {
-      userPoints[user.id] = { pts_total: 0, pts_matches: 0 };
+      userStats[user.id] = {
+        userName: user.name,
+        pts_total: 0,
+        pts_matches: 0,
+        exact_scores_count: 0,
+        sum_submitted_at: matchIds.length * farFutureTime, // Initialize all matches with far-future penalty
+      };
     }
 
     for (const prediction of predictions) {
-      if (!userPoints[prediction.user_id]) {
-        userPoints[prediction.user_id] = { pts_total: 0, pts_matches: 0 };
+      const userId = prediction.user_id;
+      if (!userStats[userId]) {
+        const user = allUsers.find((u) => u.id === userId);
+        userStats[userId] = {
+          userName: user?.name ?? 'Unknown',
+          pts_total: 0,
+          pts_matches: 0,
+          exact_scores_count: 0,
+          sum_submitted_at: matchIds.length * farFutureTime,
+        };
       }
       const total = prediction.points.reduce((sum, p) => sum + p.pts_earned, 0);
-      userPoints[prediction.user_id].pts_total += total;
-      userPoints[prediction.user_id].pts_matches += 1;
+      userStats[userId].pts_total += total;
+      userStats[userId].pts_matches += 1;
+
+      // Count exact scores (point type 'exact_score' with > 0 pts)
+      const exactPointsCount = prediction.points.filter(
+        (p) => p.type === PointType.exact_score && p.pts_earned > 0,
+      ).length;
+      userStats[userId].exact_scores_count += exactPointsCount;
+
+      // Replace the far-future default for this match with the actual prediction submitted_at timestamp
+      const submitTime = prediction.submitted_at
+        ? new Date(prediction.submitted_at).getTime()
+        : farFutureTime;
+      userStats[userId].sum_submitted_at =
+        userStats[userId].sum_submitted_at - farFutureTime + submitTime;
     }
 
     // Add special predictions points if this is overall ranking (phaseId is null/undefined)
@@ -53,28 +89,35 @@ export class RankingsService {
           user.id,
           tournamentId,
         );
-        userPoints[user.id].pts_total += specialPoints;
+        userStats[user.id].pts_total += specialPoints;
       }
     }
 
-    // Sort users by total points
-    const sortedUsers = Object.entries(userPoints).sort(
-      ([, a], [, b]) => b.pts_total - a.pts_total,
-    );
+    // Sort users:
+    // 1. Total points descending
+    // 2. Tie-breaker: exact scores count descending
+    // 3. Tie-breaker: sum of submission times ascending (earlier is better)
+    // 4. Stable sort: alphabetical by user name (case-insensitive, Portuguese rules)
+    const sortedUsers = Object.entries(userStats).sort((entryA, entryB) => {
+      const [, a] = entryA;
+      const [, b] = entryB;
 
-    // Update rankings with position
-    let position = 1;
-    for (let i = 0; i < sortedUsers.length; i++) {
-      if (i > 0) {
-        const [, prevPoints] = sortedUsers[i - 1];
-        const [, currPoints] = sortedUsers[i];
-        if (currPoints.pts_total < prevPoints.pts_total) {
-          position = i + 1;
-        }
-        // Tied users keep the same position
+      if (b.pts_total !== a.pts_total) {
+        return b.pts_total - a.pts_total;
       }
+      if (b.exact_scores_count !== a.exact_scores_count) {
+        return b.exact_scores_count - a.exact_scores_count;
+      }
+      if (a.sum_submitted_at !== b.sum_submitted_at) {
+        return a.sum_submitted_at - b.sum_submitted_at;
+      }
+      return a.userName.localeCompare(b.userName, 'pt', { sensitivity: 'base' });
+    });
 
-      const [userId, points] = sortedUsers[i];
+    // Update rankings in database with sequential position (no tied positions allowed)
+    for (let i = 0; i < sortedUsers.length; i++) {
+      const position = i + 1;
+      const [userId, stats] = sortedUsers[i];
 
       const existingRanking = await this.prisma.ranking.findFirst({
         where: {
@@ -88,8 +131,8 @@ export class RankingsService {
         await this.prisma.ranking.update({
           where: { id: existingRanking.id },
           data: {
-            pts_total: points.pts_total,
-            pts_matches: points.pts_matches,
+            pts_total: stats.pts_total,
+            pts_matches: stats.pts_matches,
             position,
           },
         });
@@ -99,8 +142,8 @@ export class RankingsService {
             user_id: userId,
             tournament_id: tournamentId,
             phase_id: phaseId ?? null,
-            pts_total: points.pts_total,
-            pts_matches: points.pts_matches,
+            pts_total: stats.pts_total,
+            pts_matches: stats.pts_matches,
             position,
           },
         });
@@ -121,28 +164,19 @@ export class RankingsService {
       include: {
         user: true,
       },
-      orderBy: [{ pts_total: 'desc' }, { user: { name: 'asc' } }],
+      orderBy: { position: 'asc' },
     });
 
-    // Handle tied positions
-    let currentPosition = 1;
-    const result = rankings.map((r, i) => {
-      if (i > 0 && rankings[i].pts_total < rankings[i - 1].pts_total) {
-        currentPosition = i + 1;
-      }
-      return {
-        position: currentPosition,
-        user_id: r.user_id,
-        user_name: r.user.name,
-        user_avatar: r.user.avatar_url,
-        user_project: r.user.project,
-        user_seniority: r.user.seniority,
-        pts_total: r.pts_total,
-        pts_matches: r.pts_matches,
-      };
-    });
-
-    return result;
+    return rankings.map((r) => ({
+      position: r.position,
+      user_id: r.user_id,
+      user_name: r.user.name,
+      user_avatar: r.user.avatar_url,
+      user_project: r.user.project,
+      user_seniority: r.user.seniority,
+      pts_total: r.pts_total,
+      pts_matches: r.pts_matches,
+    }));
   }
 
   private async calculateSpecialPoints(
