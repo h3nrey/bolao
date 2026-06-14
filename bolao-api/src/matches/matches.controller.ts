@@ -11,6 +11,7 @@ import {
   UsePipes,
 } from '@nestjs/common';
 import { MatchesService } from './matches.service';
+import { FootballDataSyncService } from './football-data-sync.service';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { AdminGuard } from '../common/guards/admin.guard';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
@@ -25,7 +26,16 @@ import {
 @Controller()
 @UseGuards(JwtAuthGuard)
 export class MatchesController {
-  constructor(private matchesService: MatchesService) {}
+  constructor(
+    private matchesService: MatchesService,
+    private syncService: FootballDataSyncService,
+  ) {}
+
+  @Post('matches/sync')
+  @UseGuards(AdminGuard)
+  async sync() {
+    return this.syncService.syncMatches();
+  }
 
   @Get('matches')
   async findAll(
