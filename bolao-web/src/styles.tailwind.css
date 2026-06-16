@@ -37,12 +37,23 @@
 
   /* Animations */
   --animate-slideInUp: slideInUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-slideInDown: slideInDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   --animate-slideInRight: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   --animate-fadeIn: fadeIn 0.25s ease-out forwards;
 
   @keyframes slideInUp {
     from {
       transform: translate(-50%, 2rem);
+      opacity: 0;
+    }
+    to {
+      transform: translate(-50%, 0);
+      opacity: 1;
+    }
+  }
+  @keyframes slideInDown {
+    from {
+      transform: translate(-50%, -2rem);
       opacity: 0;
     }
     to {

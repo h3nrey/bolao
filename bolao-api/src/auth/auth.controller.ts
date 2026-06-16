@@ -27,6 +27,7 @@ export class AuthController {
     return res.redirect(`${frontendUrl}?token=${access_token}`);
   }
 
+
   @Get('me')
   @UseGuards(JwtAuthGuard)
   getMe(@CurrentUser() user) {

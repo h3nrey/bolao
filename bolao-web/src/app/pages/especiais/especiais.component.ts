@@ -1,5 +1,6 @@
 import { Component, OnInit, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { SpecialPredictionService } from '../../services/special-prediction.service';
 import { SpecialPredictionCardComponent, SelectOption } from '../../components/ui/special-prediction-card/special-prediction-card.component';
 import { hasTournamentStarted } from '../../shared/utils/date.utils';
@@ -18,6 +19,7 @@ import { LucideCheck, LucideShieldAlert } from '@lucide/angular';
 })
 export class EspeciaisComponent implements OnInit {
   private readonly specialsService = inject(SpecialPredictionService);
+  private readonly router = inject(Router);
 
   protected readonly loading = signal(true);
   protected readonly saving = signal(false);
@@ -144,7 +146,10 @@ export class EspeciaisComponent implements OnInit {
       next: () => {
         this.saving.set(false);
         this.successMessage.set('Palpites especiais salvos com sucesso!');
-        setTimeout(() => this.successMessage.set(null), 3000);
+        setTimeout(() => {
+          this.successMessage.set(null);
+          this.router.navigate(['/perfil']);
+        }, 1500);
       },
       error: (err) => {
         console.error('Erro ao salvar palpites especiais', err);
