@@ -48,9 +48,9 @@ export class SpecialPredictionsService {
     const firstMatch = await this.prisma.match.findFirst({
       orderBy: { scheduled_at: 'asc' },
     });
-    const tournamentStart =
-      firstMatch?.scheduled_at ?? new Date('2026-06-11T17:00:00Z');
-    if (new Date() > tournamentStart) {
+    const playoffStart =
+      firstMatch?.scheduled_at ?? new Date('2026-06-28T17:00:00Z');
+    if (new Date() > playoffStart) {
       throw new ForbiddenException(
         'Tournament has already started, special predictions are locked.',
       );

@@ -304,9 +304,6 @@
   .top-0 {
     top: 0;
   }
-  .top-1\.5 {
-    top: calc(var(--spacing) * 1.5);
-  }
   .top-3 {
     top: calc(var(--spacing) * 3);
   }
@@ -345,9 +342,6 @@
   }
   .bottom-20 {
     bottom: calc(var(--spacing) * 20);
-  }
-  .-left-\[20\.5px\] {
-    left: calc(20.5px * -1);
   }
   .left-0 {
     left: 0;
@@ -991,10 +985,6 @@
   .border-b-2 {
     border-bottom-style: var(--tw-border-style);
     border-bottom-width: 2px;
-  }
-  .border-l {
-    border-left-style: var(--tw-border-style);
-    border-left-width: 1px;
   }
   .border-l-2 {
     border-left-style: var(--tw-border-style);

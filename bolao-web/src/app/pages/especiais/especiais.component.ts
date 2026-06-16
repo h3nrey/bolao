@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { SpecialPredictionService } from '../../services/special-prediction.service';
 import { SpecialPredictionCardComponent, SelectOption } from '../../components/ui/special-prediction-card/special-prediction-card.component';
-import { hasTournamentStarted } from '../../shared/utils/date.utils';
+import { hasPlayoffsStarted, hasTournamentStarted } from '../../shared/utils/date.utils';
 import { LucideCheck, LucideShieldAlert } from '@lucide/angular';
 
 @Component({
@@ -23,7 +23,7 @@ export class EspeciaisComponent implements OnInit {
 
   protected readonly loading = signal(true);
   protected readonly saving = signal(false);
-  protected readonly isLocked = signal(hasTournamentStarted());
+  protected readonly isLocked = signal(hasPlayoffsStarted());
   protected readonly error = signal<string | null>(null);
   protected readonly successMessage = signal<string | null>(null);
 
