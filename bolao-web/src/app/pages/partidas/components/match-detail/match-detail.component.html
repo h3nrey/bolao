@@ -3,10 +3,8 @@
   <!-- Page Header -->
   <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-[#2A2B36] pb-5 select-none">
     <div class="flex flex-col gap-2">
-      <button
-        (click)="goBack()"
-        class="h-8 w-fit flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#9B9BAD] hover:text-[#F0F0F5] bg-transparent border-none cursor-pointer transition-colors duration-80 font-ui"
-      >
+      <button (click)="goBack()"
+        class="h-8 w-fit flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#9B9BAD] hover:text-[#F0F0F5] bg-transparent border-none cursor-pointer transition-colors duration-80 font-ui">
         <svg lucideArrowLeft class="w-4 h-4"></svg>
         Partidas
       </button>
@@ -22,265 +20,274 @@
 
   <!-- Loading -->
   @if (loadingMatch()) {
-    <app-loading-spinner message="Carregando detalhes..." />
+  <app-loading-spinner message="Carregando detalhes..." />
   } @else if (match()) {
 
-    <!-- Scoreboard Card -->
-    <div class="bg-[#14151A] border border-[#2A2B36] border-l-2 border-l-[#E8001D] rounded-[8px] p-4 md:p-6 flex flex-col gap-6 shadow-sm select-none">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#2A2B36] pb-4">
-        <span class="text-[10px] font-black text-[#9B9BAD] uppercase tracking-widest flex items-center gap-1.5 font-ui">
-          <svg lucideGlobe2 class="w-3.5 h-3.5 text-[#5C5C72]"></svg>
-          {{ match().phase?.name }} - {{ match().group?.name || 'Mata-Mata' }}
-        </span>
+  <!-- Scoreboard Card -->
+  <div
+    class="bg-[#14151A] border border-[#2A2B36] border-l-2 border-l-[#E8001D] rounded-[8px] p-4 md:p-6 flex flex-col gap-6 shadow-sm select-none">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#2A2B36] pb-4">
+      <span class="text-[10px] font-black text-[#9B9BAD] uppercase tracking-widest flex items-center gap-1.5 font-ui">
+        <svg lucideGlobe2 class="w-3.5 h-3.5 text-[#5C5C72]"></svg>
+        {{ match().phase?.name }} - {{ match().group?.name || 'Mata-Mata' }}
+      </span>
 
-        @if (match().status === 'live') {
-          <span class="w-fit flex items-center gap-1.5 text-[9px] font-black bg-[#14151A] text-[#FF1A35] border border-[#E8001D] px-2 py-1 rounded-[4px] uppercase tracking-wider font-ui" aria-live="polite">
-            <svg lucideRadio class="w-3 h-3 animate-pulse"></svg>
-            Ao Vivo {{ match().current_minute }}'
-          </span>
-        } @else if (match().status === 'finished') {
-          <span class="w-fit flex items-center gap-1.5 text-[9px] font-black bg-[#14151A] text-[#9B9BAD] border border-[#2A2B36] px-2 py-1 rounded-[4px] uppercase tracking-wider font-ui">
-            <svg lucideCircleCheck class="w-3 h-3 text-[#5C5C72]"></svg>
-            Finalizado
-          </span>
+      @if (match().status === 'live') {
+      <span
+        class="w-fit flex items-center gap-1.5 text-[9px] font-black bg-[#14151A] text-[#FF1A35] border border-[#E8001D] px-2 py-1 rounded-[4px] uppercase tracking-wider font-ui"
+        aria-live="polite">
+        <svg lucideRadio class="w-3 h-3 animate-pulse"></svg>
+        Ao Vivo {{ match().current_minute }}'
+      </span>
+      } @else if (match().status === 'finished') {
+      <span
+        class="w-fit flex items-center gap-1.5 text-[9px] font-black bg-[#14151A] text-[#9B9BAD] border border-[#2A2B36] px-2 py-1 rounded-[4px] uppercase tracking-wider font-ui">
+        <svg lucideCircleCheck class="w-3 h-3 text-[#5C5C72]"></svg>
+        Finalizado
+      </span>
+      } @else {
+      <span
+        class="w-fit flex items-center gap-1.5 text-[9px] font-black bg-[#14151A] text-[#9B9BAD] border border-[#2A2B36] px-2 py-1 rounded-[4px] uppercase tracking-wider font-ui">
+        <svg lucideClock3 class="w-3 h-3"></svg>
+        Próximo
+      </span>
+      }
+    </div>
+
+    <!-- Teams & Score -->
+    <div class="grid grid-cols-[minmax(0,1fr)_88px_minmax(0,1fr)] items-center w-full gap-3">
+      <div class="flex flex-col items-center gap-3 text-center min-w-0">
+        <div
+          class="w-14 h-14 bg-[#0D0D0F] border border-[#2A2B36] rounded-[6px] flex items-center justify-center text-4xl font-black text-[#F0F0F5] font-ui uppercase">
+          {{ match().team_a?.flag_emoji || match().team_a?.name?.charAt(0) || '?' }}
+        </div>
+        <span class="text-sm md:text-lg font-black text-[#F0F0F5] truncate max-w-full font-body">{{ match().team_a?.name
+          }}</span>
+      </div>
+
+      <div class="flex flex-col items-center justify-center min-w-0">
+        @if (match().status === 'finished') {
+        <span class="text-4xl md:text-5xl font-black text-[#F0F0F5] tracking-normal font-display">
+          {{ match().score?.score_a }}<span class="text-[#5C5C72] text-2xl font-light mx-1">-</span>{{
+          match().score?.score_b }}
+        </span>
+        } @else if (match().status === 'live') {
+        <span class="text-4xl md:text-5xl font-black text-[#FF1A35] tracking-normal font-display">
+          {{ match().score?.score_a }}<span class="text-[#5C5C72] text-2xl font-light mx-1">-</span>{{
+          match().score?.score_b }}
+        </span>
         } @else {
-          <span class="w-fit flex items-center gap-1.5 text-[9px] font-black bg-[#14151A] text-[#9B9BAD] border border-[#2A2B36] px-2 py-1 rounded-[4px] uppercase tracking-wider font-ui">
-            <svg lucideClock3 class="w-3 h-3"></svg>
-            Próximo
-          </span>
+        <div class="flex flex-col items-center gap-1.5">
+          <span class="text-[10px] text-[#FFB800] font-black uppercase tracking-wider font-ui">VS</span>
+          <span class="text-[10px] text-[#9B9BAD] font-black whitespace-nowrap font-display">{{ match().scheduled_at |
+            date: 'dd/MM - HH:mm' }}</span>
+        </div>
         }
       </div>
 
-      <!-- Teams & Score -->
-      <div class="grid grid-cols-[minmax(0,1fr)_88px_minmax(0,1fr)] items-center w-full gap-3">
-        <div class="flex flex-col items-center gap-3 text-center min-w-0">
-          <div class="w-14 h-14 bg-[#0D0D0F] border border-[#2A2B36] rounded-[6px] flex items-center justify-center text-4xl font-black text-[#F0F0F5] font-ui uppercase">
-            {{ match().team_a?.flag_emoji || match().team_a?.name?.charAt(0) || '?' }}
-          </div>
-          <span class="text-sm md:text-lg font-black text-[#F0F0F5] truncate max-w-full font-body">{{ match().team_a?.name }}</span>
+      <div class="flex flex-col items-center gap-3 text-center min-w-0">
+        <div
+          class="w-14 h-14 bg-[#0D0D0F] border border-[#2A2B36] rounded-[6px] flex items-center justify-center text-4xl font-black text-[#F0F0F5] font-ui uppercase">
+          {{ match().team_b?.flag_emoji || match().team_b?.name?.charAt(0) || '?' }}
         </div>
+        <span class="text-sm md:text-lg font-black text-[#F0F0F5] truncate max-w-full font-body">{{ match().team_b?.name
+          }}</span>
+      </div>
+    </div>
+  </div>
 
-        <div class="flex flex-col items-center justify-center min-w-0">
-          @if (match().status === 'finished') {
-            <span class="text-4xl md:text-5xl font-black text-[#F0F0F5] tracking-normal font-display">
-              {{ match().score?.score_a }}<span class="text-[#5C5C72] text-2xl font-light mx-1">-</span>{{ match().score?.score_b }}
-            </span>
-          } @else if (match().status === 'live') {
-            <span class="text-4xl md:text-5xl font-black text-[#FF1A35] tracking-normal font-display">
-              {{ match().score?.score_a }}<span class="text-[#5C5C72] text-2xl font-light mx-1">-</span>{{ match().score?.score_b }}
-            </span>
-          } @else {
-            <div class="flex flex-col items-center gap-1.5">
-              <span class="text-[10px] text-[#FFB800] font-black uppercase tracking-wider font-ui">VS</span>
-              <span class="text-[10px] text-[#9B9BAD] font-black whitespace-nowrap font-display">{{ match().scheduled_at | date: 'dd/MM - HH:mm' }}</span>
+  <!-- 2-Column Detail Sections -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
+
+    <!-- LEFT: Palpite + Statistics -->
+    <div class="flex flex-col gap-6 w-full">
+
+      <!-- Palpite Section -->
+      <div class="bg-[#14151A] border border-[#2A2B36] rounded-[8px] p-4 md:p-5 flex flex-col gap-5 shadow-sm">
+        <h3
+          class="text-sm font-black text-[#F0F0F5] tracking-wider uppercase border-b border-[#2A2B36] pb-3 flex items-center gap-2 select-none font-ui">
+          <svg lucideCircleCheck class="w-4 h-4 text-[#E8001D]"></svg>
+          Seu Palpite
+        </h3>
+
+        @if (match().status !== 'upcoming') {
+        <!-- Locked -->
+        <div class="flex flex-col gap-4 select-none">
+          <div class="bg-[#14151A] border border-[#2A2B36] rounded-[6px] p-4 flex items-start gap-3">
+            <svg lucideLock class="w-4 h-4 text-[#E8001D] shrink-0 mt-0.5"></svg>
+            <div class="flex flex-col gap-0.5">
+              <span class="text-xs font-bold text-[#F0F0F5]">Palpites Encerrados</span>
+              <span class="text-[10px] text-[#9B9BAD]">A partida já começou ou finalizou.</span>
             </div>
-          }
-        </div>
-
-        <div class="flex flex-col items-center gap-3 text-center min-w-0">
-          <div class="w-14 h-14 bg-[#0D0D0F] border border-[#2A2B36] rounded-[6px] flex items-center justify-center text-4xl font-black text-[#F0F0F5] font-ui uppercase">
-            {{ match().team_b?.flag_emoji || match().team_b?.name?.charAt(0) || '?' }}
           </div>
-          <span class="text-sm md:text-lg font-black text-[#F0F0F5] truncate max-w-full font-body">{{ match().team_b?.name }}</span>
+          <div class="bg-[#0D0D0F] border border-[#2A2B36] rounded-[6px] p-5 flex items-center justify-center gap-6">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="text-xs font-bold text-[#9B9BAD] truncate max-w-24">{{ match().team_a?.name }}</span>
+              <span class="text-lg font-black text-[#F0F0F5] font-display">{{ scoreA() }}</span>
+            </div>
+            <span class="text-[#5C5C72] font-light">X</span>
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="text-lg font-black text-[#F0F0F5] font-display">{{ scoreB() }}</span>
+              <span class="text-xs font-bold text-[#9B9BAD] truncate max-w-24">{{ match().team_b?.name }}</span>
+            </div>
+          </div>
+        </div>
+        } @else {
+        <!-- Edit form with steppers -->
+        <div class="flex flex-col gap-5">
+          <p class="text-[11px] text-[#9B9BAD] select-none text-center">Preveja o resultado até 5 min antes do jogo.</p>
+
+          <!-- Stepper row -->
+          <div class="flex items-center justify-center gap-3">
+            <div class="flex-1">
+              <app-score-stepper [value]="scoreA()" [label]="match().team_a?.name ?? 'Time A'" [flagEmoji]="''"
+                [disabled]="savingPrediction()" (valueChange)="scoreA.set($event)" />
+            </div>
+
+            <div class="flex flex-col items-center gap-1 shrink-0 select-none pt-5">
+              <span class="text-[#5C5C72] font-black text-lg">×</span>
+            </div>
+
+            <div class="flex-1">
+              <app-score-stepper [value]="scoreB()" [label]="match().team_b?.name ?? 'Time B'" [flagEmoji]="''"
+                [disabled]="savingPrediction()" (valueChange)="scoreB.set($event)" />
+            </div>
+          </div>
+
+          @if (predictionMessage()) {
+          <div class="rounded-[6px] p-3 text-xs font-semibold flex items-center gap-2 border bg-[#14151A]"
+            [class.border-[#00D68F]]="!predictionMessage()?.isError"
+            [class.text-[#00D68F]]="!predictionMessage()?.isError"
+            [class.border-[#E8001D]]="predictionMessage()?.isError"
+            [class.text-[#E8001D]]="predictionMessage()?.isError">
+            @if (predictionMessage()?.isError) {
+            <svg lucideLock class="w-4 h-4 shrink-0"></svg>
+            } @else {
+            <svg lucideCircleCheck class="w-4 h-4 shrink-0"></svg>
+            }
+            <span>{{ predictionMessage()?.text }}</span>
+          </div>
+          }
+
+          <button (click)="savePrediction()" [disabled]="savingPrediction()"
+            class="w-full h-11 px-6 bg-[#E8001D] hover:bg-[#B8001A] disabled:bg-[#2A2B36] disabled:text-[#5C5C72] text-white font-black rounded-[4px] transition-colors duration-80 cursor-pointer flex items-center justify-center gap-2 select-none border-none font-ui uppercase tracking-wider">
+            @if (savingPrediction()) {
+            <div class="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+            <span>Salvando...</span>
+            } @else {
+            <span>{{ isEditingPrediction() ? 'Atualizar Palpite' : 'Salvar Palpite' }}</span>
+            }
+          </button>
+        </div>
+        }
+      </div>
+
+      <!-- Statistics Section -->
+      <div
+        class="bg-[#14151A] border border-[#2A2B36] rounded-[8px] p-4 md:p-5 flex flex-col gap-4 shadow-sm select-none">
+        <h3
+          class="text-sm font-black text-[#F0F0F5] tracking-wider uppercase border-b border-[#2A2B36] pb-3 flex items-center gap-2 font-ui">
+          <svg lucideBarChart2 class="w-4 h-4 text-[#E8001D]"></svg>
+          Tendências da Comunidade
+        </h3>
+        <p class="text-[11px] text-[#9B9BAD]">Distribuição estimada dos palpites para esta partida.</p>
+        <div class="w-full h-3 flex overflow-hidden bg-[#0D0D0F] border border-[#2A2B36] rounded-[4px] mt-2">
+          <div class="bg-[#E8001D] h-full" [style.width.%]="statsRatios().a"></div>
+          <div class="bg-[#5C5C72] h-full" [style.width.%]="statsRatios().draw"></div>
+          <div class="bg-[#FFB800] h-full" [style.width.%]="statsRatios().b"></div>
+        </div>
+        <div class="grid grid-cols-3 gap-2 text-center text-xs font-bold mt-1">
+          <div class="flex flex-col gap-0.5 items-center min-w-0">
+            <span class="text-[#E8001D] truncate max-w-full">{{ match().team_a?.name }}</span>
+            <span class="text-[#F0F0F5] text-sm font-black font-display">{{ statsRatios().a }}%</span>
+          </div>
+          <div class="flex flex-col gap-0.5 items-center">
+            <span class="text-[#9B9BAD]">Empate</span>
+            <span class="text-[#F0F0F5] text-sm font-black font-display">{{ statsRatios().draw }}%</span>
+          </div>
+          <div class="flex flex-col gap-0.5 items-center min-w-0">
+            <span class="text-[#FFB800] truncate max-w-full">{{ match().team_b?.name }}</span>
+            <span class="text-[#F0F0F5] text-sm font-black font-display">{{ statsRatios().b }}%</span>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- 2-Column Detail Sections -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
+    <!-- RIGHT: Other Predictions -->
+    <div class="flex flex-col gap-6 w-full">
 
-      <!-- LEFT: Palpite + Statistics -->
-      <div class="flex flex-col gap-6 w-full">
+      <!-- Other Predictions -->
+      <div class="bg-[#14151A]  h-full border border-[#2A2B36] rounded-[8px] p-4 md:p-5 flex flex-col gap-4 shadow-sm">
+        <h3
+          class="text-sm font-black text-[#F0F0F5] tracking-wider uppercase border-b border-[#2A2B36] pb-3 flex items-center gap-2 select-none font-ui">
+          <svg lucideUsers class="w-4 h-4 text-[#E8001D]"></svg>
+          Palpites da Comunidade
+        </h3>
 
-        <!-- Palpite Section -->
-        <div class="bg-[#14151A] border border-[#2A2B36] rounded-[8px] p-4 md:p-5 flex flex-col gap-5 shadow-sm">
-          <h3 class="text-sm font-black text-[#F0F0F5] tracking-wider uppercase border-b border-[#2A2B36] pb-3 flex items-center gap-2 select-none font-ui">
-            <svg lucideCircleCheck class="w-4 h-4 text-[#E8001D]"></svg>
-            Seu Palpite
-          </h3>
-
-          @if (match().status !== 'upcoming') {
-            <!-- Locked -->
-            <div class="flex flex-col gap-4 select-none">
-              <div class="bg-[#14151A] border border-[#2A2B36] rounded-[6px] p-4 flex items-start gap-3">
-                <svg lucideLock class="w-4 h-4 text-[#E8001D] shrink-0 mt-0.5"></svg>
-                <div class="flex flex-col gap-0.5">
-                  <span class="text-xs font-bold text-[#F0F0F5]">Palpites Encerrados</span>
-                  <span class="text-[10px] text-[#9B9BAD]">A partida já começou ou finalizou.</span>
-                </div>
-              </div>
-              <div class="bg-[#0D0D0F] border border-[#2A2B36] rounded-[6px] p-5 flex items-center justify-center gap-6">
-                <div class="flex items-center gap-2 min-w-0">
-                  <span class="text-xs font-bold text-[#9B9BAD] truncate max-w-24">{{ match().team_a?.name }}</span>
-                  <span class="text-lg font-black text-[#F0F0F5] font-display">{{ scoreA() }}</span>
-                </div>
-                <span class="text-[#5C5C72] font-light">X</span>
-                <div class="flex items-center gap-2 min-w-0">
-                  <span class="text-lg font-black text-[#F0F0F5] font-display">{{ scoreB() }}</span>
-                  <span class="text-xs font-bold text-[#9B9BAD] truncate max-w-24">{{ match().team_b?.name }}</span>
-                </div>
-              </div>
-            </div>
-          } @else {
-            <!-- Edit form with steppers -->
-            <div class="flex flex-col gap-5">
-              <p class="text-[11px] text-[#9B9BAD] select-none text-center">Preveja o resultado até 5 min antes do jogo.</p>
-
-              <!-- Stepper row -->
-              <div class="flex items-center justify-center gap-3">
-                <div class="flex-1">
-                  <app-score-stepper
-                    [value]="scoreA()"
-                    [label]="match().team_a?.name ?? 'Time A'"
-                    [flagEmoji]="''"
-                    [disabled]="savingPrediction()"
-                    (valueChange)="scoreA.set($event)"
-                  />
-                </div>
-
-                <div class="flex flex-col items-center gap-1 shrink-0 select-none pt-5">
-                  <span class="text-[#5C5C72] font-black text-lg">×</span>
-                </div>
-
-                <div class="flex-1">
-                  <app-score-stepper
-                    [value]="scoreB()"
-                    [label]="match().team_b?.name ?? 'Time B'"
-                    [flagEmoji]="''"
-                    [disabled]="savingPrediction()"
-                    (valueChange)="scoreB.set($event)"
-                  />
-                </div>
-              </div>
-
-              @if (predictionMessage()) {
-                <div
-                  class="rounded-[6px] p-3 text-xs font-semibold flex items-center gap-2 border bg-[#14151A]"
-                  [class.border-[#00D68F]]="!predictionMessage()?.isError"
-                  [class.text-[#00D68F]]="!predictionMessage()?.isError"
-                  [class.border-[#E8001D]]="predictionMessage()?.isError"
-                  [class.text-[#E8001D]]="predictionMessage()?.isError"
-                >
-                  @if (predictionMessage()?.isError) {
-                    <svg lucideLock class="w-4 h-4 shrink-0"></svg>
-                  } @else {
-                    <svg lucideCircleCheck class="w-4 h-4 shrink-0"></svg>
-                  }
-                  <span>{{ predictionMessage()?.text }}</span>
-                </div>
-              }
-
-              <button
-                (click)="savePrediction()"
-                [disabled]="savingPrediction()"
-                class="w-full h-11 px-6 bg-[#E8001D] hover:bg-[#B8001A] disabled:bg-[#2A2B36] disabled:text-[#5C5C72] text-white font-black rounded-[4px] transition-colors duration-80 cursor-pointer flex items-center justify-center gap-2 select-none border-none font-ui uppercase tracking-wider"
-              >
-                @if (savingPrediction()) {
-                  <div class="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
-                  <span>Salvando...</span>
-                } @else {
-                  <span>{{ isEditingPrediction() ? 'Atualizar Palpite' : 'Salvar Palpite' }}</span>
-                }
-              </button>
-            </div>
-          }
-        </div>
-
-        <!-- Statistics Section -->
-        <div class="bg-[#14151A] border border-[#2A2B36] rounded-[8px] p-4 md:p-5 flex flex-col gap-4 shadow-sm select-none">
-          <h3 class="text-sm font-black text-[#F0F0F5] tracking-wider uppercase border-b border-[#2A2B36] pb-3 flex items-center gap-2 font-ui">
-            <svg lucideBarChart2 class="w-4 h-4 text-[#E8001D]"></svg>
-            Tendências da Comunidade
-          </h3>
-          <p class="text-[11px] text-[#9B9BAD]">Distribuição estimada dos palpites para esta partida.</p>
-          <div class="w-full h-3 flex overflow-hidden bg-[#0D0D0F] border border-[#2A2B36] rounded-[4px] mt-2">
-            <div class="bg-[#E8001D] h-full" [style.width.%]="statsRatios().a"></div>
-            <div class="bg-[#5C5C72] h-full" [style.width.%]="statsRatios().draw"></div>
-            <div class="bg-[#FFB800] h-full" [style.width.%]="statsRatios().b"></div>
+        @if (match().status === 'upcoming') {
+        <div class="py-8 text-center text-[#5C5C72] select-none flex flex-col items-center gap-3">
+          <div class="w-10 h-10 bg-[#0D0D0F] border border-[#2A2B36] rounded-[6px] flex items-center justify-center">
+            <svg lucideLock class="w-5 h-5"></svg>
           </div>
-          <div class="grid grid-cols-3 gap-2 text-center text-xs font-bold mt-1">
-            <div class="flex flex-col gap-0.5 items-center min-w-0">
-              <span class="text-[#E8001D] truncate max-w-full">{{ match().team_a?.name }}</span>
-              <span class="text-[#F0F0F5] text-sm font-black font-display">{{ statsRatios().a }}%</span>
-            </div>
-            <div class="flex flex-col gap-0.5 items-center">
-              <span class="text-[#9B9BAD]">Empate</span>
-              <span class="text-[#F0F0F5] text-sm font-black font-display">{{ statsRatios().draw }}%</span>
-            </div>
-            <div class="flex flex-col gap-0.5 items-center min-w-0">
-              <span class="text-[#FFB800] truncate max-w-full">{{ match().team_b?.name }}</span>
-              <span class="text-[#F0F0F5] text-sm font-black font-display">{{ statsRatios().b }}%</span>
-            </div>
+          <div class="flex flex-col gap-1">
+            <span class="text-xs font-bold text-[#F0F0F5]">Palpites Ocultos</span>
+            <span class="text-[10px] max-w-xs leading-relaxed">Os palpites serão revelados quando a partida
+              começar.</span>
           </div>
         </div>
-      </div>
-
-      <!-- RIGHT: Other Predictions -->
-      <div class="flex flex-col gap-6 w-full">
-
-        <!-- Other Predictions -->
-        <div class="bg-[#14151A] border border-[#2A2B36] rounded-[8px] p-4 md:p-5 flex flex-col gap-4 shadow-sm">
-          <h3 class="text-sm font-black text-[#F0F0F5] tracking-wider uppercase border-b border-[#2A2B36] pb-3 flex items-center gap-2 select-none font-ui">
-            <svg lucideUsers class="w-4 h-4 text-[#E8001D]"></svg>
-            Palpites da Comunidade
-          </h3>
-
-          @if (match().status === 'upcoming') {
-            <div class="py-8 text-center text-[#5C5C72] select-none flex flex-col items-center gap-3">
-              <div class="w-10 h-10 bg-[#0D0D0F] border border-[#2A2B36] rounded-[6px] flex items-center justify-center">
-                <svg lucideLock class="w-5 h-5"></svg>
+        } @else if (loadingOthers()) {
+        <app-loading-spinner message="Carregando palpites..." size="sm" paddingY="2rem" />
+        } @else if (otherPredictions().length === 0) {
+        <div class="py-8 text-center text-[#5C5C72] select-none flex flex-col items-center gap-2">
+          <svg lucideUsers class="w-6 h-6"></svg>
+          <span class="text-xs font-semibold">Ninguém deu palpite nesta partida.</span>
+        </div>
+        } @else {
+        <div class="flex flex-col gap-3 max-h-72 overflow-y-auto pr-1 select-none text-left">
+          @for (pred of otherPredictions(); track pred.id) {
+          <div
+            class="bg-[#0D0D0F] border border-[#2A2B36] rounded-[6px] p-3 flex items-center justify-between gap-3 hover:bg-[#22232D] transition-colors duration-80">
+            <div class="flex items-center gap-2.5 overflow-hidden">
+              @if (pred.user?.avatar_url) {
+              <img [src]="pred.user.avatar_url" alt="Avatar"
+                class="w-7 h-7 rounded-full object-cover border border-[#2A2B36] shrink-0" />
+              } @else {
+              <div
+                class="w-7 h-7 rounded-full bg-[#E8001D] text-white flex items-center justify-center text-[10px] font-black shrink-0 border border-[#2A2B36] font-ui">
+                {{ pred.user?.name?.charAt(0)?.toUpperCase() }}
               </div>
-              <div class="flex flex-col gap-1">
-                <span class="text-xs font-bold text-[#F0F0F5]">Palpites Ocultos</span>
-                <span class="text-[10px] max-w-xs leading-relaxed">Os palpites serão revelados quando a partida começar.</span>
-              </div>
+              }
+              <span class="text-xs font-bold text-[#F0F0F5] truncate">{{ pred.user?.name }}</span>
             </div>
-          } @else if (loadingOthers()) {
-            <app-loading-spinner message="Carregando palpites..." size="sm" paddingY="2rem" />
-          } @else if (otherPredictions().length === 0) {
-            <div class="py-8 text-center text-[#5C5C72] select-none flex flex-col items-center gap-2">
-              <svg lucideUsers class="w-6 h-6"></svg>
-              <span class="text-xs font-semibold">Ninguém deu palpite nesta partida.</span>
-            </div>
-          } @else {
-            <div class="flex flex-col gap-3 max-h-72 overflow-y-auto pr-1 select-none text-left">
-              @for (pred of otherPredictions(); track pred.id) {
-                <div class="bg-[#0D0D0F] border border-[#2A2B36] rounded-[6px] p-3 flex items-center justify-between gap-3 hover:bg-[#22232D] transition-colors duration-80">
-                  <div class="flex items-center gap-2.5 overflow-hidden">
-                    @if (pred.user?.avatar_url) {
-                      <img [src]="pred.user.avatar_url" alt="Avatar" class="w-7 h-7 rounded-full object-cover border border-[#2A2B36] shrink-0" />
-                    } @else {
-                      <div class="w-7 h-7 rounded-full bg-[#E8001D] text-white flex items-center justify-center text-[10px] font-black shrink-0 border border-[#2A2B36] font-ui">
-                        {{ pred.user?.name?.charAt(0)?.toUpperCase() }}
-                      </div>
-                    }
-                    <span class="text-xs font-bold text-[#F0F0F5] truncate">{{ pred.user?.name }}</span>
-                  </div>
 
-                  <div class="flex items-center gap-3 shrink-0">
-                    <div class="flex items-center gap-1 px-2.5 py-1 bg-[#14151A] border border-[#2A2B36] rounded-[4px] text-xs font-black text-[#9B9BAD] font-display">
-                      <span>{{ getPredictionValue(pred, 'score_a') }}</span>
-                      <span class="text-[#5C5C72] font-light mx-0.5">-</span>
-                      <span>{{ getPredictionValue(pred, 'score_b') }}</span>
-                    </div>
-                    @if (match().status === 'finished') {
-                      @if (pred.points && pred.points.length > 0) {
-                        <span class="text-[9px] font-black uppercase text-[#00D68F] bg-[#14151A] px-2 py-0.5 rounded-[4px] tracking-wider border border-[#00D68F] font-ui">
-                          +{{ pred.points[0]?.pts_earned }} pts
-                        </span>
-                      } @else {
-                        <span class="text-[9px] font-black uppercase text-[#9B9BAD] bg-[#14151A] px-2 py-0.5 rounded-[4px] tracking-wider border border-[#2A2B36] font-ui">0 pts</span>
-                      }
-                    }
-                  </div>
-                </div>
+            <div class="flex items-center gap-3 shrink-0">
+              <div
+                class="flex items-center gap-1 px-2.5 py-1 bg-[#14151A] border border-[#2A2B36] rounded-[4px] text-xs font-black text-[#9B9BAD] font-display">
+                <span>{{ getPredictionValue(pred, 'score_a') }}</span>
+                <span class="text-[#5C5C72] font-light mx-0.5">-</span>
+                <span>{{ getPredictionValue(pred, 'score_b') }}</span>
+              </div>
+              @if (match().status === 'finished') {
+              @if (pred.points && pred.points.length > 0) {
+              <span
+                class="text-[9px] font-black uppercase text-[#00D68F] bg-[#14151A] px-2 py-0.5 rounded-[4px] tracking-wider border border-[#00D68F] font-ui">
+                +{{ pred.points[0]?.pts_earned }} pts
+              </span>
+              } @else {
+              <span
+                class="text-[9px] font-black uppercase text-[#9B9BAD] bg-[#14151A] px-2 py-0.5 rounded-[4px] tracking-wider border border-[#2A2B36] font-ui">0
+                pts</span>
+              }
               }
             </div>
+          </div>
           }
         </div>
-
+        }
       </div>
+
     </div>
+  </div>
 
   }
 </div>
