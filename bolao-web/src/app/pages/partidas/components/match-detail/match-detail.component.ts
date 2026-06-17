@@ -5,14 +5,15 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { LoadingSpinnerComponent } from '../../../../components/ui/loading-spinner/loading-spinner.component';
 import { ScoreStepperComponent } from '../../../../components/ui/score-stepper/score-stepper.component';
 import { MatchMultipliersComponent } from '../match-multipliers/match-multipliers.component';
+import { CommunityTrendsComponent } from '../community-trends/community-trends.component';
 import { SessionService } from '../../../../services/session.service';
 import { MatchesService } from '../../../../services/matches.service';
-import { LucideArrowLeft, LucideBarChart2, LucideCircleCheck, LucideClock3, LucideGlobe2, LucideLock, LucideRadio, LucideUsers } from '@lucide/angular';
+import { LucideArrowLeft, LucideCircleCheck, LucideClock3, LucideGlobe2, LucideLock, LucideRadio, LucideUsers } from '@lucide/angular';
 
 @Component({
   selector: 'app-match-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, DatePipe, LoadingSpinnerComponent, ScoreStepperComponent, MatchMultipliersComponent, LucideArrowLeft, LucideBarChart2, LucideCircleCheck, LucideClock3, LucideGlobe2, LucideLock, LucideRadio, LucideUsers],
+  imports: [CommonModule, FormsModule, DatePipe, LoadingSpinnerComponent, ScoreStepperComponent, MatchMultipliersComponent, CommunityTrendsComponent, LucideArrowLeft, LucideCircleCheck, LucideClock3, LucideGlobe2, LucideLock, LucideRadio, LucideUsers],
   templateUrl: './match-detail.component.html',
 })
 export class MatchDetailComponent implements OnInit {
@@ -157,6 +158,37 @@ export class MatchDetailComponent implements OnInit {
         this.savingPrediction.set(false);
         this.predictionMessage.set({ text: 'Falha ao conectar ao servidor. Tente novamente.', isError: true });
       },
+    });
+  }
+
+  protected onMultiplierChange(field: string, value: any): void {
+    const m = this.match();
+    if (!m) return;
+
+    const deadline = new Date(new Date(m.scheduled_at).getTime() - 5 * 60 * 1000);
+    if (new Date() > deadline || m.started_at) {
+      return;
+    }
+
+    if (field === 'scorerPlayerId') this.scorerPlayerId.set(value);
+    else if (field === 'firstGoalTeamId') this.firstGoalTeamId.set(value);
+    else if (field === 'cardsQuantity') this.cardsQuantity.set(value);
+    else if (field === 'cornersQuantity') this.cornersQuantity.set(value);
+    else if (field === 'bothTeamsScore') this.bothTeamsScore.set(value);
+
+    const multipliersPayload = {
+      scorerPlayerId: this.scorerPlayerId(),
+      firstGoalTeamId: this.firstGoalTeamId(),
+      cardsQuantity: this.cardsQuantity(),
+      cornersQuantity: this.cornersQuantity(),
+      bothTeamsScore: this.bothTeamsScore(),
+    };
+
+    this.matchesService.savePrediction(m.id, this.scoreA(), this.scoreB(), multipliersPayload).subscribe({
+      next: () => {
+        this.isEditingPrediction.set(true);
+      },
+      error: () => {}
     });
   }
 

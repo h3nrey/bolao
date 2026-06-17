@@ -25,8 +25,8 @@
 
   <!-- Scoreboard Card -->
   <div
-    class="bg-[#14151A] border border-[#2A2B36] border-l-2 border-l-[#E8001D] rounded-[8px] p-4 md:p-6 flex flex-col gap-6 shadow-sm select-none">
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#2A2B36] pb-4">
+    class="bg-[#14151A] border border-[#2A2B36] border-l-2 border-l-[#E8001D] rounded-[6px] p-4 md:p-6 flex flex-col gap-6 shadow-sm select-none">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2">
       <span class="text-[10px] font-black text-[#9B9BAD] uppercase tracking-widest flex items-center gap-1.5 font-ui">
         <svg lucideGlobe2 class="w-3.5 h-3.5 text-[#5C5C72]"></svg>
         {{ match().phase?.name }} - {{ match().group?.name || 'Mata-Mata' }}
@@ -58,7 +58,7 @@
     <div class="grid grid-cols-[minmax(0,1fr)_88px_minmax(0,1fr)] items-center w-full gap-3">
       <div class="flex flex-col items-center gap-3 text-center min-w-0">
         <div
-          class="w-14 h-14 bg-[#0D0D0F] border border-[#2A2B36] rounded-[6px] flex items-center justify-center text-4xl font-black text-[#F0F0F5] font-ui uppercase">
+          class="w-14 h-14 bg-[#0D0D0F] border border-[#2A2B36] rounded-[4px] flex items-center justify-center text-4xl font-black text-[#F0F0F5] font-ui uppercase">
           {{ match().team_a?.flag_emoji || match().team_a?.name?.charAt(0) || '?' }}
         </div>
         <span class="text-sm md:text-lg font-black text-[#F0F0F5] truncate max-w-full font-body">{{ match().team_a?.name
@@ -87,7 +87,7 @@
 
       <div class="flex flex-col items-center gap-3 text-center min-w-0">
         <div
-          class="w-14 h-14 bg-[#0D0D0F] border border-[#2A2B36] rounded-[6px] flex items-center justify-center text-4xl font-black text-[#F0F0F5] font-ui uppercase">
+          class="w-14 h-14 bg-[#0D0D0F] border border-[#2A2B36] rounded-[4px] flex items-center justify-center text-4xl font-black text-[#F0F0F5] font-ui uppercase">
           {{ match().team_b?.flag_emoji || match().team_b?.name?.charAt(0) || '?' }}
         </div>
         <span class="text-sm md:text-lg font-black text-[#F0F0F5] truncate max-w-full font-body">{{ match().team_b?.name
@@ -97,17 +97,17 @@
   </div>
 
   <!-- 2-Column Detail Sections -->
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full items-stretch">
 
-    <!-- LEFT: Palpite + Statistics -->
-    <div class="flex flex-col gap-6 w-full">
+    <!-- LEFT: Palpite + Save Button -->
+    <div class="flex flex-col gap-6 w-full lg:h-[760px]">
 
       <!-- Palpite Section -->
-      <div class="bg-[#14151A] border border-[#2A2B36] rounded-[8px] p-4 md:p-5 flex flex-col gap-5 shadow-sm">
+      <div class="bg-[#14151A] border border-[#2A2B36] rounded-[6px] p-4 md:p-5 flex flex-col gap-5 shadow-sm">
         <h3
-          class="text-sm font-black text-[#F0F0F5] tracking-wider uppercase border-b border-[#2A2B36] pb-3 flex items-center gap-2 select-none font-ui">
+          class="text-sm font-black text-[#F0F0F5] tracking-wider uppercase flex items-center gap-2 select-none font-ui">
           <svg lucideCircleCheck class="w-4 h-4 text-[#E8001D]"></svg>
-          Seu Palpite
+          Seu Palpite (Placar)
         </h3>
 
         @if (match().status !== 'upcoming') {
@@ -120,7 +120,7 @@
               <span class="text-[10px] text-[#9B9BAD]">A partida já começou ou finalizou.</span>
             </div>
           </div>
-          <div class="bg-[#0D0D0F] border border-[#2A2B36] rounded-[6px] p-5 flex items-center justify-center gap-6">
+          <div class="bg-[#0D0D0F] border border-[#2A2B36] rounded-[4px] p-5 flex items-center justify-center gap-6">
             <div class="flex items-center gap-2 min-w-0">
               <span class="text-xs font-bold text-[#9B9BAD] truncate max-w-24">{{ match().team_a?.name }}</span>
               <span class="text-lg font-black text-[#F0F0F5] font-display">{{ scoreA() }}</span>
@@ -153,94 +153,65 @@
                 [disabled]="savingPrediction()" (valueChange)="scoreB.set($event)" />
             </div>
           </div>
+
+          <!-- Save Button & Feedback (Only for upcoming matches) -->
+          <div class="flex flex-col gap-4 mt-2">
+            @if (predictionMessage()) {
+            <div class="rounded-[4px] p-3 text-xs font-semibold flex items-center gap-2 border"
+              [class.bg-[#0A1E18]]="!predictionMessage()?.isError"
+              [class.border-[#00D68F]]="!predictionMessage()?.isError"
+              [class.text-[#00D68F]]="!predictionMessage()?.isError"
+              [class.bg-[#1A0005]]="predictionMessage()?.isError"
+              [class.border-[#E8001D]]="predictionMessage()?.isError"
+              [class.text-[#E8001D]]="predictionMessage()?.isError">
+              @if (predictionMessage()?.isError) {
+              <svg lucideLock class="w-4 h-4 shrink-0"></svg>
+              } @else {
+              <svg lucideCircleCheck class="w-4 h-4 shrink-0"></svg>
+              }
+              <span>{{ predictionMessage()?.text }}</span>
+            </div>
+            }
+
+            <button (click)="savePrediction()" [disabled]="savingPrediction()"
+              class="w-full h-11 px-6 bg-[#E8001D] hover:bg-[#B8001A] disabled:bg-[#2A2B36] disabled:text-[#5C5C72] text-white font-black rounded-[4px] transition-colors duration-80 cursor-pointer flex items-center justify-center gap-2 select-none border-none font-ui uppercase tracking-wider">
+              @if (savingPrediction()) {
+              <div class="w-4 h-4 border-2 border-[#2A2B36] border-t-white rounded-full animate-spin"></div>
+              <span>Salvando...</span>
+              } @else {
+              <span>{{ isEditingPrediction() ? 'Atualizar Placar' : 'Salvar Placar' }}</span>
+              }
+            </button>
+          </div>
         </div>
         }
       </div>
 
       <!-- Multipliers Section -->
       @if (match().phase?.tournament?.multipliers_active) {
-      <app-match-multipliers [disabled]="match().status !== 'upcoming' || savingPrediction()" [teamA]="match().team_a"
+      <app-match-multipliers class="flex-1 min-h-0 block" [disabled]="match().status !== 'upcoming' || savingPrediction()" [teamA]="match().team_a"
         [teamB]="match().team_b" [scorerPlayerId]="scorerPlayerId()" [firstGoalTeamId]="firstGoalTeamId()"
         [cardsQuantity]="cardsQuantity()" [cornersQuantity]="cornersQuantity()" [bothTeamsScore]="bothTeamsScore()"
-        (scorerPlayerIdChange)="scorerPlayerId.set($event)" (firstGoalTeamIdChange)="firstGoalTeamId.set($event)"
-        (cardsQuantityChange)="cardsQuantity.set($event)" (cornersQuantityChange)="cornersQuantity.set($event)"
-        (bothTeamsScoreChange)="bothTeamsScore.set($event)"></app-match-multipliers>
+        (scorerPlayerIdChange)="onMultiplierChange('scorerPlayerId', $event)" (firstGoalTeamIdChange)="onMultiplierChange('firstGoalTeamId', $event)"
+        (cardsQuantityChange)="onMultiplierChange('cardsQuantity', $event)" (cornersQuantityChange)="onMultiplierChange('cornersQuantity', $event)"
+        (bothTeamsScoreChange)="onMultiplierChange('bothTeamsScore', $event)"></app-match-multipliers>
       }
-
-      <!-- Save Button & Feedback (Only for upcoming matches) -->
-      @if (match().status === 'upcoming') {
-      <div class="flex flex-col gap-4">
-        @if (predictionMessage()) {
-        <div class="rounded-[6px] p-3 text-xs font-semibold flex items-center gap-2 border bg-[#14151A]"
-          [class.border-[#00D68F]]="!predictionMessage()?.isError"
-          [class.text-[#00D68F]]="!predictionMessage()?.isError" [class.border-[#E8001D]]="predictionMessage()?.isError"
-          [class.text-[#E8001D]]="predictionMessage()?.isError">
-          @if (predictionMessage()?.isError) {
-          <svg lucideLock class="w-4 h-4 shrink-0"></svg>
-          } @else {
-          <svg lucideCircleCheck class="w-4 h-4 shrink-0"></svg>
-          }
-          <span>{{ predictionMessage()?.text }}</span>
-        </div>
-        }
-
-        <button (click)="savePrediction()" [disabled]="savingPrediction()"
-          class="w-full h-11 px-6 bg-[#E8001D] hover:bg-[#B8001A] disabled:bg-[#2A2B36] disabled:text-[#5C5C72] text-white font-black rounded-[4px] transition-colors duration-80 cursor-pointer flex items-center justify-center gap-2 select-none border-none font-ui uppercase tracking-wider">
-          @if (savingPrediction()) {
-          <div class="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
-          <span>Salvando...</span>
-          } @else {
-          <span>{{ isEditingPrediction() ? 'Atualizar Palpite' : 'Salvar Palpite' }}</span>
-          }
-        </button>
-      </div>
-      }
-
-      <!-- Statistics Section -->
-      <div
-        class="bg-[#14151A] border border-[#2A2B36] rounded-[8px] p-4 md:p-5 flex flex-col gap-4 shadow-sm select-none">
-        <h3
-          class="text-sm font-black text-[#F0F0F5] tracking-wider uppercase border-b border-[#2A2B36] pb-3 flex items-center gap-2 font-ui">
-          <svg lucideBarChart2 class="w-4 h-4 text-[#E8001D]"></svg>
-          Tendências da Comunidade
-        </h3>
-        <p class="text-[11px] text-[#9B9BAD]">Distribuição estimada dos palpites para esta partida.</p>
-        <div class="w-full h-3 flex overflow-hidden bg-[#0D0D0F] border border-[#2A2B36] rounded-[4px] mt-2">
-          <div class="bg-[#E8001D] h-full" [style.width.%]="statsRatios().a"></div>
-          <div class="bg-[#5C5C72] h-full" [style.width.%]="statsRatios().draw"></div>
-          <div class="bg-[#FFB800] h-full" [style.width.%]="statsRatios().b"></div>
-        </div>
-        <div class="grid grid-cols-3 gap-2 text-center text-xs font-bold mt-1">
-          <div class="flex flex-col gap-0.5 items-center min-w-0">
-            <span class="text-[#E8001D] truncate max-w-full">{{ match().team_a?.name }}</span>
-            <span class="text-[#F0F0F5] text-sm font-black font-display">{{ statsRatios().a }}%</span>
-          </div>
-          <div class="flex flex-col gap-0.5 items-center">
-            <span class="text-[#9B9BAD]">Empate</span>
-            <span class="text-[#F0F0F5] text-sm font-black font-display">{{ statsRatios().draw }}%</span>
-          </div>
-          <div class="flex flex-col gap-0.5 items-center min-w-0">
-            <span class="text-[#FFB800] truncate max-w-full">{{ match().team_b?.name }}</span>
-            <span class="text-[#F0F0F5] text-sm font-black font-display">{{ statsRatios().b }}%</span>
-          </div>
-        </div>
-      </div>
     </div>
 
-    <!-- RIGHT: Other Predictions -->
-    <div class="flex flex-col gap-6 w-full">
+    <!-- RIGHT: Other Predictions + Community Trends -->
+    <div class="flex flex-col gap-6 w-full lg:h-[760px]">
 
       <!-- Other Predictions -->
-      <div class="bg-[#14151A]  h-full border border-[#2A2B36] rounded-[8px] p-4 md:p-5 flex flex-col gap-4 shadow-sm">
+      <div class="bg-[#14151A] border border-[#2A2B36] rounded-[6px] p-4 md:p-5 flex flex-col gap-4 shadow-sm flex-[65] min-h-0">
         <h3
-          class="text-sm font-black text-[#F0F0F5] tracking-wider uppercase border-b border-[#2A2B36] pb-3 flex items-center gap-2 select-none font-ui">
+          class="text-sm font-black text-[#F0F0F5] tracking-wider uppercase flex items-center gap-2 select-none font-ui">
           <svg lucideUsers class="w-4 h-4 text-[#E8001D]"></svg>
           Palpites da Comunidade
         </h3>
 
         @if (match().status === 'upcoming') {
-        <div class="py-8 text-center text-[#5C5C72] select-none flex flex-col items-center gap-3">
-          <div class="w-10 h-10 bg-[#0D0D0F] border border-[#2A2B36] rounded-[6px] flex items-center justify-center">
+        <div class="py-8 text-center text-[#5C5C72] select-none flex flex-col items-center gap-3 justify-center h-full">
+          <div class="w-10 h-10 bg-[#0D0D0F] border border-[#2A2B36] rounded-[4px] flex items-center justify-center">
             <svg lucideLock class="w-5 h-5"></svg>
           </div>
           <div class="flex flex-col gap-1">
@@ -250,17 +221,19 @@
           </div>
         </div>
         } @else if (loadingOthers()) {
-        <app-loading-spinner message="Carregando palpites..." size="sm" paddingY="2rem" />
+        <div class="flex items-center justify-center h-full">
+          <app-loading-spinner message="Carregando palpites..." size="sm" paddingY="2rem" />
+        </div>
         } @else if (otherPredictions().length === 0) {
-        <div class="py-8 text-center text-[#5C5C72] select-none flex flex-col items-center gap-2">
+        <div class="py-8 text-center text-[#5C5C72] select-none flex flex-col items-center gap-2 justify-center h-full">
           <svg lucideUsers class="w-6 h-6"></svg>
           <span class="text-xs font-semibold">Ninguém deu palpite nesta partida.</span>
         </div>
         } @else {
-        <div class="flex flex-col gap-3 max-h-72 overflow-y-auto pr-1 select-none text-left">
+        <div class="flex flex-col gap-3 overflow-y-auto pr-1 select-none text-left custom-scrollbar flex-1">
           @for (pred of otherPredictions(); track pred.id) {
           <div
-            class="bg-[#0D0D0F] border border-[#2A2B36] rounded-[6px] p-3 flex items-center justify-between gap-3 hover:bg-[#22232D] transition-colors duration-80">
+            class="bg-[#0D0D0F] border border-[#2A2B36] rounded-[4px] p-3 flex items-center justify-between gap-3 hover:bg-[#22232D] transition-colors duration-80">
             <div class="flex items-center gap-2.5 overflow-hidden">
               @if (pred.user?.avatar_url) {
               <img [src]="pred.user.avatar_url" alt="Avatar"
@@ -284,12 +257,12 @@
               @if (match().status === 'finished') {
               @if (pred.points && pred.points.length > 0) {
               <span
-                class="text-[9px] font-black uppercase text-[#00D68F] bg-[#14151A] px-2 py-0.5 rounded-[4px] tracking-wider border border-[#00D68F] font-ui">
+                class="text-[9px] font-black uppercase text-[#00D68F] bg-[#0A1E18] px-2 py-0.5 rounded-[4px] tracking-wider border border-[#00D68F] font-ui">
                 +{{ pred.points[0]?.pts_earned }} pts
               </span>
               } @else {
               <span
-                class="text-[9px] font-black uppercase text-[#9B9BAD] bg-[#14151A] px-2 py-0.5 rounded-[4px] tracking-wider border border-[#2A2B36] font-ui">0
+                class="text-[9px] font-black uppercase text-[#9B9BAD] bg-[#0D0D0F] px-2 py-0.5 rounded-[4px] tracking-wider border border-[#2A2B36] font-ui">0
                 pts</span>
               }
               }
@@ -299,6 +272,14 @@
         </div>
         }
       </div>
+
+      <!-- Tendências da Comunidade Component (35% height) -->
+      <app-community-trends
+        class="flex-[35] min-h-0 block"
+        [statsRatios]="statsRatios()"
+        [teamA]="match().team_a"
+        [teamB]="match().team_b"
+      ></app-community-trends>
 
     </div>
   </div>

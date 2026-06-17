@@ -1,90 +1,91 @@
-<div class="flex flex-col gap-5 bg-[#14151A] border border-[#2A2B36] rounded-[8px] p-4 md:p-5 shadow-sm">
-  <h3 class="text-sm font-black text-[#F0F0F5] tracking-wider uppercase border-b border-[#2A2B36] pb-3 flex items-center gap-2 select-none font-ui">
-    <span class="w-2 h-2 bg-brand-red rounded-[2px] inline-block"></span>
-    Multiplicadores (Palpites Extras)
-  </h3>
+<div class="flex flex-col gap-5 bg-bg-surface border border-border rounded-[6px] p-4 md:p-5 shadow-sm h-full">
+
+  <!-- Header -->
+  <div class="flex items-center gap-2 select-none mb-1">
+    <svg lucideZap class="w-4 h-4 text-primary"></svg>
+    <span class="text-xs font-bold text-text-secondary tracking-wider uppercase font-ui">
+      Multiplicadores · palpites extras
+    </span>
+  </div>
 
   <div class="flex flex-col gap-4">
     <!-- Player to Score Dropdown -->
     <div class="flex flex-col gap-1.5 overflow-visible">
-      <app-form-select
-        id="multiplier-scorer"
-        label="Qual jogador marcará gol?"
-        [options]="playerSelectOptions()"
-        [value]="scorerPlayerId()"
-        [disabled]="disabled()"
-        placeholder="Selecione um jogador"
-        (valueChange)="selectScorerPlayer($event)"
-      ></app-form-select>
+      <label class="text-[10px] font-black text-text-secondary uppercase tracking-[0.18em] select-none">
+        Qual jogador marcará gol?
+      </label>
+      <app-form-select id="multiplier-scorer" label="" [options]="playerSelectOptions()" [value]="scorerPlayerId()"
+        [disabled]="disabled()" placeholder="Selecione um jogador"
+        (valueChange)="selectScorerPlayer($event)"></app-form-select>
     </div>
 
     <!-- First Goal Team Dropdown -->
     <div class="flex flex-col gap-1.5 overflow-visible">
-      <app-form-select
-        id="multiplier-first-goal"
-        label="Primeiro time a marcar gol"
-        [options]="teamSelectOptions()"
-        [value]="firstGoalTeamId()"
-        [disabled]="disabled()"
-        placeholder="Selecione o time"
-        (valueChange)="selectFirstGoalTeam($event)"
-      ></app-form-select>
+      <label class="text-[10px] font-black text-text-secondary uppercase tracking-[0.18em] select-none">
+        Primeiro time a marcar gol
+      </label>
+      <app-form-select id="multiplier-first-goal" label="" [options]="teamSelectOptions()" [value]="firstGoalTeamId()"
+        [disabled]="disabled()" placeholder="Selecione o time"
+        (valueChange)="selectFirstGoalTeam($event)"></app-form-select>
     </div>
   </div>
 
-  <div class="flex flex-col gap-5 items-center border-t border-[#2A2B36]/60 pt-4 mt-1">
-    <!-- Steppers Row -->
-    <div class="grid grid-cols-2 gap-4 w-full justify-items-center">
-      <!-- Cards quantity stepper -->
-      <div class="flex flex-col items-center">
-        <app-score-stepper
-          [value]="cardsQuantity()"
-          label="Quantidade de Cartões"
-          [disabled]="disabled()"
-          (valueChange)="cardsQuantityChange.emit($event)"
-        ></app-score-stepper>
+  <div class="flex flex-col gap-4 mt-1">
+    <!-- Steppers Row 1: Cards -->
+    <div class="flex items-center justify-between w-full select-none py-1">
+      <span class="text-xs font-bold text-text-secondary">Quantidade de cartões</span>
+      <div class="flex items-center gap-2">
+        <button type="button" [disabled]="disabled() || cardsQuantity() <= 0"
+          (click)="cardsQuantityChange.emit(cardsQuantity() - 1)"
+          class="w-8 h-8 flex items-center justify-center border border-border bg-bg-surface rounded-[4px] text-text-primary hover:bg-bg-hover cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+          <svg lucideMinus class="w-3.5 h-3.5"></svg>
+        </button>
+        <span class="w-8 text-center text-sm font-bold font-display text-text-primary tabular-nums">
+          {{ cardsQuantity() }}
+        </span>
+        <button type="button" [disabled]="disabled()" (click)="cardsQuantityChange.emit(cardsQuantity() + 1)"
+          class="w-8 h-8 flex items-center justify-center border border-border bg-bg-surface rounded-[4px] text-text-primary hover:bg-bg-hover cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+          <svg lucidePlus class="w-3.5 h-3.5"></svg>
+        </button>
       </div>
+    </div>
 
-      <!-- Corners quantity stepper -->
-      <div class="flex flex-col items-center">
-        <app-score-stepper
-          [value]="cornersQuantity()"
-          label="Quantidade de Escanteios"
-          [disabled]="disabled()"
-          (valueChange)="cornersQuantityChange.emit($event)"
-        ></app-score-stepper>
+    <!-- Steppers Row 2: Corners -->
+    <div class="flex items-center justify-between w-full select-none py-1">
+      <span class="text-xs font-bold text-text-secondary">Quantidade de escanteios</span>
+      <div class="flex items-center gap-2">
+        <button type="button" [disabled]="disabled() || cornersQuantity() <= 0"
+          (click)="cornersQuantityChange.emit(cornersQuantity() - 1)"
+          class="w-8 h-8 flex items-center justify-center border border-border bg-bg-surface rounded-[4px] text-text-primary hover:bg-bg-hover cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+          <svg lucideMinus class="w-3.5 h-3.5"></svg>
+        </button>
+        <span class="w-8 text-center text-sm font-bold font-display text-text-primary tabular-nums">
+          {{ cornersQuantity() }}
+        </span>
+        <button type="button" [disabled]="disabled()" (click)="cornersQuantityChange.emit(cornersQuantity() + 1)"
+          class="w-8 h-8 flex items-center justify-center border border-border bg-bg-surface rounded-[4px] text-text-primary hover:bg-bg-hover cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+          <svg lucidePlus class="w-3.5 h-3.5"></svg>
+        </button>
       </div>
     </div>
 
     <!-- Both Teams to Score toggle buttons -->
-    <div class="flex flex-col items-center gap-2 select-none border-t border-[#2A2B36]/30 pt-3 w-full">
-      <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider text-center">Ambos os Times Marcam?</span>
-      
-      <div class="flex items-center w-full max-w-[140px] bg-[#0A0E18]/80 border border-white/10 rounded-2xl overflow-hidden h-12 p-0.5">
-        <button
-          type="button"
-          (click)="setBothTeamsScore(1)"
-          [disabled]="disabled()"
-          class="flex-1 h-full flex items-center justify-center text-xs font-bold uppercase transition-all duration-150 border-none outline-none cursor-pointer rounded-xl"
-          [class.bg-brand-red]="bothTeamsScore() === 1"
-          [class.text-white]="bothTeamsScore() === 1"
-          [class.text-slate-400]="bothTeamsScore() !== 1"
-          [class.hover:text-white]="!disabled() && bothTeamsScore() !== 1"
-          style="background: transparent;"
-        >
+    <div class="flex flex-col gap-2 select-none w-full mt-1">
+      <span class="text-xs font-bold text-text-secondary">Ambos os times marcam?</span>
+
+      <div class="grid grid-cols-2 gap-3 w-full">
+        <button type="button" (click)="setBothTeamsScore(1)" [disabled]="disabled()"
+          class="h-10 flex items-center justify-center text-xs font-bold uppercase transition-all duration-150 border rounded-[4px] cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+          [class.bg-brand-red]="bothTeamsScore() === 1" [class.border-primary]="bothTeamsScore() === 1"
+          [class.text-text]="bothTeamsScore() === 1" [class.bg-hover]="bothTeamsScore() !== 1"
+          [class.border-border]="bothTeamsScore() !== 1" [class.text-text-secondary]="bothTeamsScore() !== 1">
           Sim
         </button>
-        <button
-          type="button"
-          (click)="setBothTeamsScore(0)"
-          [disabled]="disabled()"
-          class="flex-1 h-full flex items-center justify-center text-xs font-bold uppercase transition-all duration-150 border-none outline-none cursor-pointer rounded-xl"
-          [class.bg-brand-red]="bothTeamsScore() === 0"
-          [class.text-white]="bothTeamsScore() === 0"
-          [class.text-slate-400]="bothTeamsScore() !== 0"
-          [class.hover:text-white]="!disabled() && bothTeamsScore() !== 0"
-          style="background: transparent;"
-        >
+        <button type="button" (click)="setBothTeamsScore(0)" [disabled]="disabled()"
+          class="h-10 flex items-center justify-center text-xs font-bold uppercase transition-all duration-150 border rounded-[4px] cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+          [class.bg-brand-red]="bothTeamsScore() === 0" [class.border-primary]="bothTeamsScore() === 0"
+          [class.text-text]="bothTeamsScore() === 0" [class.bg-hover]="bothTeamsScore() !== 0"
+          [class.border-border]="bothTeamsScore() !== 0" [class.text-text-secondary]="bothTeamsScore() !== 0">
           Não
         </button>
       </div>

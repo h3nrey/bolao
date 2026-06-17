@@ -1,0 +1,32 @@
+<div class="bg-[#14151A] border border-[#2A2B36] rounded-[6px] p-4 md:p-5 flex flex-col gap-4 shadow-sm select-none h-full justify-between">
+  <div>
+    <h3 class="text-sm font-black text-[#F0F0F5] tracking-wider uppercase flex items-center gap-2 font-ui">
+      <svg lucideBarChart2 class="w-4 h-4 text-[#E8001D]"></svg>
+      Tendências da Comunidade
+    </h3>
+    <p class="text-[11px] text-[#9B9BAD] mt-1">Distribuição estimada dos palpites para esta partida.</p>
+  </div>
+
+  <div class="flex flex-col gap-3">
+    <div class="w-full h-3 flex overflow-hidden bg-[#0D0D0F] border border-[#2A2B36] rounded-[4px]">
+      <div class="bg-[#E8001D] h-full" [style.width.%]="statsRatios().a"></div>
+      <div class="bg-[#5C5C72] h-full" [style.width.%]="statsRatios().draw"></div>
+      <div class="bg-[#FFB800] h-full" [style.width.%]="statsRatios().b"></div>
+    </div>
+    
+    <div class="grid grid-cols-3 gap-2 text-center text-xs font-bold">
+      <div class="flex flex-col gap-0.5 items-center min-w-0">
+        <span class="text-[#E8001D] truncate max-w-full font-ui uppercase">{{ teamA()?.name || 'Time A' }}</span>
+        <span class="text-[#F0F0F5] text-sm font-black font-display">{{ statsRatios().a }}%</span>
+      </div>
+      <div class="flex flex-col gap-0.5 items-center">
+        <span class="text-[#9B9BAD] font-ui uppercase">Empate</span>
+        <span class="text-[#F0F0F5] text-sm font-black font-display">{{ statsRatios().draw }}%</span>
+      </div>
+      <div class="flex flex-col gap-0.5 items-center min-w-0">
+        <span class="text-[#FFB800] truncate max-w-full font-ui uppercase">{{ teamB()?.name || 'Time B' }}</span>
+        <span class="text-[#F0F0F5] text-sm font-black font-display">{{ statsRatios().b }}%</span>
+      </div>
+    </div>
+  </div>
+</div>

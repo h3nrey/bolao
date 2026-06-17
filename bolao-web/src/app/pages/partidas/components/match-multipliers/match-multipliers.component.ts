@@ -1,12 +1,12 @@
 import { Component, input, output, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormSelectComponent, SelectOption } from '../../../../components/ui/form-select/form-select.component';
-import { ScoreStepperComponent } from '../../../../components/ui/score-stepper/score-stepper.component';
+import { LucideZap, LucideMinus, LucidePlus } from '@lucide/angular';
 
 @Component({
   selector: 'app-match-multipliers',
   standalone: true,
-  imports: [CommonModule, FormSelectComponent, ScoreStepperComponent],
+  imports: [CommonModule, FormSelectComponent, LucideZap, LucideMinus, LucidePlus],
   templateUrl: './match-multipliers.component.html',
 })
 export class MatchMultipliersComponent {
