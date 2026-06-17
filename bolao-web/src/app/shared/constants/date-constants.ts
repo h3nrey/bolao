@@ -12,3 +12,5 @@ export const WEEKDAYS_SHORT_PT = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁ
 
 export const TOURNAMENT_START_DATE = new Date('2026-06-11T17:00:00');
 
+export const PLAYOFFS_START_DATE = new Date('2026-06-28T17:00:00');
+

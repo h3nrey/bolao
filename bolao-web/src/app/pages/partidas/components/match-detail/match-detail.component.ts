@@ -6,12 +6,12 @@ import { LoadingSpinnerComponent } from '../../../../components/ui/loading-spinn
 import { ScoreStepperComponent } from '../../../../components/ui/score-stepper/score-stepper.component';
 import { SessionService } from '../../../../services/session.service';
 import { MatchesService } from '../../../../services/matches.service';
-import { LucideArrowLeft, LucideBarChart2, LucideCircle, LucideCircleCheck, LucideClock3, LucideGlobe2, LucideLock, LucideRadio, LucideTimer, LucideUsers } from '@lucide/angular';
+import { LucideArrowLeft, LucideBarChart2, LucideCircleCheck, LucideClock3, LucideGlobe2, LucideLock, LucideRadio, LucideUsers } from '@lucide/angular';
 
 @Component({
   selector: 'app-match-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, DatePipe, LoadingSpinnerComponent, ScoreStepperComponent, LucideArrowLeft, LucideBarChart2, LucideCircle, LucideCircleCheck, LucideClock3, LucideGlobe2, LucideLock, LucideRadio, LucideTimer, LucideUsers],
+  imports: [CommonModule, FormsModule, DatePipe, LoadingSpinnerComponent, ScoreStepperComponent, LucideArrowLeft, LucideBarChart2, LucideCircleCheck, LucideClock3, LucideGlobe2, LucideLock, LucideRadio, LucideUsers],
   templateUrl: './match-detail.component.html',
 })
 export class MatchDetailComponent implements OnInit {

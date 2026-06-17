@@ -68,7 +68,7 @@
         {{ user()?.can_edit ? 'Meus Palpites' : 'Palpites do Participante' }}
       </h3>
       <span class="hidden h-6 items-center rounded-[4px] border border-[#2A2B36] bg-[#14151A] px-2.5 text-[10px] font-black uppercase tracking-wider text-[#9B9BAD] sm:inline-flex font-ui">
-        {{ userGuesses().length }} registros
+        {{ totalGuessesCount() }} registros
       </span>
     </div>
 
@@ -78,7 +78,7 @@
         <span class="text-[10px] font-black uppercase tracking-widest font-ui">Carregando palpites</span>
       </div>
     } @else {
-      @if (userGuesses().length === 0) {
+      @if (totalGuessesCount() === 0) {
         <div class="flex flex-col items-center justify-center gap-3 rounded-[8px] border border-dashed border-[#2A2B36] bg-[#0D0D0F] px-4 py-12 text-center text-[#9B9BAD]">
           <div class="flex h-10 w-10 items-center justify-center rounded-[6px] border border-[#2A2B36] bg-[#14151A]">
             <svg lucideClipboardList class="h-5 w-5 text-[#5C5C72]"></svg>
@@ -86,30 +86,76 @@
           <p class="text-xs font-semibold font-body">Nenhum palpite registrado ainda.</p>
         </div>
       } @else {
-        <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
-          @for (guess of userGuesses(); track guess.id) {
-            <a
-              [routerLink]="['/partidas', guess.match.id]"
-              class="flex min-h-20 items-center justify-between gap-4 rounded-[6px] border border-[#2A2B36] border-l-2 border-l-transparent bg-[#0D0D0F] p-4 no-underline transition-colors duration-80 hover:border-l-[#E8001D] hover:bg-[#22232D] focus:outline-none focus:ring-2 focus:ring-[#E8001D] focus:ring-offset-2 focus:ring-offset-[#0D0D0F]"
-            >
-              <div class="flex min-w-0 flex-col gap-2">
-                <span class="flex items-center gap-1.5 truncate text-[10px] font-black uppercase tracking-widest text-[#9B9BAD] font-ui">
-                  <svg lucideCalendar class="h-3.5 w-3.5 shrink-0 text-[#5C5C72]"></svg>
-                  {{ guess.match.round || 'Copa do Mundo' }} · {{ guess.dateLabel }}
+        <div class="flex flex-col gap-8 w-full text-left">
+          @for (group of userGuesses(); track group.roundLabel) {
+            <div class="flex flex-col gap-4 w-full animate-fadeIn">
+              <!-- Round header -->
+              <div class="flex items-center gap-3">
+                <span class="inline-flex items-center gap-1.5 text-[10px] font-black uppercase text-[#9B9BAD] tracking-widest bg-[#14151A] border border-[#2A2B36] px-2.5 py-1.5 rounded-[4px] select-none font-ui">
+                  <svg lucideCalendar class="h-3.5 w-3.5 text-[#E8001D]"></svg>
+                  {{ group.roundLabel }}
                 </span>
-                <div class="flex min-w-0 items-center gap-2">
-                  <span class="truncate text-xs font-bold text-[#F0F0F5] font-body">{{ guess.match.team_a?.name }}</span>
-                  <span class="text-[10px] font-black uppercase text-[#FFB800] font-ui">vs</span>
-                  <span class="truncate text-xs font-bold text-[#F0F0F5] font-body">{{ guess.match.team_b?.name }}</span>
-                </div>
+                <div class="flex-1 h-px bg-[#2A2B36]"></div>
               </div>
 
-              <div class="flex h-9 shrink-0 items-center gap-1.5 rounded-[4px] border border-[#2A2B36] bg-[#14151A] px-3 text-sm font-black text-[#F0F0F5] font-display">
-                <span class="text-[#E8001D]">{{ guess.scoreA }}</span>
-                <span class="text-[10px] text-[#5C5C72]">x</span>
-                <span class="text-[#E8001D]">{{ guess.scoreB }}</span>
+              <!-- Guess cards grid -->
+              <div class="grid grid-cols-1 gap-3 md:grid-cols-2 w-full">
+                @for (guess of group.guesses; track guess.id) {
+                  <a
+                    [routerLink]="['/partidas', guess.match.id]"
+                    class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-[6px] border border-[#2A2B36] border-l-2 border-l-transparent bg-[#0D0D0F] p-4 no-underline transition-colors duration-80 hover:border-l-[#E8001D] hover:bg-[#22232D] focus:outline-none focus:ring-2 focus:ring-[#E8001D] focus:ring-offset-2 focus:ring-offset-[#0D0D0F]"
+                  >
+                    <div class="flex min-w-0 flex-col gap-2">
+                      <span class="flex items-center gap-1.5 truncate text-[10px] font-black uppercase tracking-widest text-[#9B9BAD] font-ui">
+                        <svg lucideCalendar class="h-3.5 w-3.5 shrink-0 text-[#5C5C72]"></svg>
+                        {{ guess.dateLabel }}
+                        @if (guess.match.status === 'finished') {
+                          <span class="text-[9px] bg-[#E8001D]/10 text-[#FF1A35] border border-[#E8001D]/30 px-1.5 py-0.5 rounded-[3px] font-ui font-black uppercase tracking-wider ml-1">Finalizado</span>
+                        }
+                      </span>
+                      
+                      <div class="flex min-w-0 items-center gap-2">
+                        <span class="truncate text-xs font-bold text-[#F0F0F5] font-body">{{ guess.match.team_a?.name }}</span>
+                        <span class="text-[10px] font-black uppercase text-[#FFB800] font-ui">vs</span>
+                        <span class="truncate text-xs font-bold text-[#F0F0F5] font-body">{{ guess.match.team_b?.name }}</span>
+                      </div>
+
+                      @if (guess.match.status === 'finished') {
+                        <div class="flex flex-wrap items-center gap-1.5 mt-0.5">
+                          <span class="text-[9px] font-bold text-[#9B9BAD] bg-[#14151A] border border-[#2A2B36] px-2 py-0.5 rounded-[4px] font-ui">
+                            Placar Oficial: {{ guess.match.score?.score_a }} x {{ guess.match.score?.score_b }}
+                          </span>
+                          @for (pt of guess.pointsBreakdown; track pt.label) {
+                            <span class="text-[9px] font-bold bg-[#14151A] text-[#00D68F] border border-[#00D68F]/20 px-2 py-0.5 rounded-[4px] font-ui">
+                              {{ pt.label }} (+{{ pt.pts }} pts)
+                            </span>
+                          }
+                        </div>
+                      }
+                    </div>
+
+                    <div class="flex items-center gap-2 shrink-0 self-end sm:self-center">
+                      <!-- Guess display -->
+                      <div class="flex h-9 items-center gap-1.5 rounded-[4px] border border-[#2A2B36] bg-[#14151A] px-3 text-sm font-black text-[#F0F0F5] font-display">
+                        <span class="text-[#9B9BAD] text-[9px] font-black uppercase font-ui mr-1">Palpite:</span>
+                        <span class="text-[#E8001D]">{{ guess.scoreA }}</span>
+                        <span class="text-[10px] text-[#5C5C72]">x</span>
+                        <span class="text-[#E8001D]">{{ guess.scoreB }}</span>
+                      </div>
+
+                      <!-- Points earned badge -->
+                      @if (guess.match.status === 'finished') {
+                        <div 
+                          [class]="'flex h-9 min-w-[70px] items-center justify-center rounded-[4px] border px-3 text-[10px] font-black font-ui uppercase tracking-wider ' + guess.badgeClass"
+                        >
+                          +{{ guess.ptsTotal }} pts
+                        </div>
+                      }
+                    </div>
+                  </a>
+                }
               </div>
-            </a>
+            </div>
           }
         </div>
       }

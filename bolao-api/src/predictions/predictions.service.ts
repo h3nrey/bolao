@@ -20,6 +20,7 @@ export class PredictionsService {
       where: { user_id: userId },
       include: {
         items: true,
+        points: true,
       },
     });
 

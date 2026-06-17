@@ -15,7 +15,7 @@
         Detalhes da Partida
       </h1>
       <p class="text-xs text-[#9B9BAD] font-medium">
-        Placar, palpite, linha do tempo e distribuição da comunidade.
+        Placar, palpite e distribuição da comunidade.
       </p>
     </div>
   </div>
@@ -215,59 +215,8 @@
         </div>
       </div>
 
-      <!-- RIGHT: Timeline + Other Predictions -->
+      <!-- RIGHT: Other Predictions -->
       <div class="flex flex-col gap-6 w-full">
-
-        <!-- Timeline -->
-        <div class="bg-[#14151A] border border-[#2A2B36] rounded-[8px] p-4 md:p-5 flex flex-col gap-4 shadow-sm">
-          <h3 class="text-sm font-black text-[#F0F0F5] tracking-wider uppercase border-b border-[#2A2B36] pb-3 flex items-center gap-2 select-none font-ui">
-            <svg lucideTimer class="w-4 h-4 text-[#E8001D]"></svg>
-            Linha do Tempo
-          </h3>
-
-          @if (match().status === 'upcoming') {
-            <div class="py-8 text-center text-[#5C5C72] select-none flex flex-col items-center gap-2">
-              <svg lucideClock3 class="w-6 h-6"></svg>
-              <span class="text-xs font-semibold">A linha do tempo estará disponível quando a partida começar.</span>
-            </div>
-          } @else if (!match().events || match().events.length === 0) {
-            <div class="py-8 text-center text-[#5C5C72] select-none flex flex-col items-center gap-2">
-              <svg lucideCircle class="w-6 h-6"></svg>
-              <span class="text-xs font-semibold">Nenhum evento registrado ainda.</span>
-            </div>
-          } @else {
-            <div class="flex flex-col gap-3.5 pl-4 border-l border-[#2A2B36] relative text-left">
-              @for (event of match().events; track event.id) {
-                <div class="flex items-start gap-4 relative">
-                  <span class="absolute -left-[20.5px] top-1.5 w-2 h-2 bg-[#E8001D] rounded-[2px] border border-[#0D0D0F]"></span>
-                  <span class="text-xs font-black text-[#9B9BAD] whitespace-nowrap w-8 font-display">{{ event.minute }}'</span>
-                  <div class="flex flex-col gap-0.5 overflow-hidden">
-                    <div class="flex items-center gap-1.5">
-                      <span
-                        class="text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 border rounded-[3px] font-ui"
-                        [class.text-[#00D68F]]="event.type === 'goal'"
-                        [class.border-[#00D68F]]="event.type === 'goal'"
-                        [class.text-[#FFB800]]="event.type === 'yellow_card'"
-                        [class.border-[#FFB800]]="event.type === 'yellow_card'"
-                        [class.text-[#E8001D]]="event.type === 'red_card'"
-                        [class.border-[#E8001D]]="event.type === 'red_card'"
-                        [class.text-[#9B9BAD]]="event.type !== 'goal' && event.type !== 'yellow_card' && event.type !== 'red_card'"
-                        [class.border-[#2A2B36]]="event.type !== 'goal' && event.type !== 'yellow_card' && event.type !== 'red_card'"
-                      >
-                        @if (event.type === 'goal') { Gol }
-                        @else if (event.type === 'yellow_card') { Ama }
-                        @else if (event.type === 'red_card') { Ver }
-                        @else { Evt }
-                      </span>
-                      <span class="text-xs font-extrabold text-[#F0F0F5]">{{ event.player?.name }}</span>
-                    </div>
-                    <span class="text-[9px] font-bold text-[#5C5C72] uppercase tracking-widest">{{ event.team?.name }}</span>
-                  </div>
-                </div>
-              }
-            </div>
-          }
-        </div>
 
         <!-- Other Predictions -->
         <div class="bg-[#14151A] border border-[#2A2B36] rounded-[8px] p-4 md:p-5 flex flex-col gap-4 shadow-sm">
