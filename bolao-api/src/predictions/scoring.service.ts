@@ -19,19 +19,23 @@ export class ScoringService {
 
     if (!prediction) return 0;
 
+    const match = await this.prisma.match.findUnique({
+      where: { id: prediction.match_id },
+      include: {
+        phase: {
+          include: {
+            tournament: true,
+          },
+        },
+      },
+    });
+
+    if (!match) return 0;
+
     const score = await this.matchesService.getScore(prediction.match_id);
 
     const extraPeriods = await this.prisma.matchExtraPeriod.findMany({
       where: { match_id: prediction.match_id },
-    });
-
-    // Get first goal event for this match
-    const firstGoal = await this.prisma.matchEvent.findFirst({
-      where: {
-        match_id: prediction.match_id,
-        type: 'goal',
-      },
-      orderBy: { minute: 'asc' },
     });
 
     // Extract prediction values
@@ -49,6 +53,12 @@ export class ScoringService {
     const predFirstGoalPlayer = getItemPlayerId('first_goal_player');
     const predExtraTime = getItemInt('went_to_extra_time');
     const predPenalties = getItemInt('went_to_penalties');
+    
+    // New Multipliers
+    const predScorerPlayerId = getItemPlayerId('scorer_player');
+    const predCardsQty = getItemInt('cards_quantity');
+    const predCornersQty = getItemInt('corners_quantity');
+    const predBothTeamsScore = getItemInt('both_teams_score');
 
     const actualScoreA = score.score_a;
     const actualScoreB = score.score_b;
@@ -60,7 +70,7 @@ export class ScoringService {
     // --- Scoring Rules (Mutually Exclusive) ---
     if (predScoreA !== null && predScoreB !== null) {
       const isExactScore =
-        predScoreA === actualScoreA && predScoreB === actualScoreB;
+         predScoreA === actualScoreA && predScoreB === actualScoreB;
       const predResult = Math.sign(predScoreA - predScoreB);
       const actualResult = Math.sign(actualScoreA - actualScoreB);
       const isResultCorrect = predResult === actualResult;
@@ -99,6 +109,84 @@ export class ScoringService {
     const wentToPenalties = extraPeriods.some((ep) => ep.type === 'penalties');
     if (predPenalties === 1 && wentToPenalties) {
       pointsToInsert.push({ type: 'bonus_penalties', pts_earned: 5 });
+    }
+
+    // --- Multiplier Calculations (If Active) ---
+    const tournament = match.phase?.tournament;
+    if (tournament && tournament.multipliers_active) {
+      // 1. Jogador que marca gol (pts)
+      if (predScorerPlayerId) {
+        const actualScorer = await this.prisma.matchEvent.findFirst({
+          where: {
+            match_id: match.id,
+            type: 'goal',
+            player_id: predScorerPlayerId,
+          },
+        });
+        if (actualScorer) {
+          pointsToInsert.push({
+            type: 'multiplier_scorer',
+            pts_earned: tournament.multiplier_scorer_pts,
+          });
+        }
+      }
+
+      // 2. Primeiro time a marcar (pts)
+      if (predFirstGoalTeam) {
+        const firstGoalEvent = await this.prisma.matchEvent.findFirst({
+          where: {
+            match_id: match.id,
+            type: { in: ['goal', 'own_goal'] },
+          },
+          orderBy: { minute: 'asc' },
+        });
+        let actualFirstGoalTeamId: string | null = null;
+        if (firstGoalEvent) {
+          if (firstGoalEvent.type === 'goal') {
+            actualFirstGoalTeamId = firstGoalEvent.team_id;
+          } else {
+            // Own goal: opposing team gets the score
+            actualFirstGoalTeamId =
+              firstGoalEvent.team_id === match.team_a_id
+                ? match.team_b_id
+                : match.team_a_id;
+          }
+        }
+        if (actualFirstGoalTeamId && predFirstGoalTeam === actualFirstGoalTeamId) {
+          pointsToInsert.push({
+            type: 'multiplier_first_goal',
+            pts_earned: tournament.multiplier_first_goal_pts,
+          });
+        }
+      }
+
+      // 3. Quantidade de cartões (pts)
+      if (predCardsQty !== null && predCardsQty === match.cards_quantity) {
+        pointsToInsert.push({
+          type: 'multiplier_cards',
+          pts_earned: tournament.multiplier_cards_pts,
+        });
+      }
+
+      // 4. Quantidade de escanteios (pts)
+      if (predCornersQty !== null && predCornersQty === match.corners_quantity) {
+        pointsToInsert.push({
+          type: 'multiplier_corners',
+          pts_earned: tournament.multiplier_corners_pts,
+        });
+      }
+
+      // 5. Ambos os times marcam (pts)
+      if (predBothTeamsScore !== null) {
+        const actualBothTeamsScore =
+          match.score_a > 0 && match.score_b > 0 ? 1 : 0;
+        if (predBothTeamsScore === actualBothTeamsScore) {
+          pointsToInsert.push({
+            type: 'multiplier_both_score',
+            pts_earned: tournament.multiplier_both_score_pts,
+          });
+        }
+      }
     }
 
     // Delete existing points for this prediction

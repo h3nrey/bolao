@@ -42,6 +42,8 @@ export const updateMatchSchema = z.object({
   score_b_extra: z.number().int().min(0).optional(),
   penalty_score_a: z.number().int().min(0).nullable().optional(),
   penalty_score_b: z.number().int().min(0).nullable().optional(),
+  cards_quantity: z.number().int().min(0).optional(),
+  corners_quantity: z.number().int().min(0).optional(),
 });
 
 export class UpdateMatchDto extends createZodDto(updateMatchSchema) {}

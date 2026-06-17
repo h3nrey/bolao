@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LoadingSpinnerComponent } from '../../../../components/ui/loading-spinner/loading-spinner.component';
 import { ScoreStepperComponent } from '../../../../components/ui/score-stepper/score-stepper.component';
+import { MatchMultipliersComponent } from '../match-multipliers/match-multipliers.component';
 import { SessionService } from '../../../../services/session.service';
 import { MatchesService } from '../../../../services/matches.service';
 import { LucideArrowLeft, LucideBarChart2, LucideCircleCheck, LucideClock3, LucideGlobe2, LucideLock, LucideRadio, LucideUsers } from '@lucide/angular';
@@ -11,7 +12,7 @@ import { LucideArrowLeft, LucideBarChart2, LucideCircleCheck, LucideClock3, Luci
 @Component({
   selector: 'app-match-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, DatePipe, LoadingSpinnerComponent, ScoreStepperComponent, LucideArrowLeft, LucideBarChart2, LucideCircleCheck, LucideClock3, LucideGlobe2, LucideLock, LucideRadio, LucideUsers],
+  imports: [CommonModule, FormsModule, DatePipe, LoadingSpinnerComponent, ScoreStepperComponent, MatchMultipliersComponent, LucideArrowLeft, LucideBarChart2, LucideCircleCheck, LucideClock3, LucideGlobe2, LucideLock, LucideRadio, LucideUsers],
   templateUrl: './match-detail.component.html',
 })
 export class MatchDetailComponent implements OnInit {
@@ -31,6 +32,13 @@ export class MatchDetailComponent implements OnInit {
   protected readonly isEditingPrediction = signal(false);
   protected readonly savingPrediction = signal(false);
   protected readonly predictionMessage = signal<{ text: string; isError: boolean } | null>(null);
+
+  // Multiplier predictions
+  protected readonly scorerPlayerId = signal<string>('');
+  protected readonly firstGoalTeamId = signal<string>('');
+  protected readonly cardsQuantity = signal<number>(0);
+  protected readonly cornersQuantity = signal<number>(0);
+  protected readonly bothTeamsScore = signal<number | null>(null);
 
   // Other predictions
   protected readonly otherPredictions = signal<any[]>([]);
@@ -78,11 +86,29 @@ export class MatchDetailComponent implements OnInit {
         const itemB = pred.items?.find((i: any) => i.type === 'score_b');
         this.scoreA.set(itemA?.value_int ?? 0);
         this.scoreB.set(itemB?.value_int ?? 0);
+
+        const itemScorer = pred.items?.find((i: any) => i.type === 'scorer_player');
+        const itemFirstGoal = pred.items?.find((i: any) => i.type === 'first_goal_team');
+        const itemCards = pred.items?.find((i: any) => i.type === 'cards_quantity');
+        const itemCorners = pred.items?.find((i: any) => i.type === 'corners_quantity');
+        const itemBoth = pred.items?.find((i: any) => i.type === 'both_teams_score');
+
+        this.scorerPlayerId.set(itemScorer?.value_player_id ?? '');
+        this.firstGoalTeamId.set(itemFirstGoal?.value_team_id ?? '');
+        this.cardsQuantity.set(itemCards?.value_int ?? 0);
+        this.cornersQuantity.set(itemCorners?.value_int ?? 0);
+        this.bothTeamsScore.set(itemBoth?.value_int ?? null);
+
         this.isEditingPrediction.set(true);
       },
       error: () => {
         this.scoreA.set(0);
         this.scoreB.set(0);
+        this.scorerPlayerId.set('');
+        this.firstGoalTeamId.set('');
+        this.cardsQuantity.set(0);
+        this.cornersQuantity.set(0);
+        this.bothTeamsScore.set(null);
         this.isEditingPrediction.set(false);
       },
     });
@@ -112,7 +138,15 @@ export class MatchDetailComponent implements OnInit {
     this.savingPrediction.set(true);
     this.predictionMessage.set(null);
 
-    this.matchesService.savePrediction(m.id, this.scoreA(), this.scoreB()).subscribe({
+    const multipliersPayload = m.phase?.tournament?.multipliers_active ? {
+      scorerPlayerId: this.scorerPlayerId(),
+      firstGoalTeamId: this.firstGoalTeamId(),
+      cardsQuantity: this.cardsQuantity(),
+      cornersQuantity: this.cornersQuantity(),
+      bothTeamsScore: this.bothTeamsScore(),
+    } : undefined;
+
+    this.matchesService.savePrediction(m.id, this.scoreA(), this.scoreB(), multipliersPayload).subscribe({
       next: () => {
         this.savingPrediction.set(false);
         this.isEditingPrediction.set(true);

@@ -153,34 +153,48 @@
                 [disabled]="savingPrediction()" (valueChange)="scoreB.set($event)" />
             </div>
           </div>
-
-          @if (predictionMessage()) {
-          <div class="rounded-[6px] p-3 text-xs font-semibold flex items-center gap-2 border bg-[#14151A]"
-            [class.border-[#00D68F]]="!predictionMessage()?.isError"
-            [class.text-[#00D68F]]="!predictionMessage()?.isError"
-            [class.border-[#E8001D]]="predictionMessage()?.isError"
-            [class.text-[#E8001D]]="predictionMessage()?.isError">
-            @if (predictionMessage()?.isError) {
-            <svg lucideLock class="w-4 h-4 shrink-0"></svg>
-            } @else {
-            <svg lucideCircleCheck class="w-4 h-4 shrink-0"></svg>
-            }
-            <span>{{ predictionMessage()?.text }}</span>
-          </div>
-          }
-
-          <button (click)="savePrediction()" [disabled]="savingPrediction()"
-            class="w-full h-11 px-6 bg-[#E8001D] hover:bg-[#B8001A] disabled:bg-[#2A2B36] disabled:text-[#5C5C72] text-white font-black rounded-[4px] transition-colors duration-80 cursor-pointer flex items-center justify-center gap-2 select-none border-none font-ui uppercase tracking-wider">
-            @if (savingPrediction()) {
-            <div class="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
-            <span>Salvando...</span>
-            } @else {
-            <span>{{ isEditingPrediction() ? 'Atualizar Palpite' : 'Salvar Palpite' }}</span>
-            }
-          </button>
         </div>
         }
       </div>
+
+      <!-- Multipliers Section -->
+      @if (match().phase?.tournament?.multipliers_active) {
+      <app-match-multipliers [disabled]="match().status !== 'upcoming' || savingPrediction()" [teamA]="match().team_a"
+        [teamB]="match().team_b" [scorerPlayerId]="scorerPlayerId()" [firstGoalTeamId]="firstGoalTeamId()"
+        [cardsQuantity]="cardsQuantity()" [cornersQuantity]="cornersQuantity()" [bothTeamsScore]="bothTeamsScore()"
+        (scorerPlayerIdChange)="scorerPlayerId.set($event)" (firstGoalTeamIdChange)="firstGoalTeamId.set($event)"
+        (cardsQuantityChange)="cardsQuantity.set($event)" (cornersQuantityChange)="cornersQuantity.set($event)"
+        (bothTeamsScoreChange)="bothTeamsScore.set($event)"></app-match-multipliers>
+      }
+
+      <!-- Save Button & Feedback (Only for upcoming matches) -->
+      @if (match().status === 'upcoming') {
+      <div class="flex flex-col gap-4">
+        @if (predictionMessage()) {
+        <div class="rounded-[6px] p-3 text-xs font-semibold flex items-center gap-2 border bg-[#14151A]"
+          [class.border-[#00D68F]]="!predictionMessage()?.isError"
+          [class.text-[#00D68F]]="!predictionMessage()?.isError" [class.border-[#E8001D]]="predictionMessage()?.isError"
+          [class.text-[#E8001D]]="predictionMessage()?.isError">
+          @if (predictionMessage()?.isError) {
+          <svg lucideLock class="w-4 h-4 shrink-0"></svg>
+          } @else {
+          <svg lucideCircleCheck class="w-4 h-4 shrink-0"></svg>
+          }
+          <span>{{ predictionMessage()?.text }}</span>
+        </div>
+        }
+
+        <button (click)="savePrediction()" [disabled]="savingPrediction()"
+          class="w-full h-11 px-6 bg-[#E8001D] hover:bg-[#B8001A] disabled:bg-[#2A2B36] disabled:text-[#5C5C72] text-white font-black rounded-[4px] transition-colors duration-80 cursor-pointer flex items-center justify-center gap-2 select-none border-none font-ui uppercase tracking-wider">
+          @if (savingPrediction()) {
+          <div class="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+          <span>Salvando...</span>
+          } @else {
+          <span>{{ isEditingPrediction() ? 'Atualizar Palpite' : 'Salvar Palpite' }}</span>
+          }
+        </button>
+      </div>
+      }
 
       <!-- Statistics Section -->
       <div

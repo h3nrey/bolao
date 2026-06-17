@@ -718,6 +718,9 @@
   .max-w-\[120px\] {
     max-width: 120px;
   }
+  .max-w-\[140px\] {
+    max-width: 140px;
+  }
   .max-w-\[150px\] {
     max-width: 150px;
   }
@@ -882,6 +885,9 @@
   }
   .justify-start {
     justify-content: flex-start;
+  }
+  .justify-items-center {
+    justify-items: center;
   }
   .gap-0 {
     gap: calc(var(--spacing) * 0);
@@ -1094,6 +1100,9 @@
   .border-\[\#2A2B36\] {
     border-color: #2A2B36;
   }
+  .border-\[\#2A2B36\]\/30 {
+    border-color: color-mix(in oklab, #2A2B36 30%, transparent);
+  }
   .border-\[\#2A2B36\]\/40 {
     border-color: color-mix(in oklab, #2A2B36 40%, transparent);
   }
@@ -1201,6 +1210,9 @@
   }
   .border-l-transparent {
     border-left-color: transparent;
+  }
+  .bg-\[\#0A0E18\]\/80 {
+    background-color: color-mix(in oklab, #0A0E18 80%, transparent);
   }
   .bg-\[\#0A1E18\] {
     background-color: #0A1E18;

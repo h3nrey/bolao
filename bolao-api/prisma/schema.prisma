@@ -44,6 +44,12 @@ model Tournament {
   name                       String
   status                     TournamentStatus   @default(draft)
   special_predictions_active Boolean            @default(true)
+  multipliers_active         Boolean            @default(true)
+  multiplier_scorer_pts      Int                @default(5)
+  multiplier_first_goal_pts  Int                @default(5)
+  multiplier_cards_pts       Int                @default(3)
+  multiplier_corners_pts     Int                @default(3)
+  multiplier_both_score_pts  Int                @default(2)
   created_at                 DateTime           @default(now())
 
   phases   Phase[]
@@ -167,6 +173,8 @@ model Match {
   score_b_extra   Int         @default(0)
   penalty_score_a Int?
   penalty_score_b Int?
+  cards_quantity   Int         @default(0)
+  corners_quantity Int         @default(0)
 
   provider    String?
   external_id String?
@@ -346,6 +354,10 @@ enum PredictionType {
   first_goal_player
   went_to_extra_time
   went_to_penalties
+  scorer_player
+  cards_quantity
+  corners_quantity
+  both_teams_score
 }
 
 enum PointType {
@@ -359,6 +371,11 @@ enum PointType {
   bonus_zero_zero
   bonus_extra_time
   bonus_penalties
+  multiplier_scorer
+  multiplier_first_goal
+  multiplier_cards
+  multiplier_corners
+  multiplier_both_score
 }
 
 enum BracketSource {

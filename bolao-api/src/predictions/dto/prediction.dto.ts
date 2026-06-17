@@ -14,11 +14,11 @@ export const createPredictionSchema = z.object({
       }),
       z.object({
         type: z.literal('first_goal_team'),
-        value_team_id: z.string().uuid(),
+        value_team_id: z.string().uuid().nullable().optional(),
       }),
       z.object({
         type: z.literal('first_goal_player'),
-        value_player_id: z.string().uuid(),
+        value_player_id: z.string().uuid().nullable().optional(),
       }),
       z.object({
         type: z.literal('went_to_extra_time'),
@@ -27,6 +27,22 @@ export const createPredictionSchema = z.object({
       z.object({
         type: z.literal('went_to_penalties'),
         value_int: z.literal(1),
+      }),
+      z.object({
+        type: z.literal('scorer_player'),
+        value_player_id: z.string().uuid().nullable().optional(),
+      }),
+      z.object({
+        type: z.literal('cards_quantity'),
+        value_int: z.number().int().min(0).nullable().optional(),
+      }),
+      z.object({
+        type: z.literal('corners_quantity'),
+        value_int: z.number().int().min(0).nullable().optional(),
+      }),
+      z.object({
+        type: z.literal('both_teams_score'),
+        value_int: z.number().int().min(0).max(1).nullable().optional(),
       }),
     ]),
   ),

@@ -52,6 +52,95 @@
           ></app-switch>
         </div>
 
+        <!-- Option Row: Multiplicadores de Jogo -->
+        <div class="flex items-center justify-between p-4 bg-[#1C1D24] border border-[#2A2B36] w-full rounded-lg">
+          <div class="flex flex-col gap-1 text-left flex-1 min-w-0 pr-4">
+            <span class="text-xs font-bold text-white font-ui uppercase tracking-wider">Multiplicadores do Jogo</span>
+          </div>
+
+          <app-switch 
+            [checked]="multipliersActive()" 
+            (checkedChange)="toggleMultipliers()"
+            class="shrink-0"
+          ></app-switch>
+        </div>
+
+        <!-- Multipliers Points Config Panel -->
+        @if (multipliersActive()) {
+          <div class="flex flex-col gap-4 p-5 bg-[#14151A] border border-[#2A2B36] rounded-lg">
+            <span class="text-[10px] font-black uppercase tracking-wider text-slate-500 font-ui border-b border-[#2A2B36] pb-2">Configurar Pontos</span>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="flex flex-col gap-1.5 font-body">
+                <label class="text-[10px] font-black uppercase tracking-wider text-slate-400 font-ui">Jogador que Marca Gol</label>
+                <input 
+                  type="number"
+                  [value]="multiplierScorerPts()"
+                  (input)="multiplierScorerPts.set($any($event.target).value)"
+                  class="px-3.5 py-2 bg-[#0D0D0F] border border-[#2A2B36] rounded-[3px] text-xs text-white placeholder-slate-600 focus:outline-none focus:border-[#E8001D] transition-all"
+                  min="0"
+                />
+              </div>
+
+              <div class="flex flex-col gap-1.5 font-body">
+                <label class="text-[10px] font-black uppercase tracking-wider text-slate-400 font-ui">Primeiro Time a Marcar</label>
+                <input 
+                  type="number"
+                  [value]="multiplierFirstGoalPts()"
+                  (input)="multiplierFirstGoalPts.set($any($event.target).value)"
+                  class="px-3.5 py-2 bg-[#0D0D0F] border border-[#2A2B36] rounded-[3px] text-xs text-white placeholder-slate-600 focus:outline-none focus:border-[#E8001D] transition-all"
+                  min="0"
+                />
+              </div>
+
+              <div class="flex flex-col gap-1.5 font-body">
+                <label class="text-[10px] font-black uppercase tracking-wider text-slate-400 font-ui">Quantidade de Cartões</label>
+                <input 
+                  type="number"
+                  [value]="multiplierCardsPts()"
+                  (input)="multiplierCardsPts.set($any($event.target).value)"
+                  class="px-3.5 py-2 bg-[#0D0D0F] border border-[#2A2B36] rounded-[3px] text-xs text-white placeholder-slate-600 focus:outline-none focus:border-[#E8001D] transition-all"
+                  min="0"
+                />
+              </div>
+
+              <div class="flex flex-col gap-1.5 font-body">
+                <label class="text-[10px] font-black uppercase tracking-wider text-slate-400 font-ui">Quantidade de Escanteios</label>
+                <input 
+                  type="number"
+                  [value]="multiplierCornersPts()"
+                  (input)="multiplierCornersPts.set($any($event.target).value)"
+                  class="px-3.5 py-2 bg-[#0D0D0F] border border-[#2A2B36] rounded-[3px] text-xs text-white placeholder-slate-600 focus:outline-none focus:border-[#E8001D] transition-all"
+                  min="0"
+                />
+              </div>
+
+              <div class="flex flex-col gap-1.5 font-body md:col-span-2">
+                <label class="text-[10px] font-black uppercase tracking-wider text-slate-400 font-ui">Ambos os Times Marcam</label>
+                <input 
+                  type="number"
+                  [value]="multiplierBothScorePts()"
+                  (input)="multiplierBothScorePts.set($any($event.target).value)"
+                  class="px-3.5 py-2 bg-[#0D0D0F] border border-[#2A2B36] rounded-[3px] text-xs text-white placeholder-slate-600 focus:outline-none focus:border-[#E8001D] transition-all"
+                  min="0"
+                />
+              </div>
+            </div>
+
+            <button 
+              (click)="saveMultiplierSettings()" 
+              [disabled]="loading()"
+              class="mt-2 h-10 px-4 bg-[#E8001D] hover:bg-[#B8001A] text-white rounded-[3px] text-xs font-black uppercase tracking-wider font-ui cursor-pointer transition-all flex items-center justify-center gap-2 w-full border-none outline-none"
+            >
+              @if (loading()) {
+                <div class="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+              } @else {
+                Salvar Configurações dos Multiplicadores
+              }
+            </button>
+          </div>
+        }
+
       </div>
 
     </div>

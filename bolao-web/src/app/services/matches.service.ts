@@ -31,13 +31,60 @@ export class MatchesService {
     return this.http.get<any[]>(`${this.apiUrl}/matches/${matchId}/predictions`);
   }
 
-  savePrediction(matchId: string, scoreA: number, scoreB: number): Observable<any> {
-    const payload = {
-      items: [
-        { type: 'score_a', value_int: scoreA },
-        { type: 'score_b', value_int: scoreB },
-      ],
-    };
+  savePrediction(
+    matchId: string,
+    scoreA: number,
+    scoreB: number,
+    multipliers?: {
+      scorerPlayerId?: string | null;
+      firstGoalTeamId?: string | null;
+      cardsQuantity?: number | null;
+      cornersQuantity?: number | null;
+      bothTeamsScore?: number | null;
+    }
+  ): Observable<any> {
+    const items: any[] = [
+      { type: 'score_a', value_int: scoreA },
+      { type: 'score_b', value_int: scoreB },
+    ];
+
+    if (multipliers) {
+      if (multipliers.scorerPlayerId !== undefined) {
+        items.push({
+          type: 'scorer_player',
+          value_player_id: multipliers.scorerPlayerId || null,
+        });
+      }
+      if (multipliers.firstGoalTeamId !== undefined) {
+        const teamId = (multipliers.firstGoalTeamId === 'none' || !multipliers.firstGoalTeamId)
+          ? null
+          : multipliers.firstGoalTeamId;
+        items.push({
+          type: 'first_goal_team',
+          value_team_id: teamId,
+        });
+      }
+      if (multipliers.cardsQuantity !== undefined && multipliers.cardsQuantity !== null) {
+        items.push({
+          type: 'cards_quantity',
+          value_int: multipliers.cardsQuantity,
+        });
+      }
+      if (multipliers.cornersQuantity !== undefined && multipliers.cornersQuantity !== null) {
+        items.push({
+          type: 'corners_quantity',
+          value_int: multipliers.cornersQuantity,
+        });
+      }
+      if (multipliers.bothTeamsScore !== undefined && multipliers.bothTeamsScore !== null) {
+        items.push({
+          type: 'both_teams_score',
+          value_int: multipliers.bothTeamsScore,
+        });
+      }
+    }
+
+    const payload = { items };
     return this.http.post<any>(`${this.apiUrl}/matches/${matchId}/predictions`, payload);
   }
 

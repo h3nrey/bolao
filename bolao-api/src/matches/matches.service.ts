@@ -84,10 +84,10 @@ export class MatchesService {
     const match = await this.prisma.match.findUnique({
       where: { id },
       include: {
-        phase: true,
+        phase: { include: { tournament: true } },
         group: true,
-        team_a: true,
-        team_b: true,
+        team_a: { include: { players: true } },
+        team_b: { include: { players: true } },
         events: {
           orderBy: { minute: 'asc' },
           include: { player: true, team: true },

@@ -598,6 +598,30 @@
             </div>
           </div>
         }
+
+        <!-- Cards and Corners -->
+        <div class="grid grid-cols-2 gap-4 bg-[#1C1D24] p-3.5 border border-t-0 border-[#2A2B36] rounded-none font-body">
+          <div class="flex flex-col gap-1.5">
+            <label class="text-[9px] font-black uppercase tracking-wider text-slate-500 font-ui">Quantidade de Cartões</label>
+            <input 
+              type="number"
+              [value]="editMatchCardsQuantity()"
+              (input)="editMatchCardsQuantity.set($any($event.target).value)"
+              class="w-full px-3 py-2 bg-[#0D0D0F] border border-[#2A2B36] rounded-[3px] text-xs text-white focus:outline-none"
+              min="0"
+            />
+          </div>
+          <div class="flex flex-col gap-1.5">
+            <label class="text-[9px] font-black uppercase tracking-wider text-slate-500 font-ui">Quantidade de Escanteios</label>
+            <input 
+              type="number"
+              [value]="editMatchCornersQuantity()"
+              (input)="editMatchCornersQuantity.set($any($event.target).value)"
+              class="w-full px-3 py-2 bg-[#0D0D0F] border border-[#2A2B36] rounded-[3px] text-xs text-white focus:outline-none"
+              min="0"
+            />
+          </div>
+        </div>
       </div>
     </div>
 

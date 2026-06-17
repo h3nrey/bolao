@@ -115,6 +115,8 @@ export class PartidasComponent implements OnInit {
   protected readonly editMatchScoreBExtra = signal(0);
   protected readonly editMatchPenaltyScoreA = signal<number | null>(null);
   protected readonly editMatchPenaltyScoreB = signal<number | null>(null);
+  protected readonly editMatchCardsQuantity = signal(0);
+  protected readonly editMatchCornersQuantity = signal(0);
 
   protected readonly stageOptions: SelectOption[] = [
     { value: 'groups', label: 'Fase de Grupos' },
@@ -315,6 +317,8 @@ export class PartidasComponent implements OnInit {
     this.editMatchScoreBExtra.set(match.score_b_extra || 0);
     this.editMatchPenaltyScoreA.set(match.penalty_score_a ?? null);
     this.editMatchPenaltyScoreB.set(match.penalty_score_b ?? null);
+    this.editMatchCardsQuantity.set((match as any).cards_quantity || 0);
+    this.editMatchCornersQuantity.set((match as any).corners_quantity || 0);
 
     this.modalError.set(null);
     this.isEditMatchModalOpen.set(true);
@@ -359,6 +363,8 @@ export class PartidasComponent implements OnInit {
       score_b_extra: Number(this.editMatchScoreBExtra()),
       penalty_score_a: this.editMatchPenaltyScoreA() !== null && this.editMatchPenaltyScoreA() !== undefined && String(this.editMatchPenaltyScoreA()).trim() !== '' ? Number(this.editMatchPenaltyScoreA()) : null,
       penalty_score_b: this.editMatchPenaltyScoreB() !== null && this.editMatchPenaltyScoreB() !== undefined && String(this.editMatchPenaltyScoreB()).trim() !== '' ? Number(this.editMatchPenaltyScoreB()) : null,
+      cards_quantity: Number(this.editMatchCardsQuantity()),
+      corners_quantity: Number(this.editMatchCornersQuantity()),
     };
 
     this.matchesService.updateMatch(match.id, body).subscribe({
