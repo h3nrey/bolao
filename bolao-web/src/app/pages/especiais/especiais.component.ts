@@ -101,6 +101,9 @@ export class EspeciaisComponent implements OnInit {
                   this.topScorerId.set(pred.top_scorer_player_id || '');
                   this.bestPlayerId.set(pred.best_player_player_id || '');
                   this.surpriseTeamId.set(pred.surprise_team_id || '');
+                  if (pred.is_locked !== undefined) {
+                    this.isLocked.set(pred.is_locked);
+                  }
                 }
                 this.loading.set(false);
               },

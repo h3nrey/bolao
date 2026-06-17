@@ -10,6 +10,7 @@ import { ConfirmDeleteModalComponent } from '../../components/ui/confirm-delete-
 import { TabSelectorComponent, TabOption } from '../../components/ui/tab-selector/tab-selector.component';
 import { SelectedSelectorComponent, SelectorItem } from '../../components/ui/selected-selector/selected-selector.component';
 import { PartidasComponent } from './partidas/partidas.component';
+import { AdminRegrasComponent } from './regras/regras.component';
 import {
   PROJECT_LABELS,
   PROJECT_VALUES,
@@ -90,6 +91,7 @@ interface Match {
     LucideCheck,
     LucideInfo,
     PartidasComponent,
+    AdminRegrasComponent,
   ],
   templateUrl: './admin.component.html',
 })
@@ -100,11 +102,12 @@ export class AdminComponent implements OnInit {
   private readonly apiBaseUrl = API_BASE_URL;
 
   // Tab State
-  protected readonly activeTab = signal<'membros' | 'times' | 'partidas'>('membros');
+  protected readonly activeTab = signal<'membros' | 'times' | 'partidas' | 'regras'>('membros');
   protected readonly tabOptions: TabOption[] = [
     { id: 'membros', label: 'Membros' },
     { id: 'times', label: 'Times' },
     { id: 'partidas', label: 'Partidas' },
+    { id: 'regras', label: 'Regras' },
   ];
 
   // State Signals
@@ -417,7 +420,7 @@ export class AdminComponent implements OnInit {
 
   // Tab selection callback
   protected onTabChange(tabId: string): void {
-    this.activeTab.set(tabId as 'membros' | 'times' | 'partidas');
+    this.activeTab.set(tabId as 'membros' | 'times' | 'partidas' | 'regras');
     this.searchQuery.set('');
     this.selectedTeamIds.set(new Set());
   }

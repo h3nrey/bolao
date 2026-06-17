@@ -40,10 +40,11 @@ model OauthAccount {
 }
 
 model Tournament {
-  id         String             @id @default(uuid())
-  name       String
-  status     TournamentStatus   @default(draft)
-  created_at DateTime           @default(now())
+  id                         String             @id @default(uuid())
+  name                       String
+  status                     TournamentStatus   @default(draft)
+  special_predictions_active Boolean            @default(true)
+  created_at                 DateTime           @default(now())
 
   phases   Phase[]
   rankings Ranking[]

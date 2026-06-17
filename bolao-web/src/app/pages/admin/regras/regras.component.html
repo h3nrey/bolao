@@ -1,0 +1,107 @@
+<div class="flex flex-col gap-6 w-full animate-fadeIn select-none text-left">
+
+  <!-- Sleek Feedback Banner -->
+  @if (feedbackMessage(); as msg) {
+  <div
+    class="fixed bottom-20 right-4 z-50 max-w-md p-4 border rounded-none bg-[#14151A] shadow-lg flex items-center gap-3 animate-slideInRight"
+    [class.border-[#00D68F]]="msg.type === 'success'" [class.border-l-3]="true"
+    [class.border-l-[#00D68F]]="msg.type === 'success'" [class.border-[#E8001D]]="msg.type === 'error'"
+    [class.border-l-[#E8001D]]="msg.type === 'error'">
+    @if (msg.type === 'success') {
+    <div class="w-6 h-6 rounded-none bg-[#0A1E18] flex items-center justify-center shrink-0 border border-[#00D68F]/30">
+      <svg lucideCheck class="w-3.5 h-3.5 text-[#00D68F]"></svg>
+    </div>
+    <span class="text-xs font-bold text-white font-body">{{ msg.text }}</span>
+    } @else {
+    <div class="w-6 h-6 rounded-none bg-[#1A0005] flex items-center justify-center shrink-0 border border-[#E8001D]/30">
+      <svg lucideX class="w-3.5 h-3.5 text-[#E8001D]"></svg>
+    </div>
+    <span class="text-xs font-bold text-[#E8001D] font-body">{{ msg.text }}</span>
+    }
+  </div>
+  }
+
+  <!-- Loading State -->
+  @if (loading() && !tournamentId()) {
+  <div class="flex justify-center items-center py-24 bg-[#14151A] border border-[#2A2B36] rounded-none">
+    <div class="w-10 h-10 border-4 border-white/10 border-t-[#E8001D] rounded-full animate-spin"></div>
+  </div>
+  } @else {
+  <div class="flex flex-col lg:flex-row gap-6 items-start w-full">
+
+    <!-- Left side: Scrollable area for Configurações -->
+    <div
+      class="w-full lg:flex-1 flex flex-col gap-6 max-h-[calc(100vh-220px)] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-[#2A2B36] scrollbar-track-transparent">
+
+      <!-- Section: Configurações -->
+      <div class="rounded-none shadow-sm flex flex-col gap-5">
+        <div class="flex flex-col gap-1 border-b border-[#2A2B36] pb-3">
+          <h2 class="text-sm font-black text-white uppercase tracking-wider font-ui">Configurações</h2>
+        </div>
+
+        <!-- Option Row: Palpites especiais taking full remaining width -->
+        <div class="flex items-center justify-between p-4 bg-[#1C1D24] border border-[#2A2B36] w-full rounded-lg">
+          <div class="flex flex-col gap-1 text-left flex-1 min-w-0 pr-4">
+            <span class="text-xs font-bold text-white font-ui uppercase tracking-wider">Palpites Especiais</span>
+          </div>
+
+          <app-switch 
+            [checked]="specialPredictionsActive()" 
+            (checkedChange)="toggleSpecialPredictions()"
+            class="shrink-0"
+          ></app-switch>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Right side: Fixed/Sticky area for Informational Rules Card -->
+    <div class="w-fit lg:w-80 shrink-0 lg:sticky lg:top-4 h-fit flex flex-col gap-6">
+      <div class="bg-[#14151A] border border-[#2A2B36] p-6 rounded-none shadow-sm flex flex-col gap-4">
+        <h2
+          class="text-sm font-black text-white uppercase tracking-wider font-ui flex items-center gap-2 border-b border-[#2A2B36] pb-3">
+          <svg lucideInfo class="w-4 h-4 text-[#E8001D]"></svg>
+          Regras de Pontuação
+        </h2>
+
+        <div class="flex flex-col gap-3 font-body text-xs text-slate-300">
+          <div class="flex justify-between border-b border-[#1C1D24] pb-2">
+            <span class="font-bold text-white">Placar Exato</span>
+            <span class="text-[#00D68F] font-bold">15 pontos</span>
+          </div>
+          <div class="flex justify-between border-b border-[#1C1D24] pb-2">
+            <span class="font-bold text-white">Resultado / Empate</span>
+            <span class="text-[#00D68F] font-bold">5 pontos</span>
+          </div>
+          <div class="flex justify-between border-b border-[#1C1D24] pb-2">
+            <span class="font-bold text-white">Campeão</span>
+            <span class="text-[#0A84FF] font-bold">30 pontos</span>
+          </div>
+          <div class="flex justify-between border-b border-[#1C1D24] pb-2">
+            <span class="font-bold text-white">Vice-Campeão</span>
+            <span class="text-[#0A84FF] font-bold">20 pontos</span>
+          </div>
+          <div class="flex justify-between border-b border-[#1C1D24] pb-2">
+            <span class="font-bold text-white">3º Lugar</span>
+            <span class="text-[#0A84FF] font-bold">20 pontos</span>
+          </div>
+          <div class="flex justify-between border-b border-[#1C1D24] pb-2">
+            <span class="font-bold text-white">Surpresa / Zebra</span>
+            <span class="text-[#0A84FF] font-bold">20 pontos</span>
+          </div>
+          <div class="flex justify-between border-b border-[#1C1D24] pb-2">
+            <span class="font-bold text-white">Artilheiro</span>
+            <span class="text-[#0A84FF] font-bold">20 pontos</span>
+          </div>
+          <div class="flex justify-between border-b border-[#1C1D24] pb-2">
+            <span class="font-bold text-white">Melhor Jogador (MVP)</span>
+            <span class="text-[#0A84FF] font-bold">20 pontos</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  }
+</div>

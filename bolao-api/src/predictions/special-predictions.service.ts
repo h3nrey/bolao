@@ -14,6 +14,9 @@ export class SpecialPredictionsService {
   constructor(private prisma: PrismaService) {}
 
   async getMySpecialPredictions(userId: string) {
+    const tournament = await this.prisma.tournament.findFirst();
+    const isLocked = tournament ? !tournament.special_predictions_active : true;
+
     const prediction = await this.prisma.specialPrediction.findUnique({
       where: { user_id: userId },
       include: {
@@ -34,25 +37,24 @@ export class SpecialPredictionsService {
         top_scorer_player_id: null,
         best_player_player_id: null,
         surprise_team_id: null,
+        is_locked: isLocked,
       };
     }
 
-    return prediction;
+    return {
+      ...prediction,
+      is_locked: isLocked,
+    };
   }
 
   async submitSpecialPredictions(
     userId: string,
     dto: SubmitSpecialPredictionDto,
   ) {
-    // Check if tournament has started (using first match date)
-    const firstMatch = await this.prisma.match.findFirst({
-      orderBy: { scheduled_at: 'asc' },
-    });
-    const playoffStart =
-      firstMatch?.scheduled_at ?? new Date('2026-06-28T17:00:00Z');
-    if (new Date() > playoffStart) {
+    const tournament = await this.prisma.tournament.findFirst();
+    if (!tournament || !tournament.special_predictions_active) {
       throw new ForbiddenException(
-        'Tournament has already started, special predictions are locked.',
+        'Special predictions are closed.',
       );
     }
 

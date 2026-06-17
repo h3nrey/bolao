@@ -7,6 +7,7 @@ export const createTournamentSchema = z.object({
 
 export const updateTournamentSchema = z.object({
   status: z.enum(['draft', 'active', 'finished']).optional(),
+  special_predictions_active: z.boolean().optional(),
 });
 
 export class CreateTournamentDto extends createZodDto(createTournamentSchema) {}

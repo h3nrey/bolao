@@ -1,0 +1,29 @@
+<div class="flex items-center gap-3 shrink-0">
+  <button 
+    (click)="toggle()" 
+    [class.bg-success]="checked() && color() === 'success'"
+    [class.bg-primary]="checked() && color() === 'primary'"
+    [class.bg-info]="checked() && color() === 'info'"
+    [class.bg-border]="!checked()"
+    [disabled]="disabled()"
+    class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-1 focus:ring-border-strong disabled:opacity-30 disabled:cursor-not-allowed"
+  >
+    <span 
+      [class.translate-x-[20px]]="checked()"
+      [class.translate-x-0]="!checked()"
+      class="pointer-events-none absolute top-[3px] left-[3px] h-[18px] w-[18px] transform rounded-full bg-white shadow-sm transition duration-200 ease-in-out"
+    ></span>
+  </button>
+  
+  @if (showLabel()) {
+    <span 
+      [class.text-success]="checked() && color() === 'success'"
+      [class.text-primary]="checked() && color() === 'primary'"
+      [class.text-info]="checked() && color() === 'info'"
+      [class.text-text-secondary]="!checked()"
+      class="text-[10px] font-bold uppercase tracking-wider font-ui min-w-[80px] text-right select-none"
+    >
+      {{ checked() ? activeLabel() : inactiveLabel() }}
+    </span>
+  }
+</div>
