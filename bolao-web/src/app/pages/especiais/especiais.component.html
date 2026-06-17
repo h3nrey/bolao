@@ -32,28 +32,47 @@
   </div>
   }
 
-  <!-- Progress Tracking Card -->
+  <!-- Sticky Progress Tracking Card -->
+  @if (!isLocked()) {
   <div
-    class="bg-[#14151A] border border-[#2A2B36] rounded-xl p-5 md:p-6 shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4">
-    <div class="flex flex-col text-left gap-1">
-      <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest font-ui">Progresso dos
-        Palpites</span>
-      <span class="text-lg font-bold text-white font-body">
-        {{ completedCount() }} de 6 palpites salvos
-      </span>
+    class="sticky -top-4 md:-top-8 z-20 bg-[#0D0D0F] -mx-4 px-4 md:-mx-8 md:px-8 pt-4 md:pt-8 pb-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div
+      class="flex-1 bg-[#14151A] border border-[#2A2B36] rounded-xl p-5 md:p-6 shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div class="flex flex-col text-left gap-1">
+        <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest font-ui">Progresso dos
+          Palpites</span>
+        <span class="text-lg font-bold text-white font-body">
+          {{ completedCount() }} de 6 palpites salvos
+        </span>
+      </div>
+
+      <div class="flex-1 max-w-md w-full flex flex-col gap-2">
+        <div class="h-2.5 w-full bg-[#2A2B36] rounded-full overflow-hidden">
+          <div class="h-full rounded-full transition-all duration-300" [class.bg-primary-subtle]="completedCount() < 6"
+            [class.bg-brand-red]="completedCount() === 6" [style.width.%]="completionPercentage()"></div>
+        </div>
+        <div class="flex justify-between text-[10px] font-bold uppercase tracking-wider font-ui">
+          @if (completedCount() === 6) {
+          <span class="text-text-primary">Completo</span>
+          } @else {
+          <span class="text-slate-500">Incompleto</span>
+          }
+          <span class="text-slate-500">{{ completionPercentage() | number:'1.0-0' }}% Concluído</span>
+        </div>
+      </div>
     </div>
 
-    <div class="flex-1 max-w-md w-full flex flex-col gap-2">
-      <div class="h-2.5 w-full bg-[#2A2B36] rounded-full overflow-hidden">
-        <div class="h-full bg-brand-red rounded-full transition-all duration-300"
-          [style.width.%]="completionPercentage()"></div>
-      </div>
-      <div class="flex justify-between text-[10px] text-slate-500 font-bold uppercase tracking-wider font-ui">
-        <span>Incompleto</span>
-        <span>{{ completionPercentage() | number:'1.0-0' }}% Concluído</span>
-      </div>
-    </div>
+    <button type="button" (click)="savePredictions()" [disabled]="isLocked() || saving()"
+      class="w-full md:w-auto flex items-center justify-center gap-2 px-6 py-4 md:py-5 bg-brand-red hover:bg-[#FF1A35] text-white text-xs font-black uppercase tracking-wider rounded-xl cursor-pointer transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed select-none outline-none border-none focus:shadow-[0_0_0_3px_rgba(232,0,29,0.22)] shrink-0 self-stretch md:self-auto">
+      @if (saving()) {
+      <span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+      Salvando...
+      } @else {
+      {{ isLocked() ? 'Bloqueado para Envios' : 'Salvar Palpites' }}
+      }
+    </button>
   </div>
+  }
 
   <!-- Main Form Content -->
   <div class="flex flex-col gap-6">
@@ -118,18 +137,6 @@
 
     </div>
 
-    <!-- Action Button -->
-    <div class="flex justify-end mt-4">
-      <button type="button" (click)="savePredictions()" [disabled]="isLocked() || saving()"
-        class="flex items-center justify-center gap-2 px-6 py-3 bg-brand-red hover:bg-[#FF1A35] text-white text-xs font-black uppercase tracking-wider rounded-md cursor-pointer transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed select-none outline-none border-none focus:shadow-[0_0_0_3px_rgba(232,0,29,0.22)]">
-        @if (saving()) {
-        <span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-        Salvando...
-        } @else {
-        {{ isLocked() ? 'Bloqueado para Envios' : 'Salvar Palpites Especiais' }}
-        }
-      </button>
-    </div>
 
   </div>
 
