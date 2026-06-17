@@ -103,4 +103,16 @@ export class MatchesService {
   getPhases(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/phases`);
   }
+
+  getMatchEvents(matchId: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/matches/${matchId}/events`);
+  }
+
+  createMatchEvent(matchId: string, payload: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/matches/${matchId}/events`, payload);
+  }
+
+  deleteMatchEvent(id: string): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/match-events/${id}`);
+  }
 }

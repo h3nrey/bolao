@@ -6,14 +6,32 @@ import { LoadingSpinnerComponent } from '../../../../components/ui/loading-spinn
 import { ScoreStepperComponent } from '../../../../components/ui/score-stepper/score-stepper.component';
 import { MatchMultipliersComponent } from '../match-multipliers/match-multipliers.component';
 import { CommunityTrendsComponent } from '../community-trends/community-trends.component';
+import { AdminMatchEditModalComponent } from '../admin-match-edit-modal/admin-match-edit-modal.component';
 import { SessionService } from '../../../../services/session.service';
 import { MatchesService } from '../../../../services/matches.service';
-import { LucideArrowLeft, LucideCircleCheck, LucideClock3, LucideGlobe2, LucideLock, LucideRadio, LucideUsers } from '@lucide/angular';
+import { LucideArrowLeft, LucideCircleCheck, LucideClock3, LucideGlobe2, LucideLock, LucideRadio, LucideUsers, LucideSettings } from '@lucide/angular';
 
 @Component({
   selector: 'app-match-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, DatePipe, LoadingSpinnerComponent, ScoreStepperComponent, MatchMultipliersComponent, CommunityTrendsComponent, LucideArrowLeft, LucideCircleCheck, LucideClock3, LucideGlobe2, LucideLock, LucideRadio, LucideUsers],
+  imports: [
+    CommonModule,
+    FormsModule,
+    DatePipe,
+    LoadingSpinnerComponent,
+    ScoreStepperComponent,
+    MatchMultipliersComponent,
+    CommunityTrendsComponent,
+    AdminMatchEditModalComponent,
+    LucideArrowLeft,
+    LucideCircleCheck,
+    LucideClock3,
+    LucideGlobe2,
+    LucideLock,
+    LucideRadio,
+    LucideUsers,
+    LucideSettings
+  ],
   templateUrl: './match-detail.component.html',
 })
 export class MatchDetailComponent implements OnInit {
@@ -21,6 +39,7 @@ export class MatchDetailComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly session = inject(SessionService);
+  protected readonly user = this.session.user;
   protected readonly matchId = signal('');
 
   // Match data
@@ -33,6 +52,7 @@ export class MatchDetailComponent implements OnInit {
   protected readonly isEditingPrediction = signal(false);
   protected readonly savingPrediction = signal(false);
   protected readonly predictionMessage = signal<{ text: string; isError: boolean } | null>(null);
+  protected readonly isAdminModalOpen = signal(false);
 
   // Multiplier predictions
   protected readonly scorerPlayerId = signal<string>('');
@@ -198,5 +218,13 @@ export class MatchDetailComponent implements OnInit {
 
   protected goBack(): void {
     this.router.navigate(['/partidas']);
+  }
+
+  protected openAdminModal(): void {
+    this.isAdminModalOpen.set(true);
+  }
+
+  protected onAdminModalSaved(): void {
+    this.loadMatch(false);
   }
 }

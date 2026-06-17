@@ -16,6 +16,14 @@
         Placar, palpite e distribuição da comunidade.
       </p>
     </div>
+
+    @if (user()?.is_admin) {
+    <button (click)="openAdminModal()"
+      class="h-8 px-3 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-text-primary bg-primary-subtle border border-primary rounded-[4px] hover:bg-primary transition-colors cursor-pointer font-ui">
+      <svg lucideSettings class="w-3.5 h-3.5"></svg>
+      Editar Partida (Admin)
+    </button>
+    }
   </div>
 
   <!-- Loading -->
@@ -284,5 +292,14 @@
     </div>
   </div>
 
+  }
+
+  @if (isAdminModalOpen()) {
+  <app-admin-match-edit-modal
+    [isOpen]="isAdminModalOpen()"
+    [match]="match()"
+    (close)="isAdminModalOpen.set(false)"
+    (saved)="onAdminModalSaved()"
+  ></app-admin-match-edit-modal>
   }
 </div>
