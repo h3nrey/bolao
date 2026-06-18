@@ -1,14 +1,11 @@
 <app-modal [open]="open()" size="full">
-  <div class="flex flex-col h-[90vh] max-h-[800px] bg-[#14151A] rounded-md overflow-hidden">
+  <div class="flex flex-col h-[90vh] max-h-[800px] bg-[#14151A] rounded-md overflow-hidden w-full max-w-full">
     <!-- Modal Header -->
-    <div class="flex items-center justify-between px-6 py-4 border-b border-[#2A2B36] bg-[#14151A]">
+    <div class="flex items-center justify-between px-6 py-4 bg-[#14151A]">
       <div class="flex flex-col text-left">
         <h2 class="text-lg font-black text-[#F0F0F5] uppercase tracking-wider leading-none">
           Auditoria Geral de Palpites
         </h2>
-        <p class="text-[10px] text-[#9B9BAD] font-bold mt-1 uppercase tracking-wider">
-          Compare palpites e pontuações de todos os participantes por partida
-        </p>
       </div>
       <button (click)="closeAudit()"
         class="p-2 text-[#9B9BAD] hover:text-[#F0F0F5] hover:bg-[#1C1D24] rounded-md transition-all duration-200">
@@ -20,7 +17,7 @@
     </div>
 
     <!-- Modal Content -->
-    <div class="flex-1 min-h-0 flex flex-col p-6 gap-4 bg-[#0D0D0F]">
+    <div class="flex-1 min-h-0 flex flex-col p-6 gap-4 bg-[#0D0D0F] w-full max-w-full overflow-hidden">
       <!-- Controls -->
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <!-- Search -->
@@ -49,83 +46,96 @@
       @if (data.matches.length === 0) {
       <div
         class="flex-1 flex flex-col items-center justify-center text-center gap-3 text-[#9B9BAD] border border-dashed border-[#2A2B36] bg-[#14151A] rounded-md">
-        <p class="text-sm font-bold text-[#F0F0F5] uppercase">Nenhuma partida em andamento ou finalizada para auditoria.</p>
+        <p class="text-sm font-bold text-[#F0F0F5] uppercase">Nenhuma partida em andamento ou finalizada para auditoria.
+        </p>
         <p class="text-xs text-[#5C5C72]">Os dados aparecerão aqui assim que as partidas iniciarem.</p>
       </div>
       } @else {
       <!-- Audit Grid Container -->
-      <div class="flex-1 min-h-0 overflow-auto border border-[#2A2B36] rounded-md bg-[#14151A]">
-        <table class="w-full border-collapse text-left relative table-auto">
-          <thead class="sticky top-0 z-30">
-            <tr class="bg-[#14151A]">
-              <!-- Participant Header (sticky left) -->
-              <th
-                class="p-4 text-xs font-black text-[#F0F0F5] uppercase tracking-wider border-b border-[#2A2B36] sticky left-0 z-40 bg-[#14151A] border-r border-[#2A2B36] min-w-[220px] max-w-[220px]">
-                Participante
-              </th>
-              <!-- Pts Header (sticky left at 220px) -->
-              <th
-                class="p-4 text-xs font-black text-[#F0F0F5] text-center uppercase tracking-wider border-b border-[#2A2B36] sticky left-[220px] z-40 bg-[#14151A] border-r border-[#2A2B36] min-w-[80px] max-w-[80px]">
-                Pontos
-              </th>
-              <!-- Match Headers -->
-              @for (match of data.matches; track match.id) {
-              <th class="p-3 text-center border-b border-[#2A2B36] min-w-[130px] border-r border-[#2A2B36]/50"
-                  [class.bg-[#1A0005]]="match.status === 'live'">
-                <div class="flex flex-col items-center justify-center gap-1.5">
-                  @if (match.status === 'live') {
-                    <span class="inline-flex items-center gap-1 text-[8px] font-black bg-[#14151A] text-[#E8001D] border border-[#E8001D] px-1.5 py-0.5 rounded uppercase tracking-wider font-mono">
+      <div
+        class="flex-1 min-h-0 border border-[#2A2B36] rounded-md bg-[#14151A] w-full max-w-full flex flex-col overflow-hidden">
+
+        <!-- Header Table Container -->
+        <div #headerContainer (scroll)="onHeaderScroll($event)"
+          class="overflow-x-auto no-scrollbar shrink-0 bg-[#14151A] border-b border-[#2A2B36] w-full">
+          <table class="w-max min-w-full border-separate border-spacing-0 text-left table-fixed">
+            <thead>
+              <tr class="bg-[#14151A]">
+                <!-- Participant Header (sticky left) -->
+                <th
+                  class="p-4 text-xs font-black text-[#F0F0F5] uppercase tracking-wider border-b border-[#2A2B36] sticky left-0 z-40 bg-[#07080a] border-r border-[#2A2B36] w-[220px] min-w-[220px] max-w-[220px]">
+                  Participante
+                </th>
+                <!-- Pts Header (sticky left at 220px) -->
+                <th
+                  class="p-4 text-xs font-black text-[#F0F0F5] text-center uppercase tracking-wider border-b border-[#2A2B36] sticky left-[218px] z-40 bg-[#07080a] border-r border-[#2A2B36] w-[80px] min-w-[80px] max-w-[80px]">
+                  Pontos
+                </th>
+                <!-- Match Headers -->
+                @for (match of data.matches; track match.id) {
+                <th
+                  class="py-3 px-4 text-center border-b border-[#2A2B36] w-[150px] min-w-[150px] max-w-[150px] border-r border-[#2A2B36]/50 bg-[#14151A]">
+                  <div class="flex flex-col items-center justify-center gap-1.5">
+                    @if (match.status === 'live') {
+                    <span
+                      class="inline-flex items-center gap-1 text-[8px] font-black bg-[#14151A] text-[#E8001D] border border-[#E8001D] px-1.5 py-0.5 rounded uppercase tracking-wider font-mono">
                       <span class="w-1 h-1 rounded-full bg-[#E8001D] animate-pulse"></span>
                       Ao Vivo
                     </span>
-                  }
-                  <div class="text-[9px] font-black uppercase leading-none tracking-wider truncate max-w-[125px]"
-                       [class.text-[#E8001D]]="match.status === 'live'"
-                       [class.text-[#9B9BAD]]="match.status !== 'live'">
-                    {{ match.team_a }} vs {{ match.team_b }}
+                    }
+                    <div class="text-[9px] font-black uppercase leading-none tracking-wider truncate max-w-[125px]"
+                      [class.text-[#E8001D]]="match.status === 'live'" [class.text-[#9B9BAD]]="match.status !== 'live'">
+                      {{ match.team_a }} vs {{ match.team_b }}
+                    </div>
+                    <div class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-black border"
+                      [ngClass]="match.status === 'live' ? 'bg-[#E8001D] text-white border-[#E8001D]' : 'bg-[#0D0D0F] text-[#E8001D] border-[#2A2B36]'">
+                      {{ match.score_a }}x{{ match.score_b }}
+                    </div>
                   </div>
-                  <div
-                    class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-black border"
-                    [ngClass]="match.status === 'live' ? 'bg-[#E8001D] text-white border-[#E8001D]' : 'bg-[#0D0D0F] text-[#E8001D] border-[#2A2B36]'">
-                    {{ match.score_a }}x{{ match.score_b }}
+                </th>
+                }
+              </tr>
+            </thead>
+          </table>
+        </div>
+
+        <!-- Body Table Container -->
+        <div #bodyContainer (scroll)="onBodyScroll($event)"
+          class="flex-1 min-h-0 overflow-auto custom-scrollbar w-full bg-[#0D0D0F]">
+          <table class="w-max min-w-full border-separate border-spacing-0 text-left table-fixed">
+            <tbody class="divide-y divide-[#2A2B36]/50">
+              @for (user of filteredUsers(); track user.id) {
+              <tr class="hover:bg-[#1C1D24]/30 transition-colors">
+                <!-- Participant Name (sticky left) -->
+                <td
+                  class="p-4 text-xs font-bold text-[#F0F0F5] sticky left-0 z-10 bg-[#07080a] border-r border-[#2A2B36] w-[220px] min-w-[220px] max-w-[220px] truncate shadow-[2px_0_5px_rgba(0,0,0,0.1)]">
+                  <div class="flex items-center gap-1.5 min-w-0 pr-2">
+                    <span class="truncate block max-w-full" [class.text-[#E8001D]]="user.id === userId()">
+                      {{ user.name }}
+                    </span>
+                    @if (user.id === userId()) {
+                    <span
+                      class="text-[9px] font-black uppercase bg-[#14151A] text-[#E8001D] border border-[#E8001D] px-1.5 py-0.5 rounded-[4px] tracking-wider shrink-0 leading-none">Você</span>
+                    }
                   </div>
-                </div>
-              </th>
+                </td>
+                <!-- Total points (sticky left at 220px) -->
+                <td
+                  class="p-4 text-xs font-black text-center text-[#F0F0F5] sticky left-[218px] z-10 bg-[#07080a] border-r border-[#2A2B36] w-[80px] min-w-[80px] max-w-[80px] shadow-[2px_0_5px_rgba(0,0,0,0.1)]">
+                  {{ user.pts_total }} pts
+                </td>
+                <!-- User Predictions -->
+                @for (match of data.matches; track match.id) {
+                <td class="p-3 text-center border-r border-[#2A2B36]/30 w-[150px] min-w-[150px] max-w-[150px]">
+                  <app-audit-cell [prediction]="user.predictions[match.id]" />
+                </td>
+                }
+              </tr>
               }
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-[#2A2B36]/50">
-            @for (user of filteredUsers(); track user.id) {
-            <tr class="hover:bg-[#1C1D24]/30 transition-colors">
-              <!-- Participant Name (sticky left) -->
-              <td
-                class="p-4 text-xs font-bold text-[#F0F0F5] sticky left-0 z-10 bg-[#14151A] border-r border-[#2A2B36] min-w-[220px] max-w-[220px] truncate shadow-[2px_0_5px_rgba(0,0,0,0.1)]">
-                <div class="flex items-center gap-1.5 min-w-0">
-                  <span class="truncate block max-w-full" [class.text-[#E8001D]]="user.id === userId()">
-                    {{ user.name }}
-                  </span>
-                  @if (user.id === userId()) {
-                  <span
-                    class="text-[9px] font-black uppercase bg-[#14151A] text-[#E8001D] border border-[#E8001D] px-1.5 py-0.5 rounded-[4px] tracking-wider shrink-0 leading-none">Você</span>
-                  }
-                </div>
-              </td>
-              <!-- Total points (sticky left at 220px) -->
-              <td
-                class="p-4 text-xs font-black text-center text-[#F0F0F5] sticky left-[220px] z-10 bg-[#14151A] border-r border-[#2A2B36] min-w-[80px] max-w-[80px] shadow-[2px_0_5px_rgba(0,0,0,0.1)]">
-                {{ user.pts_total }} pts
-              </td>
-              <!-- User Predictions -->
-              @for (match of data.matches; track match.id) {
-              <td class="p-3 text-center border-r border-[#2A2B36]/30"
-                  [class.bg-[#1A0005]]="match.status === 'live'">
-                <app-audit-cell [prediction]="user.predictions[match.id]" />
-              </td>
-              }
-            </tr>
-            }
-          </tbody>
-        </table>
+            </tbody>
+          </table>
+        </div>
+
       </div>
       }
       }

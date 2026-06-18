@@ -1,4 +1,4 @@
-import { Component, input, output, signal, computed, inject, effect } from '@angular/core';
+import { Component, input, output, signal, computed, inject, effect, ViewChild, ElementRef } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { API_BASE_URL } from '../../../../config/api.constants';
@@ -42,6 +42,35 @@ export interface AuditData {
   templateUrl: './audit-modal.component.html',
 })
 export class AuditModalComponent {
+  @ViewChild('headerContainer') headerContainer?: ElementRef<HTMLDivElement>;
+  @ViewChild('bodyContainer') bodyContainer?: ElementRef<HTMLDivElement>;
+
+  private scrollingHeader = false;
+  private scrollingBody = false;
+
+  protected onHeaderScroll(event: Event): void {
+    if (this.scrollingBody) {
+      this.scrollingBody = false;
+      return;
+    }
+    this.scrollingHeader = true;
+    const header = event.target as HTMLElement;
+    if (this.bodyContainer) {
+      this.bodyContainer.nativeElement.scrollLeft = header.scrollLeft;
+    }
+  }
+
+  protected onBodyScroll(event: Event): void {
+    if (this.scrollingHeader) {
+      this.scrollingHeader = false;
+      return;
+    }
+    this.scrollingBody = true;
+    const body = event.target as HTMLElement;
+    if (this.headerContainer) {
+      this.headerContainer.nativeElement.scrollLeft = body.scrollLeft;
+    }
+  }
   private readonly http = inject(HttpClient);
   private readonly apiBaseUrl = API_BASE_URL;
   private readonly session = inject(SessionService);
