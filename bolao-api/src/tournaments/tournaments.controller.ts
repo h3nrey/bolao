@@ -33,6 +33,11 @@ export class TournamentsController {
     return this.tournamentsService.findOne(id);
   }
 
+  @Get(':id/audit')
+  async getAuditData(@Param('id') id: string) {
+    return this.tournamentsService.getAuditData(id);
+  }
+
   @Post()
   @UsePipes(new ZodValidationPipe(createTournamentSchema))
   async create(@Body() dto: CreateTournamentDto) {

@@ -1,0 +1,135 @@
+<app-modal [open]="open()" size="full">
+  <div class="flex flex-col h-[90vh] max-h-[800px] bg-[#14151A] rounded-md overflow-hidden">
+    <!-- Modal Header -->
+    <div class="flex items-center justify-between px-6 py-4 border-b border-[#2A2B36] bg-[#14151A]">
+      <div class="flex flex-col text-left">
+        <h2 class="text-lg font-black text-[#F0F0F5] uppercase tracking-wider leading-none">
+          Auditoria Geral de Palpites
+        </h2>
+        <p class="text-[10px] text-[#9B9BAD] font-bold mt-1 uppercase tracking-wider">
+          Compare palpites e pontuações de todos os participantes por partida
+        </p>
+      </div>
+      <button (click)="closeAudit()"
+        class="p-2 text-[#9B9BAD] hover:text-[#F0F0F5] hover:bg-[#1C1D24] rounded-md transition-all duration-200">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"
+          class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Modal Content -->
+    <div class="flex-1 min-h-0 flex flex-col p-6 gap-4 bg-[#0D0D0F]">
+      <!-- Controls -->
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <!-- Search -->
+        <div class="relative w-full sm:max-w-xs">
+          <input type="text" [value]="searchFilter()" (input)="updateSearch($event)"
+            placeholder="Buscar participante..."
+            class="w-full pl-9 pr-4 py-2 text-xs bg-[#14151A] border border-[#2A2B36] hover:border-[#3a3c4c] focus:border-[#E8001D] text-[#F0F0F5] rounded-md placeholder-[#5C5C72] outline-none transition-all duration-200" />
+          <div class="absolute left-3 top-2.5 text-[#5C5C72]">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
+              stroke="currentColor" class="w-3.5 h-3.5">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table Data -->
+      @if (loadingAudit()) {
+      <div class="flex-1 flex flex-col items-center justify-center gap-3">
+        <div class="w-10 h-10 border-3 border-[#2A2B36] border-t-[#E8001D] rounded-full animate-spin"></div>
+        <p class="text-xs text-[#9B9BAD] font-bold uppercase tracking-wider">Carregando dados de auditoria...</p>
+      </div>
+      } @else {
+      @if (auditData(); as data) {
+      @if (data.matches.length === 0) {
+      <div
+        class="flex-1 flex flex-col items-center justify-center text-center gap-3 text-[#9B9BAD] border border-dashed border-[#2A2B36] bg-[#14151A] rounded-md">
+        <p class="text-sm font-bold text-[#F0F0F5] uppercase">Nenhuma partida em andamento ou finalizada para auditoria.</p>
+        <p class="text-xs text-[#5C5C72]">Os dados aparecerão aqui assim que as partidas iniciarem.</p>
+      </div>
+      } @else {
+      <!-- Audit Grid Container -->
+      <div class="flex-1 min-h-0 overflow-auto border border-[#2A2B36] rounded-md bg-[#14151A]">
+        <table class="w-full border-collapse text-left relative table-auto">
+          <thead class="sticky top-0 z-30">
+            <tr class="bg-[#14151A]">
+              <!-- Participant Header (sticky left) -->
+              <th
+                class="p-4 text-xs font-black text-[#F0F0F5] uppercase tracking-wider border-b border-[#2A2B36] sticky left-0 z-40 bg-[#14151A] border-r border-[#2A2B36] min-w-[220px] max-w-[220px]">
+                Participante
+              </th>
+              <!-- Pts Header (sticky left at 220px) -->
+              <th
+                class="p-4 text-xs font-black text-[#F0F0F5] text-center uppercase tracking-wider border-b border-[#2A2B36] sticky left-[220px] z-40 bg-[#14151A] border-r border-[#2A2B36] min-w-[80px] max-w-[80px]">
+                Pontos
+              </th>
+              <!-- Match Headers -->
+              @for (match of data.matches; track match.id) {
+              <th class="p-3 text-center border-b border-[#2A2B36] min-w-[130px] border-r border-[#2A2B36]/50"
+                  [class.bg-[#1A0005]]="match.status === 'live'">
+                <div class="flex flex-col items-center justify-center gap-1.5">
+                  @if (match.status === 'live') {
+                    <span class="inline-flex items-center gap-1 text-[8px] font-black bg-[#14151A] text-[#E8001D] border border-[#E8001D] px-1.5 py-0.5 rounded uppercase tracking-wider font-mono">
+                      <span class="w-1 h-1 rounded-full bg-[#E8001D] animate-pulse"></span>
+                      Ao Vivo
+                    </span>
+                  }
+                  <div class="text-[9px] font-black uppercase leading-none tracking-wider truncate max-w-[125px]"
+                       [class.text-[#E8001D]]="match.status === 'live'"
+                       [class.text-[#9B9BAD]]="match.status !== 'live'">
+                    {{ match.team_a }} vs {{ match.team_b }}
+                  </div>
+                  <div
+                    class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-black border"
+                    [ngClass]="match.status === 'live' ? 'bg-[#E8001D] text-white border-[#E8001D]' : 'bg-[#0D0D0F] text-[#E8001D] border-[#2A2B36]'">
+                    {{ match.score_a }}x{{ match.score_b }}
+                  </div>
+                </div>
+              </th>
+              }
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-[#2A2B36]/50">
+            @for (user of filteredUsers(); track user.id) {
+            <tr class="hover:bg-[#1C1D24]/30 transition-colors">
+              <!-- Participant Name (sticky left) -->
+              <td
+                class="p-4 text-xs font-bold text-[#F0F0F5] sticky left-0 z-10 bg-[#14151A] border-r border-[#2A2B36] min-w-[220px] max-w-[220px] truncate shadow-[2px_0_5px_rgba(0,0,0,0.1)]">
+                <div class="flex items-center gap-1.5 min-w-0">
+                  <span class="truncate block max-w-full" [class.text-[#E8001D]]="user.id === userId()">
+                    {{ user.name }}
+                  </span>
+                  @if (user.id === userId()) {
+                  <span
+                    class="text-[9px] font-black uppercase bg-[#14151A] text-[#E8001D] border border-[#E8001D] px-1.5 py-0.5 rounded-[4px] tracking-wider shrink-0 leading-none">Você</span>
+                  }
+                </div>
+              </td>
+              <!-- Total points (sticky left at 220px) -->
+              <td
+                class="p-4 text-xs font-black text-center text-[#F0F0F5] sticky left-[220px] z-10 bg-[#14151A] border-r border-[#2A2B36] min-w-[80px] max-w-[80px] shadow-[2px_0_5px_rgba(0,0,0,0.1)]">
+                {{ user.pts_total }} pts
+              </td>
+              <!-- User Predictions -->
+              @for (match of data.matches; track match.id) {
+              <td class="p-3 text-center border-r border-[#2A2B36]/30"
+                  [class.bg-[#1A0005]]="match.status === 'live'">
+                <app-audit-cell [prediction]="user.predictions[match.id]" />
+              </td>
+              }
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      }
+      }
+      }
+    </div>
+  </div>
+</app-modal>

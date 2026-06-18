@@ -291,6 +291,21 @@ export class MatchesService {
         updated.phase.tournament_id,
         updated.phase_id,
       );
+    } else if (updated.status === 'upcoming' || updated.status === 'cancelled') {
+      const predictions = await this.prisma.prediction.findMany({
+        where: { match_id: id },
+        select: { id: true },
+      });
+      const predictionIds = predictions.map((p) => p.id);
+      if (predictionIds.length > 0) {
+        await this.prisma.predictionPoint.deleteMany({
+          where: { prediction_id: { in: predictionIds } },
+        });
+      }
+      await this.rankingsService.recalculate(
+        updated.phase.tournament_id,
+        updated.phase_id,
+      );
     }
 
     return updated;

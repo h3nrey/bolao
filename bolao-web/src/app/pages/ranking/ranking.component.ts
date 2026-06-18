@@ -1,4 +1,4 @@
-import { Component, input, signal, inject, OnInit, computed } from '@angular/core';
+import { Component, signal, inject, OnInit, computed } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { API_BASE_URL } from '../../config/api.constants';
@@ -22,11 +22,12 @@ export interface RankingUser {
 
 import { LeaderboardTableComponent } from './components/leaderboard-table/leaderboard-table.component';
 import { SessionService } from '../../services/session.service';
+import { AuditModalComponent } from './components/audit-modal/audit-modal.component';
 
 @Component({
   selector: 'app-ranking',
   standalone: true,
-  imports: [CommonModule, LeaderboardTableComponent, LucideTrophy],
+  imports: [CommonModule, LeaderboardTableComponent, LucideTrophy, AuditModalComponent],
   templateUrl: './ranking.component.html',
 })
 export class RankingComponent implements OnInit {
@@ -42,6 +43,10 @@ export class RankingComponent implements OnInit {
   protected readonly rankings = signal<RankingUser[]>([]);
   protected readonly loadingRankings = signal(false);
   protected readonly tournamentName = signal('Copa do Mundo 2026');
+
+  // Audit State
+  protected readonly activeTournamentId = signal<string | null>(null);
+  protected readonly auditModalOpen = signal(false);
 
   // Computed stats
   protected readonly myRank = computed(() => {
@@ -79,6 +84,7 @@ export class RankingComponent implements OnInit {
       next: (list) => {
         if (list.length > 0) {
           const activeTournament = list[0];
+          this.activeTournamentId.set(activeTournament.id);
           this.tournamentName.set(activeTournament.name);
           this.fetchRankings(activeTournament.id);
         }
@@ -87,6 +93,14 @@ export class RankingComponent implements OnInit {
         console.error('Falha ao carregar torneios', err);
       }
     });
+  }
+
+  protected openAuditModal(): void {
+    this.auditModalOpen.set(true);
+  }
+
+  protected closeAuditModal(): void {
+    this.auditModalOpen.set(false);
   }
 
   private fetchRankings(tournamentId: string): void {

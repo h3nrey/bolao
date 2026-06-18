@@ -9,5 +9,5 @@ import { Component, input } from '@angular/core';
 })
 export class ModalComponent {
   open = input.required<boolean>();
-  size = input<'sm' | 'md' | 'lg' | 'xl'>('md');
+  size = input<'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl' | '6xl' | '7xl' | 'full'>('md');
 }
