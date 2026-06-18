@@ -31,3 +31,7 @@ prisma/migrations/*
 
 # TypeScript
 *.tsbuildinfo
+
+# Backups and Local Logs
+backup-old-scoring.json
+recalculating-preview.log

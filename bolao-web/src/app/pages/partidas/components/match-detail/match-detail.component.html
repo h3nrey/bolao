@@ -268,10 +268,10 @@
                 <span>{{ getPredictionValue(pred, 'score_b') }}</span>
               </div>
               @if (match().status === 'finished') {
-              @if (pred.points && pred.points.length > 0) {
+              @if (getPredictionPointsSum(pred) > 0) {
               <span
                 class="text-[9px] font-black uppercase text-[#00D68F] bg-[#14151A] px-2 py-0.5 rounded-[4px] tracking-wider border border-[#00D68F] font-ui">
-                +{{ pred.points[0]?.pts_earned }} pts
+                +{{ getPredictionPointsSum(pred) }} pts
               </span>
               } @else {
               <span

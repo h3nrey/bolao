@@ -56,8 +56,6 @@ export class ScoringService {
     const pointsToInsert: { type: string; pts_earned: number }[] = [];
 
     // --- Scoring Rules ---
-
-    // --- Scoring Rules (Mutually Exclusive) ---
     if (predScoreA !== null && predScoreB !== null) {
       const isExactScore =
         predScoreA === actualScoreA && predScoreB === actualScoreB;
@@ -67,14 +65,18 @@ export class ScoringService {
 
       if (isExactScore) {
         pointsToInsert.push({ type: 'exact_score', pts_earned: 10 });
-      } else if (isResultCorrect) {
-        pointsToInsert.push({ type: 'result', pts_earned: 6 });
       } else {
+        if (isResultCorrect) {
+          pointsToInsert.push({ type: 'result', pts_earned: 5 });
+        }
         if (predScoreA === actualScoreA) {
-          pointsToInsert.push({ type: 'goals_a', pts_earned: 1 });
+          pointsToInsert.push({ type: 'goals_a', pts_earned: 2 });
         }
         if (predScoreB === actualScoreB) {
-          pointsToInsert.push({ type: 'goals_b', pts_earned: 1 });
+          pointsToInsert.push({ type: 'goals_b', pts_earned: 2 });
+        }
+        if (predScoreA + predScoreB === actualScoreA + actualScoreB) {
+          pointsToInsert.push({ type: 'total_goals', pts_earned: 2 });
         }
       }
     }

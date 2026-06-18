@@ -130,6 +130,10 @@ export class MatchDetailComponent implements OnInit {
     return prediction?.items?.find((i: any) => i.type === type)?.value_int ?? 0;
   }
 
+  protected getPredictionPointsSum(prediction: any): number {
+    return prediction?.points?.reduce((sum: number, p: any) => sum + p.pts_earned, 0) ?? 0;
+  }
+
   protected goBack(): void {
     this.router.navigate(['/partidas']);
   }

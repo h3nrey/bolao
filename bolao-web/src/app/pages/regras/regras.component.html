@@ -14,7 +14,7 @@
     <h2 class="text-lg font-black text-[#F0F0F5] tracking-tight uppercase flex items-center gap-2">
       Sistema de Pontuação por jogo
     </h2>
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 w-full">
 
       <!-- Card 1 -->
       <app-rule-card title="Placar Exato" [points]="10"
@@ -22,13 +22,23 @@
       </app-rule-card>
 
       <!-- Card 2 -->
-      <app-rule-card title="Resultado Correto" [points]="6"
-        description="Acertar o vencedor ou o empate, mas errar a quantidade exata de gols. <br/>(Exemplo: Palpitar 1 x 0 e o jogo terminar 2 x 1).">
+      <app-rule-card title="Vitória + Gols de 1 Time" [points]="7"
+        description="Acertar o vencedor/empate e o número de gols de um dos times. <br/>(Exemplo: Palpitar 2 x 1 e o jogo terminar 2 x 0).">
       </app-rule-card>
 
       <!-- Card 3 -->
-      <app-rule-card title="Quantidade de Gols" [points]="1"
-        description="Acertar a quantidade de gols marcada por uma das seleções. <br/>(Exemplo: Palpitar 2 x 0 e o jogo terminar 2 x 1).">
+      <app-rule-card title="Resultado Correto" [points]="5"
+        description="Acertar o vencedor ou o empate, errando o número de gols de ambos os times. <br/>(Exemplo: Palpitar 2 x 1 e o jogo terminar 3 x 0).">
+      </app-rule-card>
+
+      <!-- Card 4 -->
+      <app-rule-card title="Gols de um Time" [points]="2"
+        description="Acertar os gols de um time errando o resultado. <br/>(Exemplo: Palpitar 2 x 1 e o jogo terminar 2 x 3).">
+      </app-rule-card>
+
+      <!-- Card 5 -->
+      <app-rule-card title="Total de Gols no Jogo" [points]="2"
+        description="Acertar a soma de gols da partida errando o resultado. <br/>(Exemplo: Palpitar 2 x 1 (soma 3) e o jogo terminar 1 x 2 (soma 3)).">
       </app-rule-card>
     </div>
   </div>

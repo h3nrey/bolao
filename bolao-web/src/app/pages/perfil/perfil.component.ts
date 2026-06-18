@@ -97,6 +97,7 @@ export class PerfilComponent implements OnInit {
       result: 'Resultado',
       goals_a: 'Gols do Time A',
       goals_b: 'Gols do Time B',
+      total_goals: 'Total de Gols',
       bonus_zero_zero: 'Bônus 0x0',
       bonus_extra_time: 'Bônus Prorrog.',
       bonus_penalties: 'Bônus Pênaltis',
