@@ -10,6 +10,7 @@ import { CountdownBannerComponent } from './components/ui/countdown-banner/count
 import { ProfileCompletionModalComponent } from './components/ui/profile-completion-modal/profile-completion-modal.component';
 import { LogoComponent } from './components/ui/logo/logo.component';
 import { SessionService } from './services/session.service';
+import { QuickBetModalComponent } from './components/ui/quick-bet-modal/quick-bet-modal.component';
 import {
   ProjectValue,
   SeniorityValue,
@@ -20,13 +21,14 @@ import {
   LucideTrophy, 
   LucideUsers, 
   LucideCalendar, 
-  LucideClipboardList, 
   LucideFileText,
   LucideMenu,
   LucideX,
   LucideUser,
   LucideLogOut,
-  LucideShield
+  LucideShield,
+  LucidePlus,
+  LucideAward
 } from '@lucide/angular';
 
 interface UserProfile {
@@ -56,13 +58,15 @@ interface UserProfile {
     LucideTrophy, 
     LucideUsers, 
     LucideCalendar, 
-    LucideClipboardList, 
     LucideFileText,
     LucideMenu,
     LucideX,
     LucideUser,
     LucideLogOut,
-    LucideShield
+    LucideShield,
+    LucidePlus,
+    LucideAward,
+    QuickBetModalComponent
   ],
   templateUrl: './app.html',
   styleUrl: './app.css',
@@ -75,6 +79,9 @@ export class App {
 
   // Mobile menu open state signal
   protected readonly isMobileMenuOpen = signal(false);
+
+  // Quick Prediction modal state
+  protected readonly isQuickBetModalOpen = signal(false);
 
   // Signals bound to shared SessionService
   protected readonly token = this.session.token;
@@ -205,16 +212,15 @@ export class App {
     this.router.navigate(['/perfil']);
   }
 
-  protected onTabSelected(tab: 'leaderboard' | 'matches' | 'betsheet' | 'rules' | 'profile' | 'participants'): void {
+  protected onTabSelected(tab: 'leaderboard' | 'matches' | 'rules' | 'profile' | 'participants'): void {
     const paths = {
       leaderboard: '/ranking',
       participants: '/participantes',
       matches: '/partidas',
-      betsheet: '/cartela',
       rules: '/regras',
       profile: '/perfil'
     };
-    this.router.navigate([paths[tab]]);
+    this.router.navigate([paths[tab as keyof typeof paths]]);
   }
 
   protected isActive(path: string): boolean {

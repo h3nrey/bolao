@@ -37,6 +37,7 @@
         class="hidden md:block shrink-0 h-full"
         [user]="user()" 
         (logoutRequested)="logout()"
+        (quickBetRequested)="isQuickBetModalOpen.set(true)"
       ></app-sidebar>
 
       <!-- Main Content Pane -->
@@ -72,6 +73,15 @@
         <span class="text-[8px] font-black uppercase tracking-wider font-ui">Membros</span>
       </button>
 
+      <!-- Central Quick Bet Item -->
+      <button 
+        (click)="isQuickBetModalOpen.set(true)"
+        class="flex items-center justify-center bg-[#E8001D] hover:bg-[#FF1A35] text-white w-10 h-10 rounded-full cursor-pointer transition-all duration-150 outline-none border-none shadow-md shrink-0 active:scale-95"
+        title="Palpitar Rapidamente"
+      >
+        <svg lucidePlus class="w-5 h-5 block"></svg>
+      </button>
+
       <!-- Item 3: Calendar / Partidas -->
       <button 
         (click)="navigate('/partidas')"
@@ -83,18 +93,7 @@
         <span class="text-[8px] font-black uppercase tracking-wider font-ui">Jogos</span>
       </button>
 
-      <!-- Item 4: ClipboardList / Palpitar -->
-      <button 
-        (click)="navigate('/cartela')"
-        class="flex flex-col items-center justify-center gap-1.5 py-1 px-3 bg-transparent border-none cursor-pointer transition-all duration-200 outline-none"
-        [class.text-[#E8001D]]="isActive('/cartela')"
-        [class.text-slate-400]="!isActive('/cartela')"
-      >
-        <svg lucideClipboardList class="w-4.5 h-4.5"></svg>
-        <span class="text-[8px] font-black uppercase tracking-wider font-ui">Palpitar</span>
-      </button>
-
-      <!-- Item 5: FileText / Regras -->
+      <!-- Item 4: FileText / Regras -->
       <button 
         (click)="navigate('/regras')"
         class="flex flex-col items-center justify-center gap-1.5 py-1 px-3 bg-transparent border-none cursor-pointer transition-all duration-200 outline-none"
@@ -181,20 +180,20 @@
             </button>
 
             <button 
-              (click)="isMobileMenuOpen.set(false); navigate('/cartela')" 
+              (click)="isMobileMenuOpen.set(false); navigate('/especiais')" 
               class="flex items-center gap-3 py-3 px-4 rounded-[4px] font-bold text-xs uppercase tracking-wider text-left transition-colors duration-80 border-none cursor-pointer font-ui border-l-2"
-              [class.bg-[#1C1D24]]="isActive('/cartela')"
-              [class.border-[#E8001D]]="isActive('/cartela')"
-              [class.text-white]="isActive('/cartela')"
-              [class.bg-transparent]="!isActive('/cartela')"
-              [class.border-transparent]="!isActive('/cartela')"
-              [class.text-[#9B9BAD]]="!isActive('/cartela')"
-              [class.hover:text-[#F0F0F5]]="!isActive('/cartela')"
-              [class.hover:bg-[#14151A]]="!isActive('/cartela')"
-              [class.hover:border-[#2A2B36]]="!isActive('/cartela')"
+              [class.bg-[#1C1D24]]="isActive('/especiais')"
+              [class.border-[#E8001D]]="isActive('/especiais')"
+              [class.text-white]="isActive('/especiais')"
+              [class.bg-transparent]="!isActive('/especiais')"
+              [class.border-transparent]="!isActive('/especiais')"
+              [class.text-[#9B9BAD]]="!isActive('/especiais')"
+              [class.hover:text-[#F0F0F5]]="!isActive('/especiais')"
+              [class.hover:bg-[#14151A]]="!isActive('/especiais')"
+              [class.hover:border-[#2A2B36]]="!isActive('/especiais')"
             >
-              <svg lucideClipboardList class="w-4.5 h-4.5" [class.text-[#E8001D]]="isActive('/cartela')"></svg>
-              Palpitar
+              <svg lucideAward class="w-4.5 h-4.5" [class.text-[#E8001D]]="isActive('/especiais')"></svg>
+              Especiais
             </button>
 
             <button 
@@ -276,6 +275,12 @@
       </aside>
     }
   </div>
+
+  <!-- Quick Prediction Modal Component -->
+  <app-quick-bet-modal
+    [open]="isQuickBetModalOpen()"
+    (close)="isQuickBetModalOpen.set(false)"
+  ></app-quick-bet-modal>
 
   <app-profile-completion-modal
     [open]="isProfileIncomplete()"

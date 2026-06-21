@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { SidebarItemComponent } from '../ui/sidebar-item/sidebar-item.component';
 import { UserProfileFooterComponent } from '../ui/user-profile-footer/user-profile-footer.component';
 import { LogoComponent } from '../ui/logo/logo.component';
-import { LucideTrophy, LucideUsers, LucideCalendar, LucideClipboardList, LucideFileText, LucideShield, LucideAward } from '@lucide/angular';
+import { LucideTrophy, LucideUsers, LucideCalendar, LucideFileText, LucideShield, LucideAward, LucidePlus } from '@lucide/angular';
 
 interface UserProfile {
   id: string;
@@ -29,10 +29,10 @@ interface UserProfile {
     LucideTrophy, 
     LucideUsers, 
     LucideCalendar, 
-    LucideClipboardList, 
     LucideFileText,
     LucideShield,
-    LucideAward
+    LucideAward,
+    LucidePlus
   ],
   templateUrl: './sidebar.component.html',
 })
@@ -44,6 +44,7 @@ export class SidebarComponent {
 
   // Outputs
   logoutRequested = output<void>();
+  quickBetRequested = output<void>();
 
   protected navigate(path: string): void {
     this.router.navigate([path]);

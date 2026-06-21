@@ -32,14 +32,6 @@
       </app-sidebar-item>
 
       <app-sidebar-item 
-        (click)="navigate('/cartela')" 
-        [active]="isActive('/cartela')" 
-        label="Palpitar"
-      >
-        <svg lucideClipboardList class="w-5 h-5"></svg>
-      </app-sidebar-item>
-
-      <app-sidebar-item 
         (click)="navigate('/especiais')" 
         [active]="isActive('/especiais')" 
         label="Especiais"
@@ -65,6 +57,18 @@
         </app-sidebar-item>
       }
     </nav>
+
+    <!-- Quick Prediction Button -->
+    <div class="mt-6 px-1">
+      <button 
+        (click)="quickBetRequested.emit()"
+        class="w-full py-2.5 px-4 bg-[#E8001D] hover:bg-[#FF1A35] text-white text-[10px] font-black uppercase tracking-wider rounded-[6px] border-none cursor-pointer flex items-center justify-center gap-2 transition-all duration-150 shadow-md hover:shadow-lg font-ui"
+        title="Palpitar Rapidamente"
+      >
+        <svg lucidePlus class="w-4 h-4 block"></svg>
+        <span>Palpite Rápido</span>
+      </button>
+    </div>
   </div>
 
   <!-- Reusable User Profile Footer Atom -->

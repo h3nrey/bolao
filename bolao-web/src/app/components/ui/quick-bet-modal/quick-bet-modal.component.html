@@ -1,0 +1,127 @@
+<app-modal [open]="open()" size="md">
+  <div class="bg-[#14151A] border border-[#2A2B36] rounded-md p-4 sm:p-6 text-slate-100 flex flex-col gap-5 relative select-none">
+    <!-- Header -->
+    <div class="flex items-center justify-between border-b border-[#2A2B36] pb-3">
+      <h3 class="text-xs font-black uppercase tracking-wider font-ui text-[#F0F0F5]">Palpite Rápido</h3>
+      <button (click)="onClose()" class="text-slate-400 hover:text-white bg-transparent border-none cursor-pointer p-1">
+        <svg lucideX class="w-5 h-5 block"></svg>
+      </button>
+    </div>
+
+    <!-- Content -->
+    @if (loading() && upcomingMatches().length === 0) {
+      <div class="flex flex-col items-center justify-center py-10 gap-3">
+        <div class="w-8 h-8 border-3 border-[#2A2B36] border-t-[#E8001D] rounded-full animate-spin"></div>
+        <p class="text-xs text-[#9B9BAD]">Buscando partidas futuras...</p>
+      </div>
+    } @else if (error() && upcomingMatches().length === 0) {
+      <div class="py-8 text-center text-xs text-[#E8001D] font-bold font-ui">
+        {{ error() }}
+      </div>
+    } @else if (upcomingMatches().length > 0 && activeMatch()) {
+      <div class="flex flex-col gap-4">
+        <!-- Match Selector Custom Dropdown -->
+        <div class="text-left">
+          <app-form-select
+            id="quick-bet-match-select"
+            label="Selecione a Partida"
+            [options]="matchOptions()"
+            [value]="activeMatch()?.id || ''"
+            (valueChange)="onMatchChange($event)"
+            [disabled]="loading() || saving()"
+          ></app-form-select>
+        </div>
+
+        <!-- Chevron Navigator -->
+        <div class="flex items-center justify-between bg-[#0D0D0F] border border-[#2A2B36] rounded-[6px] py-2 px-3">
+          <button (click)="previousMatch()" [disabled]="selectedMatchIndex() <= 0 || loading() || saving()"
+            class="text-slate-400 hover:text-white bg-transparent border-none cursor-pointer disabled:opacity-20 disabled:cursor-not-allowed p-1 flex items-center justify-center transition-colors">
+            <svg lucideChevronLeft class="w-5 h-5 block"></svg>
+          </button>
+
+          <div class="text-center flex-1">
+            <span class="text-[10px] font-black uppercase tracking-wider text-[#E8001D] font-ui block">
+              {{ activeMatch()?.scheduled_at | date:"dd/MM 'às' HH:mm" }}
+            </span>
+            <span class="text-[9px] text-[#9B9BAD] font-ui block mt-0.5">
+              {{ activeMatch()?.group?.name ? 'Grupo ' + activeMatch().group.name : activeMatch()?.stage }}
+            </span>
+          </div>
+
+          <button (click)="nextMatch()" [disabled]="selectedMatchIndex() >= upcomingMatches().length - 1 || loading() || saving()"
+            class="text-slate-400 hover:text-white bg-transparent border-none cursor-pointer disabled:opacity-20 disabled:cursor-not-allowed p-1 flex items-center justify-center transition-colors">
+            <svg lucideChevronRight class="w-5 h-5 block"></svg>
+          </button>
+        </div>
+
+        <!-- Vertically Stacked Score Entries -->
+        <div class="flex flex-col gap-3 relative">
+          <!-- Team A Row -->
+          <div class="flex items-center justify-between bg-[#0D0D0F] border border-[#2A2B36] rounded-[6px] p-2 sm:p-3 text-left">
+            <div class="flex items-center gap-3 min-w-0 mr-4">
+              <span class="text-xl shrink-0 select-none">{{ activeMatch()?.team_a?.flag_emoji }}</span>
+              <span class="text-sm font-bold text-white truncate font-ui">{{ activeMatch()?.team_a?.name }}</span>
+            </div>
+            <app-score-stepper
+              [value]="scoreA()"
+              [disabled]="loading() || saving() || success()"
+              (valueChange)="scoreA.set($event)"
+            ></app-score-stepper>
+          </div>
+
+          <!-- Team B Row -->
+          <div class="flex items-center justify-between bg-[#0D0D0F] border border-[#2A2B36] rounded-[6px] p-2 sm:p-3 text-left">
+            <div class="flex items-center gap-3 min-w-0 mr-4">
+              <span class="text-xl shrink-0 select-none">{{ activeMatch()?.team_b?.flag_emoji }}</span>
+              <span class="text-sm font-bold text-white truncate font-ui">{{ activeMatch()?.team_b?.name }}</span>
+            </div>
+            <app-score-stepper
+              [value]="scoreB()"
+              [disabled]="loading() || saving() || success()"
+              (valueChange)="scoreB.set($event)"
+            ></app-score-stepper>
+          </div>
+
+          <!-- Loading overlay when changing selected match in dropdown/chevrons -->
+          @if (loading()) {
+            <div class="absolute inset-0 bg-[#14151A]/80 flex items-center justify-center rounded-md z-10 animate-fadeIn">
+              <div class="w-6 h-6 border-2 border-[#2A2B36] border-t-[#E8001D] rounded-full animate-spin"></div>
+            </div>
+          }
+        </div>
+
+        <!-- Success/Error Notification Messages -->
+        @if (success()) {
+          <div class="text-center py-2 px-3 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-[6px] text-xs font-bold font-ui animate-fadeIn">
+            Palpite salvo com sucesso!
+          </div>
+        }
+        @if (error()) {
+          <div class="text-center py-2 px-3 bg-red-500/10 border border-red-500/20 text-red-400 rounded-[6px] text-xs font-bold font-ui animate-fadeIn">
+            {{ error() }}
+          </div>
+        }
+
+        <!-- Actions -->
+        <button
+          (click)="savePrediction()"
+          [disabled]="loading() || saving() || success()"
+          class="w-full py-3 px-4 bg-[#E8001D] hover:bg-[#FF1A35] text-white font-bold rounded-[6px] border-none cursor-pointer transition-all duration-150 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed font-ui"
+        >
+          @if (saving()) {
+            <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            <span>Salvando...</span>
+          } @else if (success()) {
+            <span>Salvo!</span>
+          } @else {
+            <span>Salvar Palpite</span>
+          }
+        </button>
+      </div>
+    } @else {
+      <div class="py-8 text-center text-xs text-[#9B9BAD] font-ui">
+        Nenhuma partida futura disponível para palpitar.
+      </div>
+    }
+  </div>
+</app-modal>

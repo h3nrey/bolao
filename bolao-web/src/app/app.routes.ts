@@ -16,16 +16,6 @@ export const routes: Routes = [
   { path: 'participantes', component: ParticipantesComponent },
   { path: 'partidas', component: PartidasComponent },
   { path: 'partidas/:id', component: MatchDetailComponent },
-  {
-    path: 'cartela',
-    component: CartelaComponent,
-    children: [
-      { path: 'grupos', component: CartelaGruposComponent },
-      { path: 'eliminatoria/:stage', component: CartelaEliminatoriaComponent },
-      { path: 'eliminatoria', redirectTo: 'eliminatoria/r32', pathMatch: 'full' },
-      { path: '', redirectTo: 'grupos', pathMatch: 'full' }
-    ]
-  },
   { path: 'especiais', component: EspeciaisComponent },
   { path: 'regras', component: RegrasComponent },
   { path: 'perfil', component: PerfilComponent },
