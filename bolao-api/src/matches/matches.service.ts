@@ -80,6 +80,47 @@ export class MatchesService {
     return mapped;
   }
 
+  async findFeatured() {
+    const liveMatches = await this.prisma.match.findMany({
+      where: { status: 'live' },
+      include: {
+        team_a: true,
+        team_b: true,
+        group: true,
+      },
+      orderBy: { scheduled_at: 'asc' },
+    });
+
+    const upcomingMatches = await this.prisma.match.findMany({
+      where: { status: 'upcoming' },
+      include: {
+        team_a: true,
+        team_b: true,
+        group: true,
+      },
+      orderBy: { scheduled_at: 'asc' },
+      take: 2,
+    });
+
+    const matches = [...liveMatches, ...upcomingMatches];
+
+    return matches.map((match) => {
+      const currentMinute = this.getCurrentMinute(match);
+      return {
+        ...match,
+        score: {
+          score_a: match.score_a + match.score_a_extra,
+          score_b: match.score_b + match.score_b_extra,
+          score_a_regular: match.score_a,
+          score_b_regular: match.score_b,
+          score_a_extra: match.score_a_extra,
+          score_b_extra: match.score_b_extra,
+        },
+        current_minute: currentMinute,
+      };
+    });
+  }
+
   async findOne(id: string) {
     const match = await this.prisma.match.findUnique({
       where: { id },

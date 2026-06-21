@@ -47,6 +47,11 @@ export class MatchesController {
     return this.matchesService.findAll(phaseId, status, groupId, sort);
   }
 
+  @Get('matches/featured')
+  async findFeatured() {
+    return this.matchesService.findFeatured();
+  }
+
   @Get('matches/:id')
   async findOne(@Param('id') id: string) {
     return this.matchesService.findOne(id);

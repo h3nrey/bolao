@@ -2,30 +2,117 @@
 <div class="flex flex-col gap-6 w-full animate-fadeIn text-left">
 
   <!-- Header -->
-  <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-[#2A2B36] pb-5">
-    <div class="flex flex-col gap-2">
-      <span
-        class="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#9B9BAD] font-ui">
-        <span class="w-2 h-2 bg-[#E8001D] rounded-[2px] inline-block"></span>
-        Calendário Oficial
-      </span>
-      <h1 class="text-3xl font-black text-[#F0F0F5] tracking-tight leading-none font-body">
-        Partidas
-      </h1>
-      <p class="text-xs text-[#9B9BAD] font-medium max-w-2xl">
-        Jogos do torneio divididos por andamento, fase e resultados oficiais.
-      </p>
-    </div>
-
-    <div
-      class="hidden md:flex h-9 items-center gap-2 px-3 bg-[#14151A] border border-[#2A2B36] border-l-2 border-l-[#E8001D] rounded-[6px] text-[10px] font-black uppercase tracking-widest text-[#9B9BAD] font-ui">
-      <svg lucideCalendar class="w-4 h-4 text-[#E8001D]"></svg>
-      Agenda
-    </div>
+  <div class="flex flex-col gap-2">
+    <h1 class="text-3xl font-black text-[#F0F0F5] tracking-tight leading-none font-body">
+      Partidas
+    </h1>
   </div>
 
+  <!-- Featured Matches Grid (Live and Next Matches) -->
+  @if (featuredMatches().length > 0) {
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+      @for (match of featuredMatches(); track match.id) {
+        <div 
+          (click)="selectMatch(match.id)"
+          class="relative overflow-hidden bg-[#14151A] border rounded-[8px] p-5 hover:bg-[#22232D] hover:border-[#E8001D] transition-all duration-200 cursor-pointer shadow-md flex flex-col gap-4 group"
+          [class.border-[#E8001D]]="match.status === 'live'"
+          [class.border-[#2A2B36]]="match.status !== 'live'"
+        >
+          <!-- Subtle red background glow for live matches -->
+          @if (match.status === 'live') {
+            <div class="absolute inset-0 bg-gradient-to-r from-[#E8001D]/5 to-transparent pointer-events-none"></div>
+          }
+          
+          <!-- Card Header Info -->
+          <div class="flex items-center justify-between border-b border-[#2A2B36]/60 pb-3 gap-3 relative z-10">
+            <span class="text-[9px] font-black text-[#9B9BAD] uppercase tracking-widest flex items-center gap-1.5 font-ui">
+              <!-- Inline Globe SVG -->
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5 text-[#5C5C72] shrink-0">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.905 0-5.625-.94-7.843-2.582m15.686 0A8.997 8.997 0 0 1 12 18c-2.905 0-5.625-.94-7.843-2.582" />
+              </svg>
+              <span>{{ stageLabel(match.stage) }}</span>
+            </span>
+            
+            @if (match.status === 'live') {
+              <span class="flex items-center gap-1.5 text-[9px] font-black bg-[#1A0005] text-[#FF1A35] border border-[#E8001D]/40 px-2 py-0.5 rounded-[4px] uppercase tracking-wider font-ui animate-pulse">
+                <span class="relative flex h-1.5 w-1.5">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FF1A35] opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#E8001D]"></span>
+                </span>
+                Ao Vivo
+                @if (match.current_minute) { {{ match.current_minute }}' }
+              </span>
+            } @else {
+              <span class="flex items-center gap-1.5 text-[9px] font-black bg-[#1A0005] text-[#E8001D] border border-[#E8001D]/30 px-2 py-0.5 rounded-[4px] uppercase tracking-wider font-ui">
+                Próximo Jogo
+              </span>
+            }
+          </div>
+          
+          <!-- Teams Display -->
+          <div class="grid grid-cols-[minmax(0,1fr)_80px_minmax(0,1fr)] items-center w-full gap-4 relative z-10">
+            <!-- Team A -->
+            <div class="flex items-center gap-3 min-w-0">
+              @if (match.team_a?.flag_emoji) {
+                <span class="text-3xl md:text-4xl leading-none shrink-0">{{ match.team_a!.flag_emoji }}</span>
+              } @else {
+                <div class="w-9 h-9 bg-[#0D0D0F] border border-[#2A2B36] rounded-[6px] flex items-center justify-center font-black text-[#5C5C72] shrink-0">?</div>
+              }
+              <span class="text-sm font-bold text-[#F0F0F5] truncate font-body">
+                {{ match.team_a?.name ?? '?' }}
+              </span>
+            </div>
+            
+            <!-- VS / Score -->
+            <div class="flex flex-col items-center justify-center min-w-0">
+              @if (match.status === 'live') {
+                <div class="flex items-center gap-1.5 text-2xl font-black text-[#FF1A35] tracking-normal font-display">
+                  <span>{{ match.score?.score_a }}</span>
+                  <span class="text-sm text-[#5C5C72]">-</span>
+                  <span>{{ match.score?.score_b }}</span>
+                </div>
+              } @else {
+                <div class="flex flex-col items-center gap-0.5">
+                  <span class="text-[9px] text-[#E8001D] font-black uppercase tracking-wider font-ui bg-[#E8001D]/10 px-1.5 py-0.5 rounded-[2px]">VS</span>
+                  <span class="text-[10px] text-[#9B9BAD] font-bold mt-1 font-display whitespace-nowrap">
+                    {{ match.scheduled_at | date: 'dd/MM' }} às {{ match.scheduled_at | date: 'HH:mm' }}
+                  </span>
+                </div>
+              }
+            </div>
+            
+            <!-- Team B -->
+            <div class="flex items-center justify-end gap-3 min-w-0 text-right">
+              <span class="text-sm font-bold text-[#F0F0F5] truncate font-body">
+                {{ match.team_b?.name ?? '?' }}
+              </span>
+              @if (match.team_b?.flag_emoji) {
+                <span class="text-3xl md:text-4xl leading-none shrink-0">{{ match.team_b!.flag_emoji }}</span>
+              } @else {
+                <div class="w-9 h-9 bg-[#0D0D0F] border border-[#2A2B36] rounded-[6px] flex items-center justify-center font-black text-[#5C5C72] shrink-0">?</div>
+              }
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Dynamic Filters Component -->
+  <app-matches-filter
+    [groups]="groups()"
+    [dates]="dates()"
+    [selectedGroupId]="selectedGroupId()"
+    [selectedDate]="selectedDate()"
+    (groupChange)="selectedGroupId.set($event)"
+    (dateChange)="selectedDate.set($event)"
+    (clearFilters)="clearFilters()"
+  />
+
   <!-- Stage Tabs -->
+  <!--
   <app-tab-selector [options]="stageTabs" [activeId]="activeStage()" (tabChange)="setActiveStage($event)" />
+  -->
 
   <!-- Loading -->
   @if (loadingMatches()) {
@@ -33,6 +120,7 @@
   } @else {
 
   <!-- === KNOCKOUT TAB === -->
+  <!--
   @if (activeStage() === 'knockout') {
   <div class="flex flex-col gap-4 w-full animate-fadeIn text-left">
 
@@ -40,6 +128,7 @@
 
   </div>
   }
+  -->
 
   <!-- === GROUPS TAB === -->
   @if (activeStage() === 'groups') {

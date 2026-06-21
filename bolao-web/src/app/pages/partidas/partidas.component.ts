@@ -26,7 +26,10 @@ interface Match {
   team_b?: { id: string; name: string; flag_emoji?: string | null } | null;
   score?: { score_a: number; score_b: number } | null;
   current_minute?: number | null;
+  group?: { id: string; name: string } | null;
 }
+
+import { MatchesFilterComponent } from './components/matches-filter/matches-filter.component';
 
 @Component({
   selector: 'app-partidas',
@@ -38,6 +41,7 @@ interface Match {
     LoadingSpinnerComponent,
     MatchDayGroupComponent,
     LucideCalendar,
+    MatchesFilterComponent,
   ],
   templateUrl: './partidas.component.html',
 })
@@ -48,8 +52,13 @@ export class PartidasComponent implements OnInit {
 
   // List state
   protected readonly matches = signal<Match[]>([]);
+  protected readonly featuredMatches = signal<Match[]>([]);
   protected readonly loadingMatches = signal(false);
   protected readonly activeStage = signal<'groups' | 'knockout'>('groups');
+
+  // Filters state
+  protected readonly selectedGroupId = signal<string | null>(null);
+  protected readonly selectedDate = signal<string | null>(null);
 
   // Tab options
   protected readonly stageTabs: TabOption[] = [
@@ -61,15 +70,37 @@ export class PartidasComponent implements OnInit {
     if (id === 'groups' || id === 'knockout') this.activeStage.set(id);
   }
 
-  // Matches grouped by date, filtered by active stage
+  // Extract unique groups from matches
+  protected readonly groups = computed(() => this.matchesService.getUniqueGroups(this.matches()));
+
+  // Extract unique dates from matches
+  protected readonly dates = computed(() => this.matchesService.getUniqueDates(this.matches()));
+
+  // Matches grouped by date, filtered by active stage and select dropdowns
   protected readonly groupedMatches = computed(() => {
     const rawMatches = this.matches();
     if (!rawMatches.length) return [];
 
     const currentStage = this.activeStage();
-    const filtered = rawMatches.filter(m =>
+    let filtered = rawMatches.filter(m =>
       currentStage === 'groups' ? m.stage === 'groups' : m.stage !== 'groups'
     );
+
+    // Apply group filter
+    const selGroup = this.selectedGroupId();
+    if (selGroup) {
+      filtered = filtered.filter(m => m.group_id === selGroup);
+    }
+
+    // Apply date filter
+    const selDate = this.selectedDate();
+    if (selDate) {
+      filtered = filtered.filter(m => {
+        const d = new Date(m.scheduled_at);
+        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        return key === selDate;
+      });
+    }
 
     if (!filtered.length) return [];
 
@@ -86,6 +117,11 @@ export class PartidasComponent implements OnInit {
       return { dateLabel, matches: matchesInGroup };
     });
   });
+
+  protected clearFilters(): void {
+    this.selectedGroupId.set(null);
+    this.selectedDate.set(null);
+  }
 
   // Cast match to MatchCardData for the card component (single or array)
   protected toCardData(m: Match): MatchCardData;
@@ -107,6 +143,26 @@ export class PartidasComponent implements OnInit {
       },
       error: () => this.loadingMatches.set(false),
     });
+
+    this.matchesService.getFeaturedMatches().subscribe({
+      next: (list) => {
+        this.featuredMatches.set(list);
+      },
+      error: (err) => console.error('Failed to load featured matches', err)
+    });
+  }
+
+  protected stageLabel(stage: string): string {
+    const labels: Record<string, string> = {
+      groups: 'Fase de Grupos',
+      round_of_32: 'Mata-mata',
+      round_of_16: 'Oitavas de Final',
+      quarterfinal: 'Quartas de Final',
+      semifinal: 'Semifinal',
+      third_place: 'Disputa do 3º Lugar',
+      final: 'Final',
+    };
+    return labels[stage] ?? stage;
   }
 
   protected selectMatch(matchId: string): void {

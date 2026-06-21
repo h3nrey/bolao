@@ -15,6 +15,10 @@ export class MatchesService {
     return this.http.get<any[]>(url);
   }
 
+  getFeaturedMatches(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/matches/featured`);
+  }
+
   getMatch(id: string): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/matches/${id}`);
   }
@@ -55,5 +59,30 @@ export class MatchesService {
 
   getPhases(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/phases`);
+  }
+
+  getUniqueGroups(matches: any[]): { id: string; name: string }[] {
+    const map = new Map<string, string>();
+    for (const m of matches) {
+      if (m.group_id && m.group?.name) {
+        map.set(m.group_id, m.group.name);
+      }
+    }
+    return Array.from(map.entries()).map(([id, name]) => ({ id, name }));
+  }
+
+  getUniqueDates(matches: any[]): { id: string; label: string }[] {
+    const uniqueDates = new Set<string>();
+    for (const m of matches) {
+      if (m.scheduled_at) {
+        const d = new Date(m.scheduled_at);
+        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        uniqueDates.add(key);
+      }
+    }
+    return Array.from(uniqueDates).sort().map(dateStr => {
+      const [year, month, day] = dateStr.split('-');
+      return { id: dateStr, label: `${day}/${month}` };
+    });
   }
 }
