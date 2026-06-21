@@ -59,6 +59,8 @@ export class PartidasComponent implements OnInit {
   // Filters state
   protected readonly selectedGroupId = signal<string | null>(null);
   protected readonly selectedDate = signal<string | null>(null);
+  protected readonly selectedTeamId = signal<string | null>(null);
+  protected readonly selectedStatus = signal<string | null>(null);
 
   // Tab options
   protected readonly stageTabs: TabOption[] = [
@@ -75,6 +77,9 @@ export class PartidasComponent implements OnInit {
 
   // Extract unique dates from matches
   protected readonly dates = computed(() => this.matchesService.getUniqueDates(this.matches()));
+
+  // Extract unique teams from matches
+  protected readonly teams = computed(() => this.matchesService.getUniqueTeams(this.matches()));
 
   // Matches grouped by date, filtered by active stage and select dropdowns
   protected readonly groupedMatches = computed(() => {
@@ -102,6 +107,18 @@ export class PartidasComponent implements OnInit {
       });
     }
 
+    // Apply team filter
+    const selTeam = this.selectedTeamId();
+    if (selTeam) {
+      filtered = filtered.filter(m => m.team_a_id === selTeam || m.team_b_id === selTeam);
+    }
+
+    // Apply status filter
+    const selStatus = this.selectedStatus();
+    if (selStatus) {
+      filtered = filtered.filter(m => m.status === selStatus);
+    }
+
     if (!filtered.length) return [];
 
     const groups: Record<string, Match[]> = {};
@@ -121,6 +138,8 @@ export class PartidasComponent implements OnInit {
   protected clearFilters(): void {
     this.selectedGroupId.set(null);
     this.selectedDate.set(null);
+    this.selectedTeamId.set(null);
+    this.selectedStatus.set(null);
   }
 
   // Cast match to MatchCardData for the card component (single or array)

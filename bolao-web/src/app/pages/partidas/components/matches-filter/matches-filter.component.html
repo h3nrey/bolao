@@ -29,8 +29,38 @@
     </select>
   </div>
 
+  <!-- Team Filter Select -->
+  <div class="flex flex-col gap-1.5">
+    <label class="text-[9px] font-black uppercase tracking-wider text-[#9B9BAD] font-ui">Time / Seleção</label>
+    <select 
+      [value]="selectedTeamId() || ''"
+      (change)="onTeamChange($event)"
+      class="bg-[#0D0D0F] border border-[#2A2B36] text-xs font-bold text-[#F0F0F5] px-3 py-2 rounded-[6px] outline-none cursor-pointer focus:border-[#E8001D] transition-colors min-w-[140px] font-ui"
+    >
+      <option value="">Todos os Times</option>
+      @for (t of teams(); track t.id) {
+        <option [value]="t.id">{{ t.name }}</option>
+      }
+    </select>
+  </div>
+
+  <!-- Status Filter Select -->
+  <div class="flex flex-col gap-1.5">
+    <label class="text-[9px] font-black uppercase tracking-wider text-[#9B9BAD] font-ui">Status</label>
+    <select 
+      [value]="selectedStatus() || ''"
+      (change)="onStatusChange($event)"
+      class="bg-[#0D0D0F] border border-[#2A2B36] text-xs font-bold text-[#F0F0F5] px-3 py-2 rounded-[6px] outline-none cursor-pointer focus:border-[#E8001D] transition-colors min-w-[140px] font-ui"
+    >
+      <option value="">Todos os Status</option>
+      <option value="upcoming">Aberta</option>
+      <option value="live">Ao Vivo</option>
+      <option value="finished">Finalizada</option>
+    </select>
+  </div>
+
   <!-- Clear Filters Button -->
-  @if (selectedGroupId() || selectedDate()) {
+  @if (selectedGroupId() || selectedDate() || selectedTeamId() || selectedStatus()) {
     <button 
       (click)="onClear()"
       class="mt-5 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-bold text-[#E8001D] bg-[#E8001D]/10 hover:bg-[#E8001D]/20 border border-[#E8001D]/20 rounded-[6px] transition-colors cursor-pointer font-ui uppercase tracking-wider"

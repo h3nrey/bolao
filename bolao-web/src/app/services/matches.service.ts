@@ -85,4 +85,19 @@ export class MatchesService {
       return { id: dateStr, label: `${day}/${month}` };
     });
   }
+
+  getUniqueTeams(matches: any[]): { id: string; name: string }[] {
+    const map = new Map<string, string>();
+    for (const m of matches) {
+      if (m.team_a?.id && m.team_a?.name) {
+        map.set(m.team_a.id, m.team_a.name);
+      }
+      if (m.team_b?.id && m.team_b?.name) {
+        map.set(m.team_b.id, m.team_b.name);
+      }
+    }
+    return Array.from(map.entries())
+      .map(([id, name]) => ({ id, name }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }
 }

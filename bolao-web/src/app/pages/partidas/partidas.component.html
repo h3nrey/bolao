@@ -102,10 +102,15 @@
   <app-matches-filter
     [groups]="groups()"
     [dates]="dates()"
+    [teams]="teams()"
     [selectedGroupId]="selectedGroupId()"
     [selectedDate]="selectedDate()"
+    [selectedTeamId]="selectedTeamId()"
+    [selectedStatus]="selectedStatus()"
     (groupChange)="selectedGroupId.set($event)"
     (dateChange)="selectedDate.set($event)"
+    (teamChange)="selectedTeamId.set($event)"
+    (statusChange)="selectedStatus.set($event)"
     (clearFilters)="clearFilters()"
   />
 
