@@ -1,4 +1,4 @@
-import { Component, signal, inject, OnInit, computed } from '@angular/core';
+import { Component, signal, inject, OnInit, OnDestroy, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { TabSelectorComponent, TabOption } from '../../components/ui/tab-selector/tab-selector.component';
@@ -30,6 +30,7 @@ interface Match {
 }
 
 import { MatchesFilterComponent } from './components/matches-filter/matches-filter.component';
+import { ScrollToTopComponent } from '../../components/ui/scroll-to-top/scroll-to-top.component';
 
 @Component({
   selector: 'app-partidas',
@@ -42,6 +43,7 @@ import { MatchesFilterComponent } from './components/matches-filter/matches-filt
     MatchDayGroupComponent,
     LucideCalendar,
     MatchesFilterComponent,
+    ScrollToTopComponent,
   ],
   templateUrl: './partidas.component.html',
 })
