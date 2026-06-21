@@ -1,12 +1,18 @@
 <div class="w-full overflow-hidden rounded-[8px] border border-[#2A2B36] bg-[#14151A] shadow-sm">
-  <div class="overflow-x-auto">
+  <div class="overflow-auto max-h-[450px] md:max-h-[600px] custom-scrollbar">
     <table class="w-full border-collapse text-left text-sm select-none">
-      <thead>
+      <thead class="sticky top-0 z-10 bg-[#0D0D0F]">
         <tr
           class="bg-[#0D0D0F] border-b border-[#2A2B36] text-[10px] text-[#9B9BAD] font-black uppercase tracking-wider font-ui">
-          <th class="py-3 px-4 md:px-6 text-center w-20">Posição</th>
-          <th class="py-3 px-4 md:px-6">Participante</th>
-          <th class="py-3 px-4 md:px-6 text-center w-36">Pontos</th>
+          <th class="py-3 px-3 md:px-6 text-center w-14 md:w-20">
+            <span class="hidden sm:inline">Posição</span>
+            <span class="inline sm:hidden">Pos.</span>
+          </th>
+          <th class="py-3 px-3 md:px-6">Participante</th>
+          <th class="py-3 px-3 md:px-6 text-center w-16 md:w-36">
+            <span class="hidden sm:inline">Pontos</span>
+            <span class="inline sm:hidden">Pts</span>
+          </th>
         </tr>
       </thead>
       <tbody class="divide-y divide-[#2A2B36]">
@@ -14,17 +20,17 @@
         <tr class="transition-colors duration-80 hover:bg-[#22232D]" [class.border-l-2]="row.user_id === userId()"
           [class.border-l-[#E8001D]]="row.user_id === userId()">
           <!-- Position -->
-          <td class="py-4 px-4 md:px-6 text-center">
+          <td class="py-4 px-3 md:px-6 text-center">
             <span class="font-black text-[#F0F0F5] text-sm font-display">
               {{ row.position }}
             </span>
           </td>
 
           <!-- Participant Details -->
-          <td class="py-4 px-4 md:px-6">
-            <div class="flex items-center gap-3 min-w-0">
-              <!-- Profile Pic -->
-              <div class="relative shrink-0">
+          <td class="py-4 px-3 md:px-6 max-w-0 w-full">
+            <div class="flex items-center gap-2 md:gap-3 min-w-0 w-full">
+              <!-- Profile Pic (hidden on mobile) -->
+              <div class="relative shrink-0 hidden md:block">
                 @if (row.user_avatar) {
                 <img [src]="row.user_avatar" alt="Avatar"
                   class="w-9 h-9 rounded-full object-cover border border-[#2A2B36]" />
@@ -42,20 +48,27 @@
               </div>
 
               <!-- Name -->
-              <div class="flex flex-col items-start text-left min-w-0">
-                <span class="font-bold text-[#F0F0F5] flex items-center gap-1.5 text-sm truncate max-w-full">
-                  {{ row.user_name }}
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-1.5 w-full">
+                  <!-- Full Name (Desktop) -->
+                  <span class="font-bold text-[#F0F0F5] text-sm truncate hidden md:inline-block">
+                    {{ row.user_name }}
+                  </span>
+                  <!-- First + Last Name (Mobile) -->
+                  <span class="font-bold text-[#F0F0F5] text-xs truncate inline-block md:hidden">
+                    {{ formatName(row.user_name) }}
+                  </span>
                   @if (row.user_id === userId()) {
                   <span
-                    class="text-[9px] font-black uppercase bg-[#14151A] text-[#E8001D] border border-[#E8001D] px-2 py-0.5 rounded-[4px] tracking-wider font-ui shrink-0">Você</span>
+                    class="text-[9px] font-black uppercase bg-[#14151A] text-[#E8001D] border border-[#E8001D] px-1.5 py-0.5 rounded-[4px] tracking-wider font-ui shrink-0">Você</span>
                   }
-                </span>
+                </div>
               </div>
             </div>
           </td>
 
           <!-- Points -->
-          <td class="py-4 px-4 md:px-6 text-center">
+          <td class="py-4 px-3 md:px-6 text-center">
             <span class="font-black text-sm text-[#F0F0F5] font-display">
               {{ row.pts_total }}
             </span>

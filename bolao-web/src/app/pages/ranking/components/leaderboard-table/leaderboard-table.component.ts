@@ -11,4 +11,12 @@ import { RankingUser } from '../../ranking.component';
 export class LeaderboardTableComponent {
   rankings = input.required<RankingUser[]>();
   userId = input.required<string | undefined>();
+
+  formatName(name: string): string {
+    if (!name) return '';
+    const parts = name.trim().split(/\s+/);
+    if (parts.length <= 2) return name;
+    return `${parts[0]} ${parts[parts.length - 1]}`;
+  }
 }
+
