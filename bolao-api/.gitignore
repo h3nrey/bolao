@@ -5,6 +5,7 @@
 
 # tools
 /scratch
+/scripts
 
 # Testing
 /coverage
@@ -34,4 +35,4 @@ prisma/migrations/*
 
 # Backups and Local Logs
 backup-old-scoring.json
-recalculating-preview.log
+recalculating-preview.log
