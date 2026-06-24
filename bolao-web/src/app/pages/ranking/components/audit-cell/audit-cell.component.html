@@ -1,17 +1,17 @@
 <div class="flex flex-col items-center justify-center">
   @if (prediction(); as pred) {
-    @if (pred.score_a !== null && pred.score_b !== null) {
-      <div class="text-xs font-black text-[#F0F0F5]">
-        {{ pred.score_a }}x{{ pred.score_b }}
-      </div>
-      <div class="text-[9px] font-black mt-0.5 uppercase tracking-wider"
-           [ngClass]="pred.points > 0 ? 'text-[#00D68F]' : 'text-[#5C5C72]'">
-        +{{ pred.points }} pts
-      </div>
-    } @else {
-      <span class="text-xs text-[#5C5C72] font-bold">-</span>
-    }
+  @if (pred.score_a !== null && pred.score_b !== null) {
+  <div class="text-xs font-black text-[#F0F0F5]">
+    {{ pred.score_a }}x{{ pred.score_b }}
+  </div>
+  <div class="text-[9px] font-black mt-0.5 uppercase tracking-wider"
+    [ngClass]="pred.points > 0 ? 'text-[#00D68F]' : 'text-[#5C5C72]'">
+    +{{ pred.points }} pts
+  </div>
   } @else {
-    <span class="text-xs text-[#5C5C72] font-bold">-</span>
+  <span class="text-xs text-[#5C5C72] font-bold">-</span>
+  }
+  } @else {
+  <span class="text-xs text-[#5C5C72] font-bold">-</span>
   }
 </div>
