@@ -89,7 +89,7 @@
 .bracket-scroll-area {
   width: 100%;
   max-height: 680px;
-  overflow-x: auto;
+  overflow-x: hidden;
   overflow-y: auto;
   padding-bottom: 1rem;
   scrollbar-width: thin;
@@ -119,6 +119,7 @@
   flex: 1;
   min-height: 0;
   max-height: none;
+  overflow-x: auto;
 }
 
 /* Match card design overrides */

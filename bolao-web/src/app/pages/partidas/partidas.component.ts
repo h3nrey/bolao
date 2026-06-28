@@ -1,7 +1,7 @@
 import { Component, signal, inject, OnInit, OnDestroy, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { TabSelectorComponent, TabOption } from '../../components/ui/tab-selector/tab-selector.component';
+
 import { KnockoutBracketComponent } from '../../components/ui/knockout-bracket/knockout-bracket.component';
 import { LoadingSpinnerComponent } from '../../components/ui/loading-spinner/loading-spinner.component';
 import { MatchCardData } from './components/match-card/match-card.component';
@@ -37,7 +37,6 @@ import { ScrollToTopComponent } from '../../components/ui/scroll-to-top/scroll-t
   standalone: true,
   imports: [
     CommonModule,
-    TabSelectorComponent,
     KnockoutBracketComponent,
     LoadingSpinnerComponent,
     MatchDayGroupComponent,
@@ -56,7 +55,6 @@ export class PartidasComponent implements OnInit {
   protected readonly matches = signal<Match[]>([]);
   protected readonly featuredMatches = signal<Match[]>([]);
   protected readonly loadingMatches = signal(false);
-  protected readonly activeStage = signal<'groups' | 'knockout'>('groups');
 
   // Filters state
   protected readonly selectedGroupId = signal<string | null>(null);
@@ -64,15 +62,7 @@ export class PartidasComponent implements OnInit {
   protected readonly selectedTeamId = signal<string | null>(null);
   protected readonly selectedStatus = signal<string | null>(null);
 
-  // Tab options
-  protected readonly stageTabs: TabOption[] = [
-    { id: 'groups', label: 'Fase de Grupos' },
-    { id: 'knockout', label: 'Fase Eliminatória' },
-  ];
 
-  protected setActiveStage(id: string): void {
-    if (id === 'groups' || id === 'knockout') this.activeStage.set(id);
-  }
 
   // Extract unique groups from matches
   protected readonly groups = computed(() => this.matchesService.getUniqueGroups(this.matches()));
@@ -83,15 +73,12 @@ export class PartidasComponent implements OnInit {
   // Extract unique teams from matches
   protected readonly teams = computed(() => this.matchesService.getUniqueTeams(this.matches()));
 
-  // Matches grouped by date, filtered by active stage and select dropdowns
+  // Matches grouped by date, filtered by select dropdowns
   protected readonly groupedMatches = computed(() => {
     const rawMatches = this.matches();
     if (!rawMatches.length) return [];
 
-    const currentStage = this.activeStage();
-    let filtered = rawMatches.filter(m =>
-      currentStage === 'groups' ? m.stage === 'groups' : m.stage !== 'groups'
-    );
+    let filtered = [...rawMatches];
 
     // Apply group filter
     const selGroup = this.selectedGroupId();

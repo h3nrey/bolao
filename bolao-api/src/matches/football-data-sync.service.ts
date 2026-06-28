@@ -50,8 +50,38 @@ export class FootballDataSyncService {
     }
 
     try {
-      this.logger.log('Fetching World Cup fixtures from Football-Data.org...');
-      const response = await fetch('https://api.football-data.org/v4/competitions/WC/matches', {
+      // Determine the current stage based on the earliest unfinished match
+      const currentMatch = await this.prisma.match.findFirst({
+        where: {
+          status: { in: ['upcoming', 'live'] },
+        },
+        orderBy: [
+          { scheduled_at: 'asc' },
+        ],
+      });
+
+      let stageFilter = '';
+      if (currentMatch) {
+        const stageMapping: Record<string, string> = {
+          groups: 'GROUP_STAGE',
+          round_of_32: 'LAST_32',
+          round_of_16: 'LAST_16',
+          quarterfinal: 'QUARTER_FINALS',
+          semifinal: 'SEMI_FINALS',
+          third_place: 'THIRD_PLACE',
+          final: 'FINAL',
+        };
+        const apiStage = stageMapping[currentMatch.stage];
+        if (apiStage) {
+          stageFilter = `?stage=${apiStage}`;
+          this.logger.log(`Detected current stage from database: ${currentMatch.stage} (API filter: ${apiStage})`);
+        }
+      } else {
+        this.logger.log('No upcoming or live matches found in database. Syncing all stages.');
+      }
+
+      this.logger.log(`Fetching World Cup fixtures from Football-Data.org (Filter: ${stageFilter || 'none'})...`);
+      const response = await fetch(`https://api.football-data.org/v4/competitions/WC/matches${stageFilter}`, {
         headers: {
           'X-Auth-Token': apiKey,
         },
@@ -66,6 +96,56 @@ export class FootballDataSyncService {
       if (!data || !Array.isArray(data.matches)) {
         throw new Error('Invalid response structure: "matches" array not found.');
       }
+
+      // Find the active tournament
+      const tournament = await this.prisma.tournament.findFirst({
+        where: { status: 'active' },
+      });
+
+      if (!tournament) {
+        throw new Error('No active tournament found in the database.');
+      }
+
+      // Find or create phases
+      let phaseGrupos = await this.prisma.phase.findFirst({
+        where: { tournament_id: tournament.id, type: 'groups' },
+      });
+      if (!phaseGrupos) {
+        phaseGrupos = await this.prisma.phase.create({
+          data: {
+            tournament_id: tournament.id,
+            name: 'Fase de Grupos',
+            type: 'groups',
+            status: 'active',
+            order: 1,
+          },
+        });
+      }
+
+      let knockoutPhase = await this.prisma.phase.findFirst({
+        where: { tournament_id: tournament.id, type: 'knockout' },
+      });
+      if (!knockoutPhase) {
+        knockoutPhase = await this.prisma.phase.create({
+          data: {
+            tournament_id: tournament.id,
+            name: 'Fase Eliminatória',
+            type: 'knockout',
+            status: 'active',
+            order: 2,
+          },
+        });
+      }
+
+      const apiStageToDbStage: Record<string, any> = {
+        GROUP_STAGE: 'groups',
+        LAST_32: 'round_of_32',
+        LAST_16: 'round_of_16',
+        QUARTER_FINALS: 'quarterfinal',
+        SEMI_FINALS: 'semifinal',
+        THIRD_PLACE: 'third_place',
+        FINAL: 'final',
+      };
 
       this.logger.log(`Fetched ${data.matches.length} matches from API. processing...`);
       let updatedCount = 0;
@@ -95,19 +175,21 @@ export class FootballDataSyncService {
         const utcDate = new Date(apiMatch.utcDate);
 
         // Find match in our database
-        const dbMatch = await this.prisma.match.findFirst({
+        let dbMatch = await this.prisma.match.findFirst({
           where: {
-            team_a_id: teamA.id,
-            team_b_id: teamB.id,
-            scheduled_at: utcDate,
+            OR: [
+              {
+                provider: 'football-data',
+                external_id: apiMatch.id.toString(),
+              },
+              {
+                team_a_id: teamA.id,
+                team_b_id: teamB.id,
+                scheduled_at: utcDate,
+              },
+            ],
           },
         });
-
-        if (!dbMatch) {
-          continue;
-        }
-
-        matchedCount++;
 
         // Map status
         let mappedStatus: 'upcoming' | 'live' | 'finished' | 'cancelled';
@@ -130,36 +212,70 @@ export class FootballDataSyncService {
         // Extract scores
         const scoreInfo = apiMatch.score;
         const fullTime = scoreInfo?.fullTime;
+        const hasNoScoreYet = fullTime?.home === null || fullTime?.away === null;
 
-        // Skip if scores are not available yet (for upcoming matches)
-        if (fullTime?.home === null || fullTime?.away === null) {
-          continue;
-        }
+        const apiScoreA = fullTime?.home ?? 0;
+        const apiScoreB = fullTime?.away ?? 0;
 
-        const apiScoreA = fullTime.home ?? 0;
-        const apiScoreB = fullTime.away ?? 0;
-
-        const regularTime = scoreInfo.regularTime;
+        const regularTime = scoreInfo?.regularTime;
         const scoreARegular = regularTime ? (regularTime.home ?? apiScoreA) : apiScoreA;
         const scoreBRegular = regularTime ? (regularTime.away ?? apiScoreB) : apiScoreB;
 
-        const extraTime = scoreInfo.extraTime;
+        const extraTime = scoreInfo?.extraTime;
         const scoreAExtra = extraTime ? (extraTime.home ?? 0) : 0;
         const scoreBExtra = extraTime ? (extraTime.away ?? 0) : 0;
 
-        const penalties = scoreInfo.penalties;
+        const penalties = scoreInfo?.penalties;
         const penaltyScoreA = penalties ? penalties.home : null;
         const penaltyScoreB = penalties ? penalties.away : null;
 
+        if (!dbMatch) {
+          const dbStage = apiStageToDbStage[apiMatch.stage] || 'groups';
+          const phaseId = dbStage === 'groups' ? phaseGrupos.id : knockoutPhase.id;
+
+          if (dryRun) {
+            this.logger.log(`[DryRun] Would create match: ${dbHomeName} x ${dbAwayName} (${dbStage})`);
+            continue;
+          }
+
+          dbMatch = await this.prisma.match.create({
+            data: {
+              phase_id: phaseId,
+              stage: dbStage,
+              team_a_id: teamA.id,
+              team_b_id: teamB.id,
+              scheduled_at: utcDate,
+              status: mappedStatus,
+              provider: 'football-data',
+              external_id: apiMatch.id.toString(),
+              score_a: scoreARegular,
+              score_b: scoreBRegular,
+              score_a_extra: scoreAExtra,
+              score_b_extra: scoreBExtra,
+              penalty_score_a: penaltyScoreA,
+              penalty_score_b: penaltyScoreB,
+            },
+          });
+
+          updatesLog.push(`Created match ID ${dbMatch.id}: ${dbHomeName} x ${dbAwayName} (${dbStage})`);
+          this.logger.log(`Created match ID ${dbMatch.id}: ${dbHomeName} x ${dbAwayName} (${dbStage})`);
+          updatedCount++;
+          matchedCount++;
+          continue;
+        }
+
+        matchedCount++;
+
         // Check for updates
         const statusChanged = dbMatch.status !== mappedStatus;
-        const scoreChanged =
+        const scoreChanged = !hasNoScoreYet && (
           dbMatch.score_a !== scoreARegular ||
           dbMatch.score_b !== scoreBRegular ||
           dbMatch.score_a_extra !== scoreAExtra ||
           dbMatch.score_b_extra !== scoreBExtra ||
           dbMatch.penalty_score_a !== penaltyScoreA ||
-          dbMatch.penalty_score_b !== penaltyScoreB;
+          dbMatch.penalty_score_b !== penaltyScoreB
+        );
 
         if (statusChanged || scoreChanged) {
           const logMsg = `Match ID ${dbMatch.id} (${dbHomeName} x ${dbAwayName}): Status (${dbMatch.status} -> ${mappedStatus}), Score (${dbMatch.score_a}-${dbMatch.score_b} -> ${scoreARegular}-${scoreBRegular})`;
