@@ -84,6 +84,7 @@ export class AuditModalComponent {
   protected readonly loadingAudit = signal(false);
   protected readonly auditData = signal<AuditData | null>(null);
   protected readonly searchFilter = signal('');
+  protected readonly expandedUserId = signal<string | null>(null);
 
   // Computed for audit users filtering
   protected readonly filteredUsers = computed(() => {
@@ -109,6 +110,10 @@ export class AuditModalComponent {
     this.close.emit();
   }
 
+  protected toggleUser(userId: string): void {
+    this.expandedUserId.update((id) => (id === userId ? null : userId));
+  }
+
   protected updateSearch(event: Event): void {
     const val = (event.target as HTMLInputElement).value;
     this.searchFilter.set(val);
@@ -118,7 +123,7 @@ export class AuditModalComponent {
     this.loadingAudit.set(true);
     const token = this.session.token();
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    
+
     this.http.get<AuditData>(`${this.apiBaseUrl}/tournaments/${tournamentId}/audit`, { headers }).subscribe({
       next: (data) => {
         this.auditData.set(data);
