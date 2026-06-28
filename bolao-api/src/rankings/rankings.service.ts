@@ -7,12 +7,11 @@ export class RankingsService {
   constructor(private prisma: PrismaService) {}
 
   async recalculate(tournamentId: string, phaseId?: string | null) {
-    // Get all predictions for matches in this tournament (and optionally phase)
+    // Get all predictions for matches in this tournament (all phases)
     const matches = await this.prisma.match.findMany({
       where: {
         phase: {
           tournament_id: tournamentId,
-          ...(phaseId ? { id: phaseId } : {}),
         },
       },
     });
@@ -82,15 +81,13 @@ export class RankingsService {
         userStats[userId].sum_submitted_at - farFutureTime + submitTime;
     }
 
-    // Add special predictions points if this is overall ranking (phaseId is null/undefined)
-    if (!phaseId) {
-      for (const user of allUsers) {
-        const specialPoints = await this.calculateSpecialPoints(
-          user.id,
-          tournamentId,
-        );
-        userStats[user.id].pts_total += specialPoints;
-      }
+    // Add special predictions points
+    for (const user of allUsers) {
+      const specialPoints = await this.calculateSpecialPoints(
+        user.id,
+        tournamentId,
+      );
+      userStats[user.id].pts_total += specialPoints;
     }
 
     // Sort users:
@@ -123,7 +120,7 @@ export class RankingsService {
         where: {
           user_id: userId,
           tournament_id: tournamentId,
-          phase_id: phaseId ?? null,
+          phase_id: null,
         },
       });
 
@@ -141,7 +138,7 @@ export class RankingsService {
           data: {
             user_id: userId,
             tournament_id: tournamentId,
-            phase_id: phaseId ?? null,
+            phase_id: null,
             pts_total: stats.pts_total,
             pts_matches: stats.pts_matches,
             position,
@@ -149,17 +146,13 @@ export class RankingsService {
         });
       }
     }
-
-    if (phaseId) {
-      await this.recalculate(tournamentId, null);
-    }
   }
 
   async getFormatted(tournamentId: string, phaseId?: string) {
     const rankings = await this.prisma.ranking.findMany({
       where: {
         tournament_id: tournamentId,
-        phase_id: phaseId ?? null,
+        phase_id: null, // Always return the overall ranking
       },
       include: {
         user: true,
